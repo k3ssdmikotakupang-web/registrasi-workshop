@@ -11,31 +11,32 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   
   <style>
-    :root { --bg-dark: #0b0f19; --card-bg: #151c2e; --neon-cyan: #00f2fe; --neon-blue: #4facfe; --neon-emerald: #38ef7d; --neon-purple: #e100ff; --neon-gold: #ffe000; }
+    :root { --bg-dark: #111827; --card-bg: #1f2937; --neon-cyan: #00f2fe; --neon-blue: #4facfe; --neon-emerald: #10b981; --neon-purple: #e100ff; --neon-gold: #f59e0b; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-dark); color: #f8fafc; min-height: 100vh; }
-    .hero-banner { background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%); border-bottom: 2px solid var(--neon-cyan); padding: 35px 20px; box-shadow: 0 0 25px rgba(0, 242, 254, 0.2); }
+    .hero-banner { background: linear-gradient(135deg, #0f2027 0%, #1f2937 50%, #111827 100%); border-bottom: 2px solid var(--neon-cyan); padding: 35px 20px; box-shadow: 0 0 25px rgba(0, 242, 254, 0.1); }
     .neon-text-cyan { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-    .neon-text-emerald { background: linear-gradient(135deg, #11998e, var(--neon-emerald)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-    .card-neon { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
-    .form-control, .form-select { background-color: #0f172a; border: 1px solid #334155; color: #ffffff; border-radius: 12px; padding: 12px 16px; }
-    .form-control:focus { border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); color:#fff; }
-    .btn-neon-cyan { background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%); color: #000; font-weight: 700; border: none; border-radius: 12px; padding: 14px; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); }
-    .btn-neon-gold { background: linear-gradient(135deg, #f5af19 0%, #f12711 100%); color: #fff; font-weight: 700; border: none; border-radius: 12px; padding: 14px; box-shadow: 0 0 15px rgba(245, 175, 25, 0.4); transition: 0.3s; }
-    .btn-neon-gold:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(245, 175, 25, 0.6); color: #fff;}
+    .neon-text-emerald { background: linear-gradient(135deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+    .card-neon { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .form-control, .form-select { background-color: #374151; border: 1px solid #4b5563; color: #ffffff; border-radius: 12px; padding: 12px 16px; font-weight:500;}
+    .form-control::placeholder { color: #9ca3af; }
+    .form-control:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background-color:#374151; color:#fff; }
+    .btn-neon-cyan { background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%); color: #000; font-weight: 700; border: none; border-radius: 12px; padding: 14px; box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+    .btn-neon-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; font-weight: 700; border: none; border-radius: 12px; padding: 14px; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); transition: 0.3s; }
+    .btn-neon-gold:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(245, 158, 11, 0.5); color: #fff;}
     
     .tracker-container { display: flex; justify-content: space-between; position: relative; margin: 30px 0; }
-    .tracker-container::before { content: ''; position: absolute; top: 50%; left: 10%; right: 10%; height: 4px; background: #334155; z-index: 1; transform: translateY(-50%); }
+    .tracker-container::before { content: ''; position: absolute; top: 50%; left: 10%; right: 10%; height: 4px; background: #4b5563; z-index: 1; transform: translateY(-50%); }
     .track-step { position: relative; z-index: 2; width: 33%; text-align: center; }
-    .track-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #1e293b; color: #64748b; font-weight: bold; margin: 0 auto 10px; border: 2px solid #334155; transition: 0.3s; font-size: 1.2rem; }
-    .track-step.done .track-icon { background: var(--neon-emerald); color: #000; border-color: var(--neon-emerald); box-shadow: 0 0 15px rgba(56, 239, 125, 0.5); }
-    .track-step.active .track-icon { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 254, 0.5); }
-    .track-text { font-size: 0.85rem; font-weight: 600; color: #94a3b8; }
+    .track-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #374151; color: #9ca3af; font-weight: bold; margin: 0 auto 10px; border: 2px solid #4b5563; transition: 0.3s; font-size: 1.2rem; }
+    .track-step.done .track-icon { background: var(--neon-emerald); color: #fff; border-color: var(--neon-emerald); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+    .track-step.active .track-icon { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); }
+    .track-text { font-size: 0.9rem; font-weight: 700; color: #cbd5e1; }
     .track-step.done .track-text { color: var(--neon-emerald); }
     .track-step.active .track-text { color: var(--neon-cyan); }
     
-    .nav-pills .nav-link { color: #94a3b8; border-radius: 12px; font-weight: 600; }
+    .nav-pills .nav-link { color: #cbd5e1; border-radius: 12px; font-weight: 600; }
     .nav-pills .nav-link.active { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; font-weight: 800; }
-    .id-card-neon { background: #0f172a; border: 1px solid #e100ff; border-radius: 18px; box-shadow: 0 0 20px rgba(225, 0, 255, 0.2); overflow: hidden; }
+    .id-card-neon { background: #1f2937; border: 1px solid #e100ff; border-radius: 18px; box-shadow: 0 0 15px rgba(225, 0, 255, 0.15); overflow: hidden; }
   </style>
 </head>
 <body>
@@ -271,7 +272,7 @@
       globalKwitansiNo = payment.noKwitansi;
     } else if(isPending) {
       stBayar.classList.add("active");
-      badgeBox.innerHTML = '<span class="badge bg-warning text-dark px-4 py-2 fs-6"><i class="bi bi-clock-history me-1"></i> BUKTI TERKIRIM - MENUNGGU VALIDASI</span>';
+      badgeBox.innerHTML = '<span class="badge bg-warning text-dark px-4 py-2 fs-6 mb-2"><i class="bi bi-clock-history me-1"></i> BUKTI TERKIRIM - MENUNGGU VALIDASI</span><br><button class="btn btn-sm btn-outline-danger mt-2" onclick="cancelProofUpload()"><i class="bi bi-x-circle me-1"></i> Batalkan Pengajuan Transfer</button>';
       paymentBox.classList.add('d-none');
       receiptBox.classList.add('d-none');
     } else {
@@ -305,6 +306,19 @@
       .then(r => r.json()).then(res => { Swal.close(); showAlert('success', 'Berhasil', res.message); checkNPSN(); });
     };
     reader.readAsDataURL(file);
+  }
+
+  // FUNGSI BATALKAN PENGAJUAN TRANSFER
+  function cancelProofUpload() {
+    Swal.fire({
+      title: 'Batalkan Pengajuan?', text: 'Bukti transfer akan dihapus, Anda bisa memilih metode bayar tunai/transfer ulang.', icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Batalkan', cancelButtonText: 'Tutup', background: '#1f2937', color: '#fff'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({ title: 'Membatalkan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }, background: '#1f2937', color: '#fff'});
+        fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'cancel_proof', npsn: currentSchoolData.npsn }) })
+        .then(r => r.json()).then(res => { Swal.close(); showAlert('success', 'Dibatalkan', res.message); checkNPSN(); });
+      }
+    });
   }
 
   // PORTAL BENDAHARA
