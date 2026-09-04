@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Scanner Absensi - YPKR Event 2026</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+  <style>
+    body { background: #0b0f19; color: white; font-family: sans-serif; padding: 20px; }
+    .card-scanner { background: #151c2e; border: 1px solid #00f2fe; border-radius: 20px; box-shadow: 0 0 25px rgba(0, 242, 254, 0.2); }
+    #reader { border-radius: 15px; overflow: hidden; border: 2px dashed #00f2fe; }
+  </style>
+</head>
+<body>
+
+<div class="container" style="max-width: 500px;">
+  <div class="card card-scanner p-4 text-center">
+    <h4 class="fw-bold text-info mb-1"><i class="bi bi-qr-code-scan me-2"></i>Scanner Absensi Panitia</h4>
+    <p class="text-muted small mb-3">Arahkan kamera ke QR Code ID Card Peserta</p>
+
+    <div class="mb-3">
+      <select class="form-select bg-dark text-white border-secondary" id="select-session">
+        <option value="HARI-1-CHECKIN">Hari 1 — Check-In Venue (25 Sep)</option>
+        <option value="SESI-01">Sesi 01 — Strategic School Planning</option>
+        <option value="SESI-02">Sesi 02 — Digital Transformation</option>
+        <option value="HARI-2-CHECKIN">Hari 2 — Check-In Venue (26 Sep)</option>
+        <option value="HARI-3-CHECKIN">Hari 3 — Check-In Venue (27 Sep)</option>
+      </select>
+    </div>
+
+    <div id="reader" class="mb-3"></div>
+
+    <div id="result-box" class="alert d-none mt-2"></div>
+  </div>
+</div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec"; // Ganti dengan URL Web App Apps Script mas bro
+
+  function onScanSuccess(decodedText, decodedResult) {
+    const sessionId = document.getElementById('select-session').value;
+    const resultBox = document.getElementById('result-box');
+
+    resultBox.className = "alert alert-info";
+    resultBox.innerHTML = "<span class='spinner-border spinner-border-sm me-2'></span> Memverifikasi ID: " + decodedText;
+    resultBox.classList.remove('d-none');
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: new URLSearchParams({
+        action: 'record_attendance',
+        participantId: decodedText,
+        sessionId: sessionId
+      })
+    })
+    .then(r => r.json())
+    .then(res => {
+      if(res.success) {
+        resultBox.className = "alert alert-success";
+        resultBox.innerHTML = `<strong>✅ ${res.message}</strong><br>
+          Nama: <b>${res.participant.nama}</b><br>
+          Jabatan: ${res.participant.jabatan}<br>
+          Waktu: ${res.timeStr}`;
+      } else {
+        resultBox.className = "alert alert-danger";
+        resultBox.innerHTML = `<strong>❌ ${res.message}</strong>`;
+      }
+    })
+    .catch(err => {
+      resultBox.className = "alert alert-danger";
+      resultBox.innerHTML = "Gagal terhubung ke server.";
+    });
+  }
+
+  let html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader", { fps: 10, qrbox: { width: 250, height: 250 } }, false);
+  html5QrcodeScanner.render(onScanSuccess);
+</script>
+</body>
+</html>
