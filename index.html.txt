@@ -1,0 +1,131 @@
+<!-- --- SIMPAN SEBAGAI index.html --- -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registrasi Peserta - Workshop YPKR</title>
+  <!-- Link Bootstrap 5 CDN untuk tampilan modern -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    .main-card { border-radius: 15px; border: none; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .header-bg { background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%); color: white; border-radius: 15px 15px 0 0; padding: 20px; }
+    .qr-box { border: 2px dashed #0d6efd; border-radius: 10px; background-color: #f8f9fa; }
+  </style>
+</head>
+<body>
+
+<div class="container mt-5 mb-5" style="max-width: 550px;">
+  
+  <!-- KOTAK FORM PENDAFTARAN -->
+  <div class="card main-card" id="form-container">
+    <div class="header-bg text-center">
+      <h4 class="mb-1 fw-bold">Workshop Kepsek SD/MI</h4>
+      <p class="mb-0 small opacity-75">Kota Kupang 2026 - Pendaftaran Peserta</p>
+    </div>
+    <div class="card-body p-4">
+      <form id="formRegistrasi">
+        <div class="mb-3">
+          <label class="form-label fw-bold text-muted small">NPSN / ID Sekolah</label>
+          <input type="text" class="form-control form-control-lg" id="schoolId" required placeholder="Contoh: 503XXXXX">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold text-muted small">Nama Lengkap (Beserta Gelar)</label>
+          <input type="text" class="form-control form-control-lg" id="namaLengkap" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-bold text-muted small">Jabatan</label>
+          <select class="form-select form-control-lg" id="jabatan" required>
+            <option value="">Pilih Jabatan...</option>
+            <option value="Kepala Sekolah">Kepala Sekolah</option>
+            <option value="Guru Peserta">Guru Peserta</option>
+          </select>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-bold text-muted small">Email Aktif</label>
+          <input type="email" class="form-control form-control-lg" id="email" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold" id="btn-submit">
+          Daftar Sekarang
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- KOTAK HASIL KARTU QR (Awalnya Disembunyikan) -->
+  <div class="card main-card d-none" id="result-container">
+    <div class="card-body p-4 text-center">
+      <h3 class="text-success fw-bold mb-2">Pendaftaran Sukses!</h3>
+      <p class="text-muted mb-4">Simpan Kartu Identitas Digital ini untuk masuk ke venue.</p>
+      
+      <div class="qr-box p-4 mb-4">
+        <h4 class="fw-bold mb-0" id="res-nama">Nama Peserta</h4>
+        <p class="text-muted mb-3" id="res-jabatan">Jabatan</p>
+        <!-- Tempat gambar QR -->
+        <img id="res-qr" src="" alt="QR Code" class="img-fluid mb-3 shadow-sm rounded" style="width: 220px;">
+        <h2 class="text-primary fw-bold mb-0" id="res-id">WS26-XXX</h2>
+      </div>
+      
+      <button class="btn btn-primary btn-lg w-100 mb-2" onclick="window.print()">Simpan Kartu (PDF/Screenshot)</button>
+      <button class="btn btn-outline-secondary w-100" onclick="location.reload()">Daftarkan Peserta Lain</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- SCRIPT UNTUK MENGIRIM DATA KE GOOGLE APPS SCRIPT -->
+<script>
+  // MAS BRO, PASTE URL WEB APP DARI GOOGLE APPS SCRIPT DI BAWAH INI:
+  const API_URL = "https://script.google.com/macros/s/AKfycbwrptLezBuHJmmXDVVj9MSfLckwH89bM1IpZq4qDsrprP9gzvIc8inYI9jQtPkmvGJ4/exec";
+
+  document.getElementById('formRegistrasi').addEventListener('submit', function(e) {
+    e.preventDefault(); // Mencegah halaman reload
+    
+    const btn = document.getElementById('btn-submit');
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memproses...';
+    btn.disabled = true;
+
+    // Menyiapkan data untuk dikirim ke API
+    const formData = new URLSearchParams();
+    formData.append('action', 'register');
+    formData.append('schoolId', document.getElementById('schoolId').value);
+    formData.append('namaLengkap', document.getElementById('namaLengkap').value);
+    formData.append('jabatan', document.getElementById('jabatan').value);
+    formData.append('email', document.getElementById('email').value);
+
+    // Proses pengiriman ke Google Apps Script
+    fetch(API_URL, {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(result => {
+      if(result.success) {
+        // Jika sukses, hilangkan form, munculkan kartu QR
+        document.getElementById('form-container').classList.add('d-none');
+        document.getElementById('result-container').classList.remove('d-none');
+        
+        // Isi data ke dalam kartu
+        document.getElementById('res-nama').innerText = result.nama;
+        document.getElementById('res-jabatan').innerText = result.jabatan;
+        document.getElementById('res-id').innerText = result.participantId;
+        document.getElementById('res-qr').src = result.qrUrl;
+      } else {
+        alert("Gagal: " + result.message);
+        btn.innerHTML = 'Daftar Sekarang';
+        btn.disabled = false;
+      }
+    })
+    .catch(error => {
+      alert("Terjadi kesalahan jaringan.");
+      btn.innerHTML = 'Daftar Sekarang';
+      btn.disabled = false;
+    });
+  });
+</script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
