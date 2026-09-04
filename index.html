@@ -174,16 +174,37 @@
           <div><h4 class="neon-text-emerald fw-bold mb-0" id="disp-operator-name">-</h4><span class="text-warning small" id="disp-subrayon-id">-</span></div>
           <button class="btn btn-sm btn-outline-danger" onclick="location.reload()"><i class="bi bi-box-arrow-right"></i> Logout</button>
         </div>
+        <!-- MENU TABS BENDAHARA (DIPERBARUI) -->
         <ul class="nav nav-tabs border-secondary mb-3">
           <li class="nav-item"><button class="nav-link active text-warning" data-bs-toggle="tab" data-bs-target="#tab-pending">Validasi Transfer</button></li>
           <li class="nav-item"><button class="nav-link text-info" data-bs-toggle="tab" data-bs-target="#tab-all-schools">Bayar Tunai</button></li>
+          <li class="nav-item"><button class="nav-link text-success fw-bold" data-bs-toggle="tab" data-bs-target="#tab-buku-besar">Buku Besar</button></li>
         </ul>
+        
         <div class="tab-content">
+          <!-- SUB-TAB 1: VALIDASI TRANSFER -->
           <div class="tab-pane fade show active" id="tab-pending">
-            <div class="table-responsive"><table class="table table-dark table-hover border-secondary small"><tbody id="tbl-pending-transfers"></tbody></table></div>
+            <div class="table-responsive"><table class="table table-dark table-hover border-secondary small"><thead><tr><th>Sekolah</th><th>Penyetor</th><th>Bukti</th><th>Aksi</th></tr></thead><tbody id="tbl-pending-transfers"></tbody></table></div>
           </div>
+          <!-- SUB-TAB 2: BAYAR TUNAI -->
           <div class="tab-pane fade" id="tab-all-schools">
-            <div class="table-responsive"><table class="table table-dark table-hover border-secondary small"><tbody id="tbl-subrayon-schools"></tbody></table></div>
+            <div class="table-responsive"><table class="table table-dark table-hover border-secondary small"><thead><tr><th>NPSN</th><th>Sekolah</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="tbl-subrayon-schools"></tbody></table></div>
+          </div>
+          <!-- SUB-TAB 3: BUKU BESAR (BARU) -->
+          <div class="tab-pane fade" id="tab-buku-besar">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+               <h6 class="text-muted mb-0">Rekap Status Pembayaran</h6>
+               <select id="filter-buku" class="form-select form-select-sm w-auto" style="background:#374151; color:white;" onchange="renderBukuBesar()">
+                 <option value="ALL">Semua Status</option>
+                 <option value="LUNAS">Sudah Lunas</option>
+                 <option value="MENUNGGU VERIFIKASI">Menunggu Verifikasi</option>
+                 <option value="BELUM LUNAS">Belum / Menunggak</option>
+               </select>
+            </div>
+            <div class="table-responsive"><table class="table table-dark table-hover border-secondary small">
+              <thead><tr><th>NPSN</th><th>Sekolah</th><th>Status</th><th>Kwitansi</th></tr></thead>
+              <tbody id="tbl-buku-besar"></tbody>
+            </table></div>
           </div>
         </div>
       </div>
@@ -203,7 +224,8 @@
   let currentSchoolData = null; 
   let currentSubrayonUser = null;
   let globalKwitansiNo = "";
-
+  let globalBukuBesar = [];
+  
   // Helper Swal Neon
   function showAlert(icon, title, text) {
     Swal.fire({ icon: icon, title: title, text: text, background: '#151c2e', color: '#fff', confirmButtonColor: '#00f2fe' });
@@ -322,13 +344,33 @@
   }
 
   // PORTAL BENDAHARA
-  function handleSubrayonLogin(e) { e.preventDefault(); fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'login_subrayon', username: document.getElementById('sub-user').value, password: document.getElementById('sub-pass').value }) }).then(r => r.json()).then(res => { if(res.success) { currentSubrayonUser = res; document.getElementById('box-login-subrayon').classList.add('d-none'); document.getElementById('box-dash-subrayon').classList.remove('d-none'); document.getElementById('disp-operator-name').innerText = res.namaOperator; document.getElementById('disp-subrayon-id').innerText = res.idSubrayon; loadPendingTransfers(res.idSubrayon); loadSubrayonSchools(res.idSubrayon); } else { showAlert('error', 'Login Gagal', res.message); } }); }
+  function handleSubrayonLogin(e) { e.preventDefault(); fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'login_subrayon', username: document.getElementById('sub-user').value, password: document.getElementById('sub-pass').value }) }).then(r => r.json()).then(res => { if(res.success) { currentSubrayonUser = res; document.getElementById('box-login-subrayon').classList.add('d-none'); document.getElementById('box-dash-subrayon').classList.remove('d-none'); document.getElementById('disp-operator-name').innerText = res.namaOperator; document.getElementById('disp-subrayon-id').innerText = res.idSubrayon; loadPendingTransfers(res.idSubrayon); loadSubrayonSchools(res.idSubrayon); loadBukuBesar(res.idSubrayon); } else { showAlert('error', 'Login Gagal', res.message); } }); }
   function loadPendingTransfers(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_pending_transfers', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; if(res.list.length === 0) html = '<tr><td colspan="4" class="text-center text-muted">Tidak ada pending transfer.</td></tr>'; res.list.forEach(item => { html += `<tr><td><b>${item.namaSekolah}</b></td><td>${item.namaPembayar}</td><td><button class="btn btn-sm btn-info" onclick="previewImg('${item.buktiUrl}')"><i class="bi bi-eye"></i></button></td><td><button class="btn btn-sm btn-success" onclick="approveTransfer(${item.rowId}, '${item.npsn}')">Setujui</button></td></tr>`; }); document.getElementById('tbl-pending-transfers').innerHTML = html; }); }
   function previewImg(url) { document.getElementById('img-preview').src = url; new bootstrap.Modal(document.getElementById('modalPreview')).show(); }
   function approveTransfer(rowId, npsn) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', rowId: rowId, npsn: npsn, idSubrayon: currentSubrayonUser.idSubrayon, operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { showAlert('success', 'Terkonfirmasi', 'Transfer Berhasil Divalidasi & Status LUNAS!'); bootstrap.Modal.getInstance(document.getElementById('modalPreview'))?.hide(); loadPendingTransfers(currentSubrayonUser.idSubrayon); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
   function loadSubrayonSchools(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_subrayon_schools', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; res.list.forEach(s => { let isLunas = s.statusBayar === 'LUNAS'; let badge = isLunas ? '<span class="badge bg-success">LUNAS</span>' : '<span class="badge bg-danger">BELUM</span>'; let btn = isLunas ? `<button class="btn btn-sm btn-outline-info" onclick="window.open('verify.html?kw=${s.noKwitansi}', '_blank')"><i class="bi bi-printer"></i> Kwitansi</button>` : `<button class="btn btn-sm btn-warning" onclick="openCashModal('${s.npsn}', '${s.namaSekolah}')">Tunai</button>`; html += `<tr><td>${s.npsn}</td><td>${s.namaSekolah}</td><td>${badge}</td><td>${btn}</td></tr>`; }); document.getElementById('tbl-subrayon-schools').innerHTML = html; }); }
   function openCashModal(npsn, nama) { document.getElementById('pay-npsn').value = npsn; document.getElementById('pay-nama-sekolah').value = nama; new bootstrap.Modal(document.getElementById('modalPayment')).show(); }
   function submitCashPayment() { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', npsn: document.getElementById('pay-npsn').value, idSubrayon: currentSubrayonUser.idSubrayon, namaPembayar: document.getElementById('pay-nama-pembayar').value, kontakPembayar: document.getElementById('pay-kontak-pembayar').value, nominal: 1500000, metodeBayar: 'TUNAI', operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { showAlert('success', 'Berhasil', 'Pembayaran Tunai Dikonfirmasi & E-Kwitansi Diterbitkan!'); bootstrap.Modal.getInstance(document.getElementById('modalPayment')).hide(); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
+
+  // FUNGSI BUKU BESAR
+  function loadBukuBesar(idSubrayon) { 
+    fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_buku_besar', idSubrayon: idSubrayon }) })
+    .then(r => r.json()).then(res => { globalBukuBesar = res.list; renderBukuBesar(); }); 
+  }
+
+  function renderBukuBesar() {
+    let filter = document.getElementById('filter-buku').value;
+    let html = '';
+    globalBukuBesar.forEach(s => {
+      if(filter !== 'ALL' && s.statusBayar !== filter) return;
+      let badge = s.statusBayar === 'LUNAS' ? '<span class="badge bg-success">LUNAS</span>' : (s.statusBayar === 'MENUNGGU VERIFIKASI' ? '<span class="badge bg-warning text-dark">PENDING BUKTI</span>' : '<span class="badge bg-danger">MENUNGGAK</span>');
+      let btn = s.statusBayar === 'LUNAS' ? `<button class="btn btn-sm btn-neon-gold" onclick="window.open('verify.html?kw=${s.noKwitansi}', '_blank')"><i class="bi bi-printer"></i> Cetak</button>` : '-';
+      html += `<tr><td>${s.npsn}</td><td>${s.namaSekolah}</td><td>${badge}</td><td>${btn}</td></tr>`;
+    });
+    if(html === '') html = '<tr><td colspan="4" class="text-center text-muted">Tidak ada data sesuai filter.</td></tr>';
+    document.getElementById('tbl-buku-besar').innerHTML = html;
+  }
+  
 </script>
 </body>
 </html>
