@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal Peserta - Workshop YPKR 2026</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0b0f19;
+      --card-bg: #151c2e;
+      --neon-cyan: #00f2fe;
+      --neon-blue: #4facfe;
+    }
+    body { background-color: var(--bg-dark); color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .card-neon { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+    .form-control { background-color: #0f172a; border: 1px solid #334155; color: #ffffff; border-radius: 12px; padding: 12px; }
+    .form-control:focus { background-color: #0f172a; border-color: var(--neon-cyan); color: #ffffff; box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+    .btn-neon { background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%); color: #000; font-weight: 700; border: none; border-radius: 12px; padding: 12px; }
+    .menu-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; text-align: center; transition: 0.3s; }
+    .menu-box:hover { background: rgba(0, 242, 254, 0.1); border-color: var(--neon-cyan); cursor: pointer; }
+    .menu-icon { font-size: 2rem; color: var(--neon-cyan); margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+
+<div class="container mt-4 mb-5" style="max-width: 500px;">
+  
+  <!-- HALAMAN LOGIN PESERTA -->
+  <div class="card card-neon p-4 p-md-5" id="box-login">
+    <div class="text-center mb-4">
+      <span class="badge bg-warning text-dark px-3 py-2 rounded-pill fw-bold mb-2">PARTICIPANT PORTAL</span>
+      <h3 class="fw-bold text-white mb-1">Login Peserta</h3>
+      <p class="text-muted small">Workshop Manajemen Kepsek 2026</p>
+    </div>
+    
+    <form onsubmit="loginPortal(event)">
+      <div class="mb-3">
+        <label class="form-label text-muted small fw-bold">ID Peserta (Contoh: WS26-001)</label>
+        <input type="text" class="form-control text-uppercase" id="login-id" required>
+      </div>
+      <div class="mb-4">
+        <label class="form-label text-muted small fw-bold">NPSN Sekolah (Sebagai PIN)</label>
+        <input type="number" class="form-control" id="login-npsn" required>
+      </div>
+      <button type="submit" class="btn btn-neon w-100" id="btn-login">Masuk ke Portal</button>
+    </form>
+    
+    <div id="login-alert" class="alert alert-danger mt-3 d-none small"></div>
+  </div>
+
+  <!-- HALAMAN DASHBOARD PESERTA (Hidden Awal) -->
+  <div class="d-none" id="box-dashboard">
+    <!-- Profil Header -->
+    <div class="card card-neon p-4 mb-4 text-center" style="border-top: 4px solid #00f2fe;">
+      <h5 class="fw-bold mb-1" id="dash-nama">Nama Peserta</h5>
+      <p class="text-info small mb-2" id="dash-jabatan">Jabatan</p>
+      <div class="badge bg-secondary mb-3"><i class="bi bi-building me-1"></i> <span id="dash-sekolah">Nama Sekolah</span></div>
+      
+      <!-- QR Code untuk Absen -->
+      <div class="bg-white p-2 rounded d-inline-block mx-auto mb-2">
+        <img id="dash-qr" src="" alt="QR Code" style="width: 150px; height: 150px;">
+      </div>
+      <p class="text-muted small mt-2 mb-0">Tunjukkan QR ini ke panitia untuk presensi.</p>
+    </div>
+
+    <!-- Menu Grid -->
+    <div class="row g-3">
+      <div class="col-6">
+        <div class="menu-box" onclick="alert('Fitur Jadwal akan segera aktif!')">
+          <i class="bi bi-calendar-event menu-icon"></i>
+          <h6 class="mb-0 fw-bold small">Jadwal Sesi</h6>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="menu-box" onclick="alert('Fitur Materi akan segera aktif!')">
+          <i class="bi bi-cloud-arrow-down menu-icon"></i>
+          <h6 class="mb-0 fw-bold small">Unduh Materi</h6>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="menu-box" onclick="alert('Fitur Tugas akan segera aktif!')">
+          <i class="bi bi-journal-check menu-icon"></i>
+          <h6 class="mb-0 fw-bold small">Tugas Mandiri</h6>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="menu-box" onclick="alert('E-Sertifikat belum tersedia.')">
+          <i class="bi bi-award menu-icon"></i>
+          <h6 class="mb-0 fw-bold small">E-Sertifikat</h6>
+        </div>
+      </div>
+    </div>
+    
+    <button class="btn btn-outline-danger w-100 mt-4" onclick="location.reload()">Keluar (Logout)</button>
+  </div>
+
+</div>
+
+<script>
+  // PASTE URL WEB APP APPS SCRIPT MAS BRO DI BAWAH INI:
+  const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
+
+  function loginPortal(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-login');
+    const id = document.getElementById('login-id').value;
+    const npsn = document.getElementById('login-npsn').value;
+    const alertBox = document.getElementById('login-alert');
+
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memverifikasi...';
+    btn.disabled = true;
+    alertBox.classList.add('d-none');
+
+    fetch(API_URL, {
+      method: 'POST',
+      body: new URLSearchParams({ action: 'login_participant', participantId: id, npsn: npsn })
+    })
+    .then(r => r.json())
+    .then(res => {
+      if(res.success) {
+        if(res.participant.status !== 'APPROVED') {
+          alertBox.innerText = "Akun belum aktif. Silakan selesaikan pembayaran ke Bendahara Subrayon terlebih dahulu.";
+          alertBox.classList.remove('d-none');
+          btn.innerHTML = 'Masuk ke Portal';
+          btn.disabled = false;
+          return;
+        }
+
+        // Tampilkan Dashboard
+        document.getElementById('box-login').classList.add('d-none');
+        document.getElementById('box-dashboard').classList.remove('d-none');
+
+        // Isi Data
+        document.getElementById('dash-nama').innerText = res.participant.nama;
+        document.getElementById('dash-jabatan').innerText = res.participant.jabatan;
+        document.getElementById('dash-sekolah').innerText = res.participant.namaSekolah;
+        document.getElementById('dash-qr').src = res.participant.qrUrl;
+
+      } else {
+        alertBox.innerText = res.message;
+        alertBox.classList.remove('d-none');
+        btn.innerHTML = 'Masuk ke Portal';
+        btn.disabled = false;
+      }
+    })
+    .catch(err => {
+      alertBox.innerText = "Gagal terhubung ke server. Periksa koneksi internet.";
+      alertBox.classList.remove('d-none');
+      btn.innerHTML = 'Masuk ke Portal';
+      btn.disabled = false;
+    });
+  }
+</script>
+</body>
+</html>
