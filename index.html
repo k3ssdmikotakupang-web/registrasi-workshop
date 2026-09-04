@@ -7,6 +7,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- SWEETALERT 2 UNTUK POP-UP MODERN -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
   <style>
     :root { --bg-dark: #0b0f19; --card-bg: #151c2e; --neon-cyan: #00f2fe; --neon-blue: #4facfe; --neon-emerald: #38ef7d; --neon-purple: #e100ff; --neon-gold: #ffe000; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-dark); color: #f8fafc; min-height: 100vh; }
@@ -15,15 +18,15 @@
     .neon-text-emerald { background: linear-gradient(135deg, #11998e, var(--neon-emerald)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
     .card-neon { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
     .form-control, .form-select { background-color: #0f172a; border: 1px solid #334155; color: #ffffff; border-radius: 12px; padding: 12px 16px; }
-    .form-control:focus { border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
+    .form-control:focus { border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); color:#fff; }
     .btn-neon-cyan { background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%); color: #000; font-weight: 700; border: none; border-radius: 12px; padding: 14px; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); }
+    .btn-neon-gold { background: linear-gradient(135deg, #f5af19 0%, #f12711 100%); color: #fff; font-weight: 700; border: none; border-radius: 12px; padding: 14px; box-shadow: 0 0 15px rgba(245, 175, 25, 0.4); transition: 0.3s; }
+    .btn-neon-gold:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(245, 175, 25, 0.6); color: #fff;}
     
-    /* ELEGANT TRACKER UI */
     .tracker-container { display: flex; justify-content: space-between; position: relative; margin: 30px 0; }
     .tracker-container::before { content: ''; position: absolute; top: 50%; left: 10%; right: 10%; height: 4px; background: #334155; z-index: 1; transform: translateY(-50%); }
     .track-step { position: relative; z-index: 2; width: 33%; text-align: center; }
     .track-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #1e293b; color: #64748b; font-weight: bold; margin: 0 auto 10px; border: 2px solid #334155; transition: 0.3s; font-size: 1.2rem; }
-    
     .track-step.done .track-icon { background: var(--neon-emerald); color: #000; border-color: var(--neon-emerald); box-shadow: 0 0 15px rgba(56, 239, 125, 0.5); }
     .track-step.active .track-icon { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 254, 0.5); }
     .track-text { font-size: 0.85rem; font-weight: 600; color: #94a3b8; }
@@ -50,7 +53,9 @@
 
   <div class="tab-content" id="mainTabContent">
 
+    <!-- ============================================== -->
     <!-- PORTAL SEKOLAH -->
+    <!-- ============================================== -->
     <div class="tab-pane fade show active" id="pendaftaran-pane">
       
       <!-- STEP 1: CARI NPSN -->
@@ -66,7 +71,7 @@
       <div class="card card-neon p-4 p-md-5 d-none" id="box-form-peserta">
         <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary">
           <div><h4 class="fw-bold neon-text-cyan mb-0" id="disp-nama-sekolah">-</h4><span class="text-muted small">NPSN: <span id="disp-npsn">-</span> | <span id="disp-subrayon" class="text-warning">-</span></span></div>
-          <button class="btn btn-sm btn-outline-light" onclick="location.reload()">Kembali</button>
+          <button class="btn btn-sm btn-outline-danger" onclick="location.reload()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
         </div>
         <form onsubmit="submitFullRegistration(event)">
           <h5 class="neon-text-emerald mb-3">1. Data Kepala Sekolah</h5>
@@ -80,28 +85,36 @@
       <!-- STEP 3: TRACKING & INVOICE -->
       <div class="card card-neon p-4 p-md-5 d-none" id="box-result-peserta">
         
-        <!-- STATUS TRACKER UI -->
-        <h5 class="text-center text-white fw-bold mb-0" id="res-sekolah">-</h5>
+        <!-- HEADER & TOMBOL LOGOUT -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-building"></i> Dashboard Sekolah</span>
+          <button class="btn btn-sm btn-outline-danger" onclick="location.reload()"><i class="bi bi-box-arrow-right me-1"></i> Keluar</button>
+        </div>
+
+        <h4 class="text-center text-white fw-bold mb-0" id="res-sekolah">-</h4>
         <p class="text-center text-muted small mb-4">NPSN: <span id="res-npsn-val">-</span> | <span id="res-subrayon-val" class="text-warning">-</span></p>
 
+        <!-- STATUS TRACKER UI -->
         <div class="tracker-container">
           <div class="track-step done" id="step-daftar">
-            <div class="track-icon"><i class="bi bi-check-lg"></i></div>
-            <div class="track-text">Terdaftar</div>
+            <div class="track-icon"><i class="bi bi-check-lg"></i></div><div class="track-text">Terdaftar</div>
           </div>
           <div class="track-step" id="step-bayar">
-            <div class="track-icon"><i class="bi bi-cash-stack"></i></div>
-            <div class="track-text">Pembayaran</div>
+            <div class="track-icon"><i class="bi bi-cash-stack"></i></div><div class="track-text">Pembayaran</div>
           </div>
           <div class="track-step" id="step-lunas">
-            <div class="track-icon"><i class="bi bi-qr-code"></i></div>
-            <div class="track-text">Lunas & QR Aktif</div>
+            <div class="track-icon"><i class="bi bi-qr-code"></i></div><div class="track-text">Lunas / QR Aktif</div>
           </div>
         </div>
 
         <div class="text-center mb-4"><div id="status-badge-box"></div></div>
 
-        <!-- RINCIAN TAGIHAN & UPLOAD -->
+        <!-- TOMBOL CETAK KWITANSI (Tampil Jika Lunas) -->
+        <div id="receipt-download-box" class="d-none mb-4">
+          <button class="btn btn-neon-gold w-100" onclick="cetakKwitansi()"><i class="bi bi-printer-fill me-2 fs-5"></i> Cetak E-Kwitansi Digital</button>
+        </div>
+
+        <!-- RINCIAN TAGIHAN & UPLOAD (Tampil Jika Belum Lunas) -->
         <div class="card bg-dark border-secondary p-4 mb-4" id="box-invoice-detail">
           <h5 class="neon-text-gold fw-bold mb-3">Tagihan Kontribusi</h5>
           <div class="d-flex justify-content-between mb-2"><span>Total (2 Peserta)</span><span class="fw-bold text-warning fs-5">Rp 1.500.000</span></div>
@@ -142,9 +155,10 @@
       </div>
     </div>
 
+    <!-- ============================================== -->
     <!-- PORTAL BENDAHARA -->
+    <!-- ============================================== -->
     <div class="tab-pane fade" id="subrayon-pane">
-       <!-- KODE PORTAL BENDAHARA TETAP SAMA SEPERTI SEBELUMNYA -->
        <div class="card card-neon p-4 p-md-5" id="box-login-subrayon">
         <h4 class="neon-text-cyan fw-bold mb-3"><i class="bi bi-shield-lock me-2"></i>Login Bendahara</h4>
         <form onsubmit="handleSubrayonLogin(event)">
@@ -156,11 +170,8 @@
 
       <div class="card card-neon p-4 d-none" id="box-dash-subrayon">
         <div class="d-flex justify-content-between align-items-center mb-4">
-          <div>
-            <h4 class="neon-text-emerald fw-bold mb-0" id="disp-operator-name">-</h4>
-            <span class="text-warning small" id="disp-subrayon-id">-</span>
-          </div>
-          <button class="btn btn-sm btn-outline-danger" onclick="location.reload()">Logout</button>
+          <div><h4 class="neon-text-emerald fw-bold mb-0" id="disp-operator-name">-</h4><span class="text-warning small" id="disp-subrayon-id">-</span></div>
+          <button class="btn btn-sm btn-outline-danger" onclick="location.reload()"><i class="bi bi-box-arrow-right"></i> Logout</button>
         </div>
         <ul class="nav nav-tabs border-secondary mb-3">
           <li class="nav-item"><button class="nav-link active text-warning" data-bs-toggle="tab" data-bs-target="#tab-pending">Validasi Transfer</button></li>
@@ -179,7 +190,7 @@
   </div>
 </div>
 
-<!-- MODAL BUKTI & TUNAI (TETAP SAMA) -->
+<!-- MODAL BUKTI & TUNAI -->
 <div class="modal fade" id="modalPreview"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-neon text-white"><div class="modal-header border-secondary"><h5 class="modal-title neon-text-cyan">Foto Bukti Transfer</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body text-center"><img id="img-preview" src="" class="img-fluid rounded border-secondary"></div></div></div></div>
 <div class="modal fade" id="modalPayment"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-neon text-white"><div class="modal-header border-secondary"><h5 class="modal-title neon-text-emerald">Terima Pembayaran Tunai</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="pay-npsn"><div class="mb-3"><label class="text-muted small">Sekolah</label><input type="text" class="form-control" id="pay-nama-sekolah" readonly></div><div class="mb-3"><label class="text-muted small">Nama Penyetor</label><input type="text" class="form-control" id="pay-nama-pembayar" required></div><div class="mb-3"><label class="text-muted small">Kontak (No WA)</label><input type="tel" class="form-control" id="pay-kontak-pembayar"></div></div><div class="modal-footer border-secondary"><button type="button" class="btn btn-neon-emerald w-100" onclick="submitCashPayment()">Konfirmasi Tunai & Cetak Kwitansi</button></div></div></div></div>
 
@@ -187,12 +198,19 @@
 <script>
   // PASTE URL WEB APP APPS SCRIPT MAS BRO DI BAWAH INI:
   const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+  
+  let currentSchoolData = null; 
+  let currentSubrayonUser = null;
+  let globalKwitansiNo = "";
 
-  let currentSchoolData = null; let currentSubrayonUser = null;
+  // Helper Swal Neon
+  function showAlert(icon, title, text) {
+    Swal.fire({ icon: icon, title: title, text: text, background: '#151c2e', color: '#fff', confirmButtonColor: '#00f2fe' });
+  }
 
   function checkNPSN() {
     const npsn = document.getElementById('input-npsn').value;
-    if(!npsn) return;
+    if(!npsn) { showAlert('warning', 'Oops!', 'Masukkan NPSN terlebih dahulu.'); return; }
     document.getElementById('btn-search-npsn').innerHTML = 'Melacak...';
     
     fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'search_npsn', npsn: npsn }) })
@@ -202,17 +220,15 @@
         currentSchoolData = res.school;
         document.getElementById('box-search-npsn').classList.add('d-none');
         
-        // LOGIKA BARU: JIKA SUDAH DAFTAR, LANGSUNG KE TRACKING
         if(res.participants && res.participants.length > 0) {
           showParticipantResult(res.school, res.participants, res.payment);
         } else {
-          // JIKA BELUM, MUNCULKAN FORM REGISTRASI
           document.getElementById('box-form-peserta').classList.remove('d-none');
           document.getElementById('disp-nama-sekolah').innerText = res.school.namaSekolah;
           document.getElementById('disp-npsn').innerText = res.school.npsn;
           document.getElementById('disp-subrayon').innerText = res.school.subrayon;
         }
-      } else { alert(res.message); }
+      } else { showAlert('error', 'Gagal', res.message); }
     });
   }
 
@@ -225,11 +241,10 @@
       namaGuru: document.getElementById('namaGuru').value, noWaGuru: document.getElementById('noWaGuru').value
     });
     fetch(API_URL, { method: 'POST', body: params }).then(r => r.json()).then(res => {
-      if(res.success) { checkNPSN(); } else { alert(res.message); document.getElementById('btn-submit-reg').innerText = "Submit Data & Terbitkan Tagihan"; }
+      if(res.success) { checkNPSN(); } else { showAlert('error', 'Gagal', res.message); document.getElementById('btn-submit-reg').innerText = "Submit Data & Terbitkan Tagihan"; }
     });
   }
 
-  // FUNGSI TAMPILKAN TRACKER STATUS
   function showParticipantResult(school, participants, payment) {
     document.getElementById('box-form-peserta').classList.add('d-none');
     document.getElementById('box-result-peserta').classList.remove('d-none');
@@ -240,55 +255,66 @@
     let isLunas = payment && payment.status === 'LUNAS';
     let isPending = payment && payment.status === 'MENUNGGU VERIFIKASI';
     
-    // UPDATE STATUS TRACKER BAR
     let stBayar = document.getElementById('step-bayar');
     let stLunas = document.getElementById('step-lunas');
     let badgeBox = document.getElementById('status-badge-box');
-    let paymentBox = document.getElementById('payment-options-box');
+    let paymentBox = document.getElementById('box-invoice-detail');
+    let receiptBox = document.getElementById('receipt-download-box');
 
     stBayar.className = "track-step"; stLunas.className = "track-step";
     
     if(isLunas) {
       stBayar.classList.add("done"); stLunas.classList.add("done");
       badgeBox.innerHTML = '<span class="badge bg-success px-4 py-2 fs-6"><i class="bi bi-check-circle-fill me-1"></i> STATUS: LUNAS & QR AKTIF</span>';
-      paymentBox.classList.add('d-none'); // Sembunyikan opsi bayar
+      paymentBox.classList.add('d-none'); // Sembunyikan tagihan
+      receiptBox.classList.remove('d-none'); // Tampilkan Cetak Kwitansi
+      globalKwitansiNo = payment.noKwitansi;
     } else if(isPending) {
       stBayar.classList.add("active");
       badgeBox.innerHTML = '<span class="badge bg-warning text-dark px-4 py-2 fs-6"><i class="bi bi-clock-history me-1"></i> BUKTI TERKIRIM - MENUNGGU VALIDASI</span>';
       paymentBox.classList.add('d-none');
+      receiptBox.classList.add('d-none');
     } else {
       stBayar.classList.add("active");
       badgeBox.innerHTML = '<span class="badge bg-danger px-4 py-2 fs-6"><i class="bi bi-exclamation-triangle-fill me-1"></i> TAGIHAN BELUM DIBAYAR</span>';
       paymentBox.classList.remove('d-none');
+      receiptBox.classList.add('d-none');
     }
 
-    // UPDATE ID CARD GAMBAR
     let kepsek = participants.find(p => p.jabatan === 'Kepala Sekolah');
     let guru = participants.find(p => p.jabatan === 'Guru Peserta');
     if(kepsek) { document.getElementById('res-kepsek-nama').innerText = kepsek.nama; document.getElementById('res-kepsek-qr').src = kepsek.qrUrl; document.getElementById('res-kepsek-qr').style.opacity = isLunas ? '1' : '0.1'; }
     if(guru) { document.getElementById('res-guru-nama').innerText = guru.nama; document.getElementById('res-guru-qr').src = guru.qrUrl; document.getElementById('res-guru-qr').style.opacity = isLunas ? '1' : '0.1'; }
   }
 
+  function cetakKwitansi() {
+    if(globalKwitansiNo) { window.open('verify.html?kw=' + globalKwitansiNo, '_blank'); }
+  }
+
   function submitProofUpload() {
     const file = document.getElementById('upload-file-bukti').files[0];
     const nama = document.getElementById('upload-nama-pembayar').value;
-    if(!file || !nama) { alert("Isi nama & pilih gambar bukti."); return; }
+    if(!file || !nama) { showAlert('warning', 'Perhatian', 'Isi nama penyetor & pilih gambar bukti!'); return; }
+    
+    // Loading pop up Swal
+    Swal.fire({ title: 'Mengunggah...', html: 'Mohon tunggu sebentar', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }, background: '#151c2e', color: '#fff'});
+
     const reader = new FileReader();
     reader.onload = function(e) {
       fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'upload_proof', npsn: currentSchoolData.npsn, subrayon: currentSchoolData.subrayon, namaPembayar: nama, buktiUrl: e.target.result }) })
-      .then(r => r.json()).then(res => { alert(res.message); checkNPSN(); });
+      .then(r => r.json()).then(res => { Swal.close(); showAlert('success', 'Berhasil', res.message); checkNPSN(); });
     };
     reader.readAsDataURL(file);
   }
 
-  // FUNGSI BENDAHARA (TETAP SAMA SEPERTI SEBELUMNYA)
-  function handleSubrayonLogin(e) { e.preventDefault(); fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'login_subrayon', username: document.getElementById('sub-user').value, password: document.getElementById('sub-pass').value }) }).then(r => r.json()).then(res => { if(res.success) { currentSubrayonUser = res; document.getElementById('box-login-subrayon').classList.add('d-none'); document.getElementById('box-dash-subrayon').classList.remove('d-none'); document.getElementById('disp-operator-name').innerText = res.namaOperator; document.getElementById('disp-subrayon-id').innerText = res.idSubrayon; loadPendingTransfers(res.idSubrayon); loadSubrayonSchools(res.idSubrayon); } else { alert(res.message); } }); }
-  function loadPendingTransfers(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_pending_transfers', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; if(res.list.length === 0) html = '<tr><td colspan="4" class="text-center text-muted">Tidak ada pending transfer.</td></tr>'; res.list.forEach(item => { html += `<tr><td><b>${item.namaSekolah}</b></td><td>${item.namaPembayar}</td><td><button class="btn btn-sm btn-info" onclick="previewImg('${item.buktiUrl}')">Lihat</button></td><td><button class="btn btn-sm btn-success" onclick="approveTransfer(${item.rowId}, '${item.npsn}')">Setujui</button></td></tr>`; }); document.getElementById('tbl-pending-transfers').innerHTML = html; }); }
+  // PORTAL BENDAHARA
+  function handleSubrayonLogin(e) { e.preventDefault(); fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'login_subrayon', username: document.getElementById('sub-user').value, password: document.getElementById('sub-pass').value }) }).then(r => r.json()).then(res => { if(res.success) { currentSubrayonUser = res; document.getElementById('box-login-subrayon').classList.add('d-none'); document.getElementById('box-dash-subrayon').classList.remove('d-none'); document.getElementById('disp-operator-name').innerText = res.namaOperator; document.getElementById('disp-subrayon-id').innerText = res.idSubrayon; loadPendingTransfers(res.idSubrayon); loadSubrayonSchools(res.idSubrayon); } else { showAlert('error', 'Login Gagal', res.message); } }); }
+  function loadPendingTransfers(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_pending_transfers', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; if(res.list.length === 0) html = '<tr><td colspan="4" class="text-center text-muted">Tidak ada pending transfer.</td></tr>'; res.list.forEach(item => { html += `<tr><td><b>${item.namaSekolah}</b></td><td>${item.namaPembayar}</td><td><button class="btn btn-sm btn-info" onclick="previewImg('${item.buktiUrl}')"><i class="bi bi-eye"></i></button></td><td><button class="btn btn-sm btn-success" onclick="approveTransfer(${item.rowId}, '${item.npsn}')">Setujui</button></td></tr>`; }); document.getElementById('tbl-pending-transfers').innerHTML = html; }); }
   function previewImg(url) { document.getElementById('img-preview').src = url; new bootstrap.Modal(document.getElementById('modalPreview')).show(); }
-  function approveTransfer(rowId, npsn) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', rowId: rowId, npsn: npsn, idSubrayon: currentSubrayonUser.idSubrayon, operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { alert("LUNAS!"); loadPendingTransfers(currentSubrayonUser.idSubrayon); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
-  function loadSubrayonSchools(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_subrayon_schools', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; res.list.forEach(s => { let isLunas = s.statusBayar === 'LUNAS'; let badge = isLunas ? '<span class="badge bg-success">LUNAS</span>' : '<span class="badge bg-danger">BELUM</span>'; let btn = isLunas ? '-' : `<button class="btn btn-sm btn-warning" onclick="openCashModal('${s.npsn}', '${s.namaSekolah}')">Tunai</button>`; html += `<tr><td>${s.npsn}</td><td>${s.namaSekolah}</td><td>${badge}</td><td>${btn}</td></tr>`; }); document.getElementById('tbl-subrayon-schools').innerHTML = html; }); }
+  function approveTransfer(rowId, npsn) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', rowId: rowId, npsn: npsn, idSubrayon: currentSubrayonUser.idSubrayon, operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { showAlert('success', 'Terkonfirmasi', 'Transfer Berhasil Divalidasi & Status LUNAS!'); bootstrap.Modal.getInstance(document.getElementById('modalPreview'))?.hide(); loadPendingTransfers(currentSubrayonUser.idSubrayon); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
+  function loadSubrayonSchools(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_subrayon_schools', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; res.list.forEach(s => { let isLunas = s.statusBayar === 'LUNAS'; let badge = isLunas ? '<span class="badge bg-success">LUNAS</span>' : '<span class="badge bg-danger">BELUM</span>'; let btn = isLunas ? `<button class="btn btn-sm btn-outline-info" onclick="window.open('verify.html?kw=${s.noKwitansi}', '_blank')"><i class="bi bi-printer"></i> Kwitansi</button>` : `<button class="btn btn-sm btn-warning" onclick="openCashModal('${s.npsn}', '${s.namaSekolah}')">Tunai</button>`; html += `<tr><td>${s.npsn}</td><td>${s.namaSekolah}</td><td>${badge}</td><td>${btn}</td></tr>`; }); document.getElementById('tbl-subrayon-schools').innerHTML = html; }); }
   function openCashModal(npsn, nama) { document.getElementById('pay-npsn').value = npsn; document.getElementById('pay-nama-sekolah').value = nama; new bootstrap.Modal(document.getElementById('modalPayment')).show(); }
-  function submitCashPayment() { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', npsn: document.getElementById('pay-npsn').value, idSubrayon: currentSubrayonUser.idSubrayon, namaPembayar: document.getElementById('pay-nama-pembayar').value, kontakPembayar: document.getElementById('pay-kontak-pembayar').value, nominal: 1500000, metodeBayar: 'TUNAI', operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { alert("LUNAS!"); bootstrap.Modal.getInstance(document.getElementById('modalPayment')).hide(); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
+  function submitCashPayment() { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', npsn: document.getElementById('pay-npsn').value, idSubrayon: currentSubrayonUser.idSubrayon, namaPembayar: document.getElementById('pay-nama-pembayar').value, kontakPembayar: document.getElementById('pay-kontak-pembayar').value, nominal: 1500000, metodeBayar: 'TUNAI', operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { showAlert('success', 'Berhasil', 'Pembayaran Tunai Dikonfirmasi & E-Kwitansi Diterbitkan!'); bootstrap.Modal.getInstance(document.getElementById('modalPayment')).hide(); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
 </script>
 </body>
 </html>
