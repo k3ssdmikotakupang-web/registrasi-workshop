@@ -4,23 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EMS Workshop K3S 2026</title>
-    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Library QR Code Scanner -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     
     <style>
-        /* Base Dark Theme */
         body {
-            background-color: #0f172a; /* Dark Slate */
+            background-color: #0f172a; 
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
         }
-
-        /* Glassmorphism Card */
         .glass-card {
             background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(15px);
@@ -29,8 +26,6 @@
             border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-
-        /* Neon Text & Gradients */
         .text-neon {
             background: linear-gradient(to right, #00f2fe, #4facfe);
             -webkit-background-clip: text;
@@ -38,8 +33,6 @@
             text-shadow: 0px 0px 15px rgba(0, 242, 254, 0.3);
             font-weight: bold;
         }
-
-        /* Input Styling */
         .form-control {
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -52,8 +45,6 @@
             color: white;
             box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
         }
-
-        /* Neon Buttons */
         .btn-neon {
             background: linear-gradient(45deg, #00f2fe, #4facfe);
             border: none;
@@ -67,7 +58,6 @@
             transform: translateY(-2px);
             color: white;
         }
-        
         .btn-outline-neon {
             background: transparent;
             border: 2px solid #f093fb;
@@ -81,15 +71,24 @@
             box-shadow: 0 0 20px rgba(240, 147, 251, 0.5);
             color: #f093fb;
         }
+        /* Custom QR Scanner Canvas */
+        #qr-reader {
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        #qr-reader video {
+            border-radius: 10px;
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-5 col-lg-4">
             
-            <!-- CARD UTAMA -->
             <div class="card glass-card p-4">
                 <div class="text-center mb-4">
                     <h2 class="text-neon mb-1">EMS WORKSHOP</h2>
@@ -112,18 +111,23 @@
 
                     <div class="text-center mb-3 text-white-50">ATAU</div>
 
-                    <!-- Tombol QR Scan -->
-                    <button class="btn btn-outline-neon w-100 py-2 mb-4">
+                    <!-- Wadah Kamera QR Scanner -->
+                    <div id="qr-reader" style="display: none; width: 100%;"></div>
+                    
+                    <button class="btn btn-outline-neon w-100 py-2 mb-2" id="btnScanQR" onclick="startQRScanner()">
                         <i class="bi bi-qr-code-scan me-2"></i> Login via QR Code
                     </button>
+                    <button class="btn btn-danger w-100 py-2 mb-4" id="btnStopQR" style="display: none;" onclick="stopQRScanner()">
+                        Tutup Kamera
+                    </button>
 
-                    <div class="text-center">
+                    <div class="text-center mt-2">
                         <span class="text-white-50 small">Sekolah belum terdaftar?</span>
                         <a href="#" class="text-neon text-decoration-none small" onclick="toggleView('register')">Daftar di sini</a>
                     </div>
                 </div>
 
-                <!-- SECTION PENDAFTARAN (Sembunyi secara default) -->
+                <!-- SECTION PENDAFTARAN -->
                 <div id="registerSection" style="display: none;">
                     <form id="formRegister">
                         <div class="mb-3">
@@ -135,17 +139,20 @@
                             <div id="statusCek" class="form-text text-warning mt-2 small"></div>
                         </div>
 
-                        <!-- Form ini muncul setelah NPSN ditemukan -->
                         <div id="formLanjutan" style="display: none;">
                             <div class="mb-3">
                                 <label class="form-label text-white-50 small">Nama Sekolah</label>
                                 <input type="text" id="namaSekolah" class="form-control" readonly>
                             </div>
-                            <div class="mb-4">
-                                <label class="form-label text-white-50 small">Buat Password Admin</label>
-                                <input type="password" id="passAdmin" class="form-control" placeholder="Minimal 6 karakter">
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small">Subrayon</label>
+                                <input type="text" id="namaSubrayon" class="form-control" readonly>
                             </div>
-                            <button type="button" class="btn btn-neon w-100 py-2 mb-3">Daftarkan Sekolah</button>
+                            <div class="mb-4">
+                                <label class="form-label text-white-50 small">Buat Password Admin Sekolah</label>
+                                <input type="password" id="passAdmin" class="form-control" placeholder="Minimal 6 karakter" required>
+                            </div>
+                            <button type="button" class="btn btn-neon w-100 py-2 mb-3">Simpan Pendaftaran</button>
                         </div>
                     </form>
 
@@ -163,21 +170,21 @@
 
 <!-- Scripts -->
 <script>
-    // --- GANTI URL DI BAWAH INI DENGAN URL WEB APP BRO ---
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec"; 
+    let html5QrcodeScanner = null;
 
-    // Fungsi untuk ganti tampilan Login <-> Register
     function toggleView(view) {
         if(view === 'register') {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('registerSection').style.display = 'block';
+            stopQRScanner(); // Matikan kamera jika pindah ke register
         } else {
             document.getElementById('registerSection').style.display = 'none';
             document.getElementById('loginSection').style.display = 'block';
         }
     }
 
-    // Fungsi fetch ke Google Apps Script
+    // --- FUNGSI MENCARI NPSN ---
     async function cekNpsnKeDatabase() {
         const npsn = document.getElementById('inputNPSN').value;
         const btnCek = document.getElementById('btnCekNPSN');
@@ -186,10 +193,10 @@
 
         if(!npsn) {
             statusText.innerText = "NPSN tidak boleh kosong!";
+            statusText.className = "form-text text-danger mt-2 small";
             return;
         }
 
-        // Efek loading di tombol
         btnCek.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
         statusText.innerText = "Mencari data ke database...";
         statusText.className = "form-text text-info mt-2 small";
@@ -198,10 +205,8 @@
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
-                body: JSON.stringify({
-                    action: 'cek_npsn',
-                    npsn: npsn
-                })
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Penting untuk mencegah blokir CORS Google
+                body: JSON.stringify({ action: 'cek_npsn', npsn: npsn })
             });
 
             const result = await response.json();
@@ -209,22 +214,59 @@
             if(result.status === 'success') {
                 statusText.innerText = "Data ditemukan!";
                 statusText.className = "form-text text-success mt-2 small";
-                document.getElementById('namaSekolah').value = result.data.nama_sekolah + " (" + result.data.subrayon + ")";
+                document.getElementById('namaSekolah').value = result.data.nama_sekolah;
+                document.getElementById('namaSubrayon').value = result.data.subrayon;
                 formLanjutan.style.display = 'block';
             } else {
-                statusText.innerText = result.message; // Menampilkan "NPSN tidak ditemukan"
+                statusText.innerText = result.message; 
                 statusText.className = "form-text text-danger mt-2 small";
             }
         } catch (error) {
-            statusText.innerText = "Terjadi kesalahan koneksi!";
+            statusText.innerText = "Terjadi kesalahan. Pastikan URL API sudah benar.";
             statusText.className = "form-text text-danger mt-2 small";
+            console.error(error);
         } finally {
-            btnCek.innerHTML = 'Cek Data'; // Kembalikan teks tombol
+            btnCek.innerHTML = 'Cek Data';
+        }
+    }
+
+    // --- FUNGSI QR CODE SCANNER ---
+    function startQRScanner() {
+        document.getElementById('qr-reader').style.display = 'block';
+        document.getElementById('btnScanQR').style.display = 'none';
+        document.getElementById('btnStopQR').style.display = 'block';
+
+        html5QrcodeScanner = new Html5Qrcode("qr-reader");
+        html5QrcodeScanner.start(
+            { facingMode: "environment" }, // Prioritas kamera belakang (HP)
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            (decodedText, decodedResult) => {
+                // Eksekusi jika QR berhasil terbaca
+                stopQRScanner();
+                alert("QR Berhasil dipindai!\nData: " + decodedText);
+                // Nanti kita tambahkan logika login otomatis di sini
+            },
+            (errorMessage) => {
+                // Abaikan error background saat mencari QR
+            }
+        ).catch(err => {
+            alert("Gagal mengakses kamera. Pastikan browser diizinkan menggunakan kamera.");
+            stopQRScanner();
+        });
+    }
+
+    function stopQRScanner() {
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.stop().then(() => {
+                document.getElementById('qr-reader').style.display = 'none';
+                document.getElementById('btnScanQR').style.display = 'block';
+                document.getElementById('btnStopQR').style.display = 'none';
+                html5QrcodeScanner = null;
+            }).catch(err => console.error("Gagal stop kamera", err));
         }
     }
 </script>
 
-<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
