@@ -90,16 +90,16 @@
 
                 <!-- SECTION LOGIN -->
                 <div id="loginSection">
-                    <form id="formLogin">
+                    <form id="formLogin" onsubmit="prosesLogin(event)">
                         <div class="mb-3">
                             <label class="form-label text-white-50 small">Username / NPSN</label>
-                            <input type="text" class="form-control" placeholder="Masukkan NPSN" required>
+                            <input type="text" id="loginUser" class="form-control" placeholder="Masukkan NPSN" required>
                         </div>
                         <div class="mb-4">
                             <label class="form-label text-white-50 small">Password / PIN</label>
-                            <input type="password" class="form-control" placeholder="••••••••" required>
+                            <input type="password" id="loginPass" class="form-control" placeholder="••••••••" required>
                         </div>
-                        <button type="submit" class="btn btn-neon w-100 py-2 mb-3">Login System</button>
+                        <button type="submit" id="btnLogin" class="btn btn-neon w-100 py-2 mb-3">Login System</button>
                     </form>
 
                     <div class="text-center mb-3 text-white-50">ATAU</div>
@@ -272,6 +272,48 @@
         } finally {
             btnSimpan.innerHTML = 'Simpan Pendaftaran';
             btnSimpan.disabled = false;
+        }
+    }
+
+    async function prosesLogin(event) {
+        event.preventDefault(); // Mencegah reload halaman
+        
+        const user = document.getElementById('loginUser').value;
+        const pass = document.getElementById('loginPass').value;
+        const btnLogin = document.getElementById('btnLogin');
+        
+        btnLogin.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Loading...';
+        btnLogin.disabled = true;
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'login', username: user, password: pass })
+            });
+
+            const result = await response.json();
+
+            if(result.status === 'success') {
+                // Simpan data login ke memori browser
+                localStorage.setItem('userLogin', JSON.stringify(result.data));
+                
+                Toast.fire({ 
+                    icon: 'success', 
+                    title: 'Login Berhasil!', 
+                    text: `Selamat datang, ${result.data.nama_pic}` 
+                }).then(() => {
+                    // Nanti kita arahkan ke halaman Dashboard di sini
+                    alert(`Kamu login sebagai: ${result.data.role}\nNanti akan diarahkan ke dashboard.`);
+                });
+            } else {
+                Toast.fire({ icon: 'error', title: 'Login Gagal', text: result.message });
+            }
+        } catch (error) {
+            Toast.fire({ icon: 'error', title: 'Error Koneksi', text: 'Gagal terhubung ke server.' });
+        } finally {
+            btnLogin.innerHTML = 'Login System';
+            btnLogin.disabled = false;
         }
     }
 
