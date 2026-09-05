@@ -98,9 +98,9 @@
                 <div class="step-container px-3">
                     <div class="step active">1 <span class="step-label">Akun Dibuat</span></div>
                     <div class="step active">2 <span class="step-label">Tagihan Terbit</span></div>
-                    <div class="step">3 <span class="step-label">Validasi Lunas</span></div>
-                    <div class="step">4 <span class="step-label">Input Peserta</span></div>
-                    <div class="step">5 <span class="step-label">Selesai</span></div>
+                    <div class="step" id="step3">3 <span class="step-label">Validasi Lunas</span></div>
+                    <div class="step" id="step4">4 <span class="step-label">Input Peserta</span></div>
+                    <div class="step" id="step5">5 <span class="step-label">Selesai</span></div>
                 </div>
             </div>
         </div>
@@ -114,7 +114,7 @@
                 <div id="statusTagihan" class="alert alert-warning py-2 small" role="alert">
                     <i class="bi bi-exclamation-triangle"></i> Status: <strong>Belum Lunas</strong>
                 </div>
-                <div class="d-grid gap-2">
+                <<div class="d-grid gap-2" id="kotakAksiTagihan">
                     <button class="btn btn-neon" data-bs-toggle="modal" data-bs-target="#uploadModal"><i class="bi bi-upload"></i> Upload Bukti Transfer</button>
                     <button class="btn btn-outline-light btn-sm"><i class="bi bi-cash"></i> Panduan Bayar Tunai</button>
                 </div>
@@ -157,6 +157,46 @@
         document.getElementById('roleUser').innerText = userData.role.replace('_', ' ');
         document.getElementById('subrayonUser').innerText = userData.subrayon;
     }
+
+    async function cekStatusSekolah() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_status_sekolah', npsn: userData.username })
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                const statusTagihan = document.getElementById('statusTagihan');
+                const kotakAksi = document.getElementById('kotakAksiTagihan');
+
+                if (result.data.status_bayar === 'Pending') {
+                    statusTagihan.innerHTML = '<i class="bi bi-clock-history"></i> Status: <strong>Menunggu Validasi Subrayon</strong>';
+                    statusTagihan.className = 'alert alert-info py-2 small';
+                } 
+                else if (result.data.status_bayar === 'Lunas') {
+                    // Nyalakan lampu progress bar step 3 & 4
+                    document.getElementById('step3').classList.add('active');
+                    document.getElementById('step4').classList.add('active');
+                    
+                    // Ubah status dan ubah tombol aksi menjadi Kwitansi & Input Peserta
+                    statusTagihan.innerHTML = '<i class="bi bi-check-circle"></i> Status: <strong>LUNAS</strong>';
+                    statusTagihan.className = 'alert alert-success py-2 small';
+                    
+                    kotakAksi.innerHTML = `
+                        <button class="btn btn-outline-info btn-sm"><i class="bi bi-printer"></i> Cetak E-Kwitansi</button>
+                        <button class="btn btn-neon"><i class="bi bi-person-plus"></i> Input Data Peserta</button>
+                    `;
+                }
+            }
+        } catch (error) {
+            console.error("Gagal menarik status dari database.");
+        }
+    }
+    
+    // Jalankan fungsi ini sesaat setelah data user ter-load
+    cekStatusSekolah();
 
     // Fungsi Logout
     function logout() {
