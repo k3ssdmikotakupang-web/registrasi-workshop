@@ -303,8 +303,8 @@
                     title: 'Login Berhasil!', 
                     text: `Selamat datang, ${result.data.nama_pic}` 
                 }).then(() => {
-                    // Nanti kita arahkan ke halaman Dashboard di sini
-                    alert(`Kamu login sebagai: ${result.data.role}\nNanti akan diarahkan ke dashboard.`);
+                    // Langsung arahkan ke file dashboard
+                    window.location.href = "dashboard.html";
                 });
             } else {
                 Toast.fire({ icon: 'error', title: 'Login Gagal', text: result.message });
