@@ -152,7 +152,7 @@
                                 <label class="form-label text-white-50 small">Buat Password Admin Sekolah</label>
                                 <input type="password" id="passAdmin" class="form-control" placeholder="Minimal 6 karakter" required>
                             </div>
-                            <button type="button" class="btn btn-neon w-100 py-2 mb-3">Simpan Pendaftaran</button>
+                            <button type="button" class="btn btn-neon w-100 py-2 mb-3" id="btnSimpan" onclick="simpanPendaftaran()">Simpan Pendaftaran</button>
                         </div>
                     </form>
 
@@ -265,6 +265,55 @@
             }).catch(err => console.error("Gagal stop kamera", err));
         }
     }
+
+    // --- FUNGSI SIMPAN PENDAFTARAN ---
+    async function simpanPendaftaran() {
+        const npsn = document.getElementById('inputNPSN').value;
+        const namaSekolah = document.getElementById('namaSekolah').value;
+        const subrayon = document.getElementById('namaSubrayon').value;
+        const password = document.getElementById('passAdmin').value;
+        
+        if(!password || password.length < 6) {
+            alert("Password tidak boleh kosong dan minimal 6 karakter!");
+            return;
+        }
+
+        const btnSimpan = document.getElementById('btnSimpan');
+        btnSimpan.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
+        btnSimpan.disabled = true;
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ 
+                    action: 'register_akun', 
+                    npsn: npsn,
+                    nama_sekolah: namaSekolah,
+                    subrayon: subrayon,
+                    password: password
+                })
+            });
+
+            const result = await response.json();
+
+            if(result.status === 'success') {
+                alert("Mantap! Pendaftaran berhasil. Silakan login.");
+                toggleView('login'); // Otomatis balik ke halaman login
+                document.getElementById('formRegister').reset(); // Bersihkan form
+                document.getElementById('formLanjutan').style.display = 'none';
+            } else {
+                alert("Gagal: " + result.message);
+            }
+        } catch (error) {
+            alert("Terjadi kesalahan sistem saat menyimpan.");
+            console.error(error);
+        } finally {
+            btnSimpan.innerHTML = 'Simpan Pendaftaran';
+            btnSimpan.disabled = false;
+        }
+    }
+    
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
