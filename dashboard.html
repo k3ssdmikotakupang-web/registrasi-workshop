@@ -185,7 +185,7 @@
                     statusTagihan.className = 'alert alert-success py-2 small';
                     
                     kotakAksi.innerHTML = `
-                        <button class="btn btn-outline-info btn-sm"><i class="bi bi-printer"></i> Cetak E-Kwitansi</button>
+                        <button onclick="bukaKwitansi('${result.data.id_transaksi}')" class="btn btn-outline-info btn-sm"><i class="bi bi-printer"></i> Cetak E-Kwitansi</button>
                         <button class="btn btn-neon"><i class="bi bi-person-plus"></i> Input Data Peserta</button>
                     `;
                 }
@@ -276,6 +276,11 @@
         // Mulai membaca file
         reader.readAsDataURL(file);
     }
+
+    function bukaKwitansi(idTrx) {
+        window.open(`kwitansi.html?trx=${idTrx}`, '_blank');
+    }
+    
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
