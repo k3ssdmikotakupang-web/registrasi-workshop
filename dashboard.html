@@ -145,19 +145,36 @@
 </div>
 
 <script>
-    // 1. Cek Keamanan: Pastikan user sudah login dari localStorage
+    // 1. Cek Keamanan: Pastikan user sudah login
     const userData = JSON.parse(localStorage.getItem('userLogin'));
-    
     if(!userData) {
-        // Jika tidak ada data login, tendang balik ke depan
         window.location.href = "index.html";
     } else {
-        // Tampilkan data user di layar
         document.getElementById('namaSekolah').innerText = userData.nama_pic;
         document.getElementById('roleUser').innerText = userData.role.replace('_', ' ');
         document.getElementById('subrayonUser').innerText = userData.subrayon;
     }
 
+    // 2. Deklarasi Variabel Utama (Harus di Atas!)
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec"; // <-- Jangan lupa masukkan URL baru Kapt!
+    
+    const Toast = Swal.mixin({
+        customClass: { popup: 'swal-dark' },
+        confirmButtonColor: '#00f2fe'
+    });
+
+    // 3. Fungsi Buka Kwitansi
+    function bukaKwitansi(idTrx) {
+        window.open(`kwitansi.html?trx=${idTrx}`, '_blank');
+    }
+
+    // 4. Fungsi Logout
+    function logout() {
+        localStorage.removeItem('userLogin');
+        window.location.href = "index.html";
+    }
+
+    // 5. Fungsi Tarik Status Tagihan
     async function cekStatusSekolah() {
         try {
             const response = await fetch(API_URL, {
@@ -167,17 +184,14 @@
             });
             const result = await response.json();
 
-            // Jika API merespons error (misal lupa Deploy Versi Baru), akan muncul pop-up ini!
             if (result.status === 'error') {
-                alert("INFO SISTEM: " + result.message);
+                console.log("INFO SISTEM: " + result.message);
                 return;
             }
 
             if (result.status === 'success') {
                 const statusTagihan = document.getElementById('statusTagihan');
                 const kotakAksi = document.getElementById('kotakAksiTagihan');
-                
-                // Ubah status jadi huruf kecil semua agar kebal salah ketik Lunas / LUNAS
                 const statBayar = result.data.status_bayar.toLowerCase(); 
 
                 if (statBayar === 'pending') {
@@ -185,15 +199,12 @@
                     statusTagihan.className = 'alert alert-info py-2 small';
                 } 
                 else if (statBayar === 'lunas') {
-                    // Nyalakan lampu progress bar
                     document.getElementById('step3').classList.add('active');
                     document.getElementById('step4').classList.add('active');
                     
-                    // Ubah jadi LUNAS hijau
                     statusTagihan.innerHTML = '<i class="bi bi-check-circle"></i> Status: <strong>LUNAS</strong>';
                     statusTagihan.className = 'alert alert-success py-2 small';
                     
-                    // Tampilkan Tombol Kwitansi & Input Peserta
                     kotakAksi.innerHTML = `
                         <button onclick="bukaKwitansi('${result.data.id_transaksi}')" class="btn btn-outline-info btn-sm mb-2 w-100"><i class="bi bi-printer"></i> Cetak E-Kwitansi</button>
                         <button class="btn btn-neon w-100"><i class="bi bi-person-plus"></i> Input Data Peserta</button>
@@ -201,37 +212,20 @@
                 }
             }
         } catch (error) {
-            alert("Gagal koneksi saat cek status: " + error.toString());
+            console.error("Gagal cek status: " + error.toString());
         }
     }
-    
-    // Jalankan fungsi ini sesaat setelah data user ter-load
-    cekStatusSekolah();
 
-    // Fungsi Logout
-    function logout() {
-        localStorage.removeItem('userLogin');
-        window.location.href = "index.html";
-    }
-
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
-
-    const Toast = Swal.mixin({
-        customClass: { popup: 'swal-dark' },
-        confirmButtonColor: '#00f2fe'
-    });
-
+    // 6. Fungsi Upload Bukti Transfer (Tetap dipertahankan)
     async function prosesUploadBukti() {
         const fileInput = document.getElementById('fileBukti');
         if (fileInput.files.length === 0) {
             Toast.fire({ icon: 'warning', title: 'Oops...', text: 'Pilih file terlebih dahulu!' });
             return;
         }
-
         const file = fileInput.files[0];
-        // Validasi ukuran maksimal 2MB (mencegah Google Apps Script timeout)
         if (file.size > 2 * 1024 * 1024) {
-            Toast.fire({ icon: 'warning', title: 'File Kebesaran', text: 'Maksimal ukuran file adalah 2MB.' });
+            Toast.fire({ icon: 'warning', title: 'File Kebesaran', text: 'Maksimal ukuran file 2MB.' });
             return;
         }
 
@@ -239,38 +233,28 @@
         btnUpload.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Mengupload...';
         btnUpload.disabled = true;
 
-        // Proses konversi file menjadi teks (Base64)
         const reader = new FileReader();
         reader.onload = async function(e) {
             const base64Data = e.target.result.split(',')[1]; 
-            
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ 
                         action: 'upload_bukti', 
-                        npsn: userData.username, // Mengambil NPSN dari sesi login
+                        npsn: userData.username, 
                         fileName: file.name,
                         mimeType: file.type,
                         base64Data: base64Data
                     })
                 });
-
                 const result = await response.json();
 
                 if(result.status === 'success') {
                     Toast.fire({ icon: 'success', title: 'Berhasil!', text: result.message }).then(() => {
-                        // Tutup Modal otomatis
-                        const modalElement = document.getElementById('uploadModal');
-                        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                        const modalInstance = bootstrap.Modal.getInstance(document.getElementById('uploadModal'));
                         modalInstance.hide();
-                        
-                        // Reset input & ubah tampilan status tagihan
-                        fileInput.value = '';
-                        const statusTagihan = document.getElementById('statusTagihan');
-                        statusTagihan.innerHTML = '<i class="bi bi-clock-history"></i> Status: <strong>Menunggu Validasi Subrayon</strong>';
-                        statusTagihan.className = 'alert alert-info py-2 small';
+                        cekStatusSekolah(); // Langsung perbarui tampilan setelah upload sukses
                     });
                 } else {
                     Toast.fire({ icon: 'error', title: 'Gagal', text: result.message });
@@ -282,15 +266,11 @@
                 btnUpload.disabled = false;
             }
         };
-        
-        // Mulai membaca file
         reader.readAsDataURL(file);
     }
 
-    function bukaKwitansi(idTrx) {
-        window.open(`kwitansi.html?trx=${idTrx}`, '_blank');
-    }
-    
+    // 7. JALANKAN CEK STATUS SAAT HALAMAN DIBUKA
+    cekStatusSekolah();
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
