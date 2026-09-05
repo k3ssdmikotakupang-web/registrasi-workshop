@@ -29,13 +29,14 @@
         <div class="text-center header-title">
             <h4 class="mb-0">E-KWITANSI RESMI</h4>
             <small>WORKSHOP MANAJEMEN KEPALA SD/MI KOTA KUPANG 2026</small><br>
-            <small>Forum K3S SD/MI Kota Kupang | YPKR</small>
+            <small>Kelompok Kerja Kepala Sekolah (K3S) SD/MI Kota Kupang</small>
         </div>
 
         <table class="table table-borderless table-sm mb-4">
             <tr><td width="35%">No. Transaksi</td><td width="5%">:</td><td id="k_id">...</td></tr>
             <tr><td>Tanggal Validasi</td><td>:</td><td id="k_tgl">...</td></tr>
             <tr><td>Telah Terima Dari</td><td>:</td><td class="fw-bold" id="k_sekolah">...</td></tr>
+            <tr><td>Disetor Oleh</td><td>:</td><td id="k_penyetor">...</td></tr>
             <tr><td>NPSN</td><td>:</td><td id="k_npsn">...</td></tr>
             <tr><td>Uang Sebesar</td><td>:</td><td class="fw-bold fs-5">Rp 2.240.000</td></tr>
             <tr><td>Keterangan</td><td>:</td><td>Kontribusi Workshop (2 Peserta) - Pembayaran <span id="k_metode">...</span></td></tr>
@@ -84,13 +85,14 @@
                 document.getElementById('k_id').innerText = dt.id_transaksi;
                 document.getElementById('k_tgl').innerText = tgl;
                 document.getElementById('k_sekolah').innerText = dt.nama_sekolah;
+                document.getElementById('k_penyetor').innerText = dt.penyetor;
                 document.getElementById('k_npsn').innerText = dt.npsn;
                 document.getElementById('k_metode').innerText = dt.metode;
                 document.getElementById('k_validator').innerText = dt.validator;
 
                 // --- MAGIC GENERATE QR CODE ---
-                // Isi QR persis seperti permintaan bro
-                const isiQR = `Tgl: ${tgl}\nOleh: ${dt.validator}\nSekolah: ${dt.nama_sekolah}\nNPSN: ${dt.npsn}\nStatus: ${dt.status} (Rp 2.240.000)`;
+                const isiQR = `Tgl: ${tgl}\nPenyetor: ${dt.penyetor}\nSekolah: ${dt.nama_sekolah}\nNPSN: ${dt.npsn}\nPenerima: ${dt.validator}\nStatus: ${dt.status} (Rp 2.240.000)`;
+                
                 // Gunakan URL encode agar teks aman diproses
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(isiQR)}`;
                 document.getElementById('qrValidasi').src = qrUrl;
