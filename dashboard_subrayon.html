@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Bendahara Subrayon</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+        .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+        .btn-neon { background: linear-gradient(45deg, #00f2fe, #4facfe); border: none; color: white; border-radius: 8px; font-weight: 600; }
+        .table-dark { background-color: transparent !important; }
+        .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px !important; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
+    <div class="container">
+        <span class="navbar-brand text-neon">EMS Bendahara</span>
+        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <h4 class="fw-bold mb-1">Wilayah: <span id="namaSubrayon" class="text-neon">Memuat...</span></h4>
+    <p class="text-white-50">Tugas Anda: Memvalidasi bukti transfer dari sekolah-sekolah di bawah ini.</p>
+
+    <div class="glass-card p-4 mt-4 overflow-auto">
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr class="text-info border-bottom border-info">
+                    <th>NPSN</th>
+                    <th>Nama Sekolah</th>
+                    <th>Status</th>
+                    <th>Aksi Validasi</th>
+                </tr>
+            </thead>
+            <tbody id="tabelSekolah">
+                <tr><td colspan="4" class="text-center">Memuat data dari database...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec"; 
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
+
+    if(!userData || userData.role !== 'Bendahara_Subrayon') window.location.href = "index.html";
+    
+    document.getElementById('namaSubrayon').innerText = userData.subrayon;
+
+    // Tarik data sekolah saat halaman dibuka
+    async function muatDataSekolah() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_data_subrayon', subrayon: userData.subrayon })
+            });
+            const result = await response.json();
+            
+            let htmlTable = '';
+            if(result.status === 'success') {
+                result.data.forEach(sek => {
+                    let badgeClass = sek.status_bayar === 'Lunas' ? 'bg-success' : (sek.status_bayar === 'Pending' ? 'bg-warning text-dark' : 'bg-secondary');
+                    
+                    // Tombol Aksi
+                    let aksiHtml = '';
+                    if(sek.status_bayar === 'Pending') {
+                        aksiHtml = `
+                            <a href="${sek.link_bukti}" target="_blank" class="btn btn-sm btn-outline-info me-2"><i class="bi bi-eye"></i> Cek Bukti</a>
+                            <button onclick="validasi('${sek.id_transaksi}')" class="btn btn-sm btn-neon"><i class="bi bi-check-circle"></i> Validasi Lunas</button>
+                        `;
+                    } else if (sek.status_bayar === 'Lunas') {
+                        aksiHtml = `<span class="text-success"><i class="bi bi-check2-all"></i> Selesai</span>`;
+                    } else {
+                        aksiHtml = `<span class="text-white-50">-</span>`;
+                    }
+
+                    htmlTable += `
+                        <tr>
+                            <td>${sek.npsn}</td>
+                            <td>${sek.nama_sekolah}</td>
+                            <td><span class="badge ${badgeClass}">${sek.status_bayar}</span></td>
+                            <td>${aksiHtml}</td>
+                        </tr>
+                    `;
+                });
+                document.getElementById('tabelSekolah').innerHTML = htmlTable;
+            }
+        } catch (e) {
+            document.getElementById('tabelSekolah').innerHTML = '<tr><td colspan="4" class="text-danger text-center">Gagal memuat data!</td></tr>';
+        }
+    }
+
+    // Fungsi tombol Validasi
+    async function validasi(idTransaksi) {
+        Swal.fire({
+            title: 'Validasi Pembayaran?',
+            text: "Pastikan nominal di bukti transfer sudah benar Rp 2.240.000.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Lunas!',
+            cancelButtonText: 'Batal',
+            customClass: { popup: 'swal-dark' },
+            background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ 
+                            action: 'validasi_pembayaran', 
+                            id_transaksi: idTransaksi,
+                            validator: userData.nama_pic 
+                        })
+                    });
+                    const res = await response.json();
+                    if(res.status === 'success') {
+                        Toast.fire({ icon: 'success', title: 'Validasi Berhasil!' });
+                        muatDataSekolah(); // Refresh tabel
+                    }
+                } catch(e) {
+                    Toast.fire({ icon: 'error', title: 'Error sistem' });
+                }
+            }
+        });
+    }
+
+    function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
+
+    // Jalankan saat pertama kali buka
+    muatDataSekolah();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
