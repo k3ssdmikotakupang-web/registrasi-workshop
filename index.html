@@ -1,446 +1,230 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workshop Kepsek SD/MI Kota Kupang 2026 - YPKR</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <!-- SWEETALERT 2 UNTUK POP-UP MODERN -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <!-- LIBRARY KONVERSI HTML KE GAMBAR -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  
-  <style>
-    :root { --bg-dark: #111827; --card-bg: #1f2937; --neon-cyan: #00f2fe; --neon-blue: #4facfe; --neon-emerald: #10b981; --neon-purple: #e100ff; --neon-gold: #f59e0b; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-dark); color: #f8fafc; min-height: 100vh; }
-    .hero-banner { background: linear-gradient(135deg, #0f2027 0%, #1f2937 50%, #111827 100%); border-bottom: 2px solid var(--neon-cyan); padding: 35px 20px; box-shadow: 0 0 25px rgba(0, 242, 254, 0.1); }
-    .neon-text-cyan { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-    .neon-text-emerald { background: linear-gradient(135deg, #10b981, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-    .card-neon { background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    .form-control, .form-select { background-color: #374151; border: 1px solid #4b5563; color: #ffffff; border-radius: 12px; padding: 12px 16px; font-weight:500;}
-    .form-control::placeholder { color: #9ca3af; }
-    .form-control:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); background-color:#374151; color:#fff; }
-    .btn-neon-cyan { background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-blue) 100%); color: #000; font-weight: 700; border: none; border-radius: 12px; padding: 14px; box-shadow: 0 0 15px rgba(0, 242, 254, 0.3); }
-    .btn-neon-gold { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: #fff; font-weight: 700; border: none; border-radius: 12px; padding: 14px; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); transition: 0.3s; }
-    .btn-neon-gold:hover { transform: translateY(-2px); box-shadow: 0 0 25px rgba(245, 158, 11, 0.5); color: #fff;}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS Workshop K3S 2026</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
-    .tracker-container { display: flex; justify-content: space-between; position: relative; margin: 30px 0; }
-    .tracker-container::before { content: ''; position: absolute; top: 50%; left: 10%; right: 10%; height: 4px; background: #4b5563; z-index: 1; transform: translateY(-50%); }
-    .track-step { position: relative; z-index: 2; width: 33%; text-align: center; }
-    .track-icon { width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: #374151; color: #9ca3af; font-weight: bold; margin: 0 auto 10px; border: 2px solid #4b5563; transition: 0.3s; font-size: 1.2rem; }
-    .track-step.done .track-icon { background: var(--neon-emerald); color: #fff; border-color: var(--neon-emerald); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
-    .track-step.active .track-icon { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; border-color: var(--neon-cyan); box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); }
-    .track-text { font-size: 0.9rem; font-weight: 700; color: #cbd5e1; }
-    .track-step.done .track-text { color: var(--neon-emerald); }
-    .track-step.active .track-text { color: var(--neon-cyan); }
-    
-    .nav-pills .nav-link { color: #cbd5e1; border-radius: 12px; font-weight: 600; }
-    .nav-pills .nav-link.active { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; font-weight: 800; }
-    .id-card-neon { background: #1f2937; border: 1px solid #e100ff; border-radius: 18px; box-shadow: 0 0 15px rgba(225, 0, 255, 0.15); overflow: hidden; }
-  
-  @media print {
-      body * { visibility: hidden; }
-      #tab-buku-besar, #tab-buku-besar * { visibility: visible; }
-      #tab-buku-besar { position: absolute; left: 0; top: 0; width: 100%; color: #000; }
-      .table-dark { color: #000; background: #fff; }
-      .print-hide { display: none !important; }
-      .badge { border: 1px solid #000; color: #000 !important; background: transparent !important; }
-    }
-  
-  </style>
+    <style>
+        /* Base Dark Theme */
+        body {
+            background-color: #0f172a; /* Dark Slate */
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* Neon Text & Gradients */
+        .text-neon {
+            background: linear-gradient(to right, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0px 0px 15px rgba(0, 242, 254, 0.3);
+            font-weight: bold;
+        }
+
+        /* Input Styling */
+        .form-control {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 10px;
+        }
+        .form-control:focus {
+            background: rgba(0, 0, 0, 0.4);
+            border-color: #00f2fe;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
+        }
+
+        /* Neon Buttons */
+        .btn-neon {
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            border: none;
+            color: white;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-neon:hover {
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+            transform: translateY(-2px);
+            color: white;
+        }
+        
+        .btn-outline-neon {
+            background: transparent;
+            border: 2px solid #f093fb;
+            color: #f093fb;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        .btn-outline-neon:hover {
+            background: rgba(240, 147, 251, 0.1);
+            box-shadow: 0 0 20px rgba(240, 147, 251, 0.5);
+            color: #f093fb;
+        }
+    </style>
 </head>
 <body>
 
-<div class="hero-banner text-center mb-4">
-  <span class="badge bg-dark border border-warning text-warning px-3 py-2 rounded-pill fw-bold mb-2"><i class="bi bi-star-fill me-1"></i> YPKR EVENT MANAGEMENT 2026</span>
-  <h2 class="neon-text-cyan mb-1">WORKSHOP MANAJEMEN KEPSEK SD/MI</h2>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            
+            <!-- CARD UTAMA -->
+            <div class="card glass-card p-4">
+                <div class="text-center mb-4">
+                    <h2 class="text-neon mb-1">EMS WORKSHOP</h2>
+                    <p class="text-white-50 small">K3S SD/MI Kota Kupang 2026</p>
+                </div>
+
+                <!-- SECTION LOGIN -->
+                <div id="loginSection">
+                    <form id="formLogin">
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">Username / NPSN</label>
+                            <input type="text" class="form-control" placeholder="Masukkan NPSN" required>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-white-50 small">Password / PIN</label>
+                            <input type="password" class="form-control" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-neon w-100 py-2 mb-3">Login System</button>
+                    </form>
+
+                    <div class="text-center mb-3 text-white-50">ATAU</div>
+
+                    <!-- Tombol QR Scan -->
+                    <button class="btn btn-outline-neon w-100 py-2 mb-4">
+                        <i class="bi bi-qr-code-scan me-2"></i> Login via QR Code
+                    </button>
+
+                    <div class="text-center">
+                        <span class="text-white-50 small">Sekolah belum terdaftar?</span>
+                        <a href="#" class="text-neon text-decoration-none small" onclick="toggleView('register')">Daftar di sini</a>
+                    </div>
+                </div>
+
+                <!-- SECTION PENDAFTARAN (Sembunyi secara default) -->
+                <div id="registerSection" style="display: none;">
+                    <form id="formRegister">
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">NPSN Sekolah</label>
+                            <div class="input-group">
+                                <input type="number" id="inputNPSN" class="form-control" placeholder="Ketik NPSN" required>
+                                <button type="button" class="btn btn-neon" onclick="cekNpsnKeDatabase()" id="btnCekNPSN">Cek Data</button>
+                            </div>
+                            <div id="statusCek" class="form-text text-warning mt-2 small"></div>
+                        </div>
+
+                        <!-- Form ini muncul setelah NPSN ditemukan -->
+                        <div id="formLanjutan" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small">Nama Sekolah</label>
+                                <input type="text" id="namaSekolah" class="form-control" readonly>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label text-white-50 small">Buat Password Admin</label>
+                                <input type="password" id="passAdmin" class="form-control" placeholder="Minimal 6 karakter">
+                            </div>
+                            <button type="button" class="btn btn-neon w-100 py-2 mb-3">Daftarkan Sekolah</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <a href="#" class="text-white-50 text-decoration-none small" onclick="toggleView('login')">
+                            <i class="bi bi-arrow-left"></i> Kembali ke Login
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="container mb-5" style="max-width: 850px;">
-  <ul class="nav nav-pills nav-justified mb-4 card-neon p-2" id="mainTab">
-    <li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pendaftaran-pane">Portal Sekolah</button></li>
-    <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#subrayon-pane">Portal Bendahara</button></li>
-  </ul>
-
-  <div class="tab-content" id="mainTabContent">
-
-    <!-- ============================================== -->
-    <!-- PORTAL SEKOLAH -->
-    <!-- ============================================== -->
-    <div class="tab-pane fade show active" id="pendaftaran-pane">
-      
-      <!-- STEP 1: CARI NPSN -->
-      <div class="card card-neon p-4 p-md-5 mb-4" id="box-search-npsn">
-        <h4 class="fw-bold mb-3 neon-text-cyan"><i class="bi bi-search me-2"></i>Cari / Lacak Data Sekolah</h4>
-        <div class="input-group mb-3">
-          <input type="text" class="form-control form-control-lg" id="input-npsn" placeholder="Masukkan NPSN Sekolah">
-          <button class="btn btn-neon-cyan px-4" id="btn-search-npsn" onclick="checkNPSN()">Lacak Data</button>
-        </div>
-      </div>
-
-      <!-- STEP 2: FORM REGISTRASI -->
-      <div class="card card-neon p-4 p-md-5 d-none" id="box-form-peserta">
-        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom border-secondary">
-          <div><h4 class="fw-bold neon-text-cyan mb-0" id="disp-nama-sekolah">-</h4><span class="text-muted small">NPSN: <span id="disp-npsn">-</span> | <span id="disp-subrayon" class="text-warning">-</span></span></div>
-          <button class="btn btn-sm btn-outline-danger" onclick="location.reload()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
-        </div>
-        <form onsubmit="submitFullRegistration(event)">
-          <h5 class="neon-text-emerald mb-3">1. Data Kepala Sekolah</h5>
-          <div class="row g-3 mb-4"><div class="col-md-7"><input type="text" class="form-control" id="namaKepsek" placeholder="Nama & Gelar Kepsek" required></div><div class="col-md-5"><input type="tel" class="form-control" id="noWaKepsek" placeholder="No WA Kepsek" required></div></div>
-          <h5 class="neon-text-emerald mb-3">2. Data Guru Peserta</h5>
-          <div class="row g-3 mb-4"><div class="col-md-7"><input type="text" class="form-control" id="namaGuru" placeholder="Nama & Gelar Guru" required></div><div class="col-md-5"><input type="tel" class="form-control" id="noWaGuru" placeholder="No WA Guru" required></div></div>
-          <button type="submit" class="btn btn-neon-cyan w-100" id="btn-submit-reg">Submit Data & Terbitkan Tagihan</button>
-        </form>
-      </div>
-
-      <!-- STEP 3: TRACKING & INVOICE -->
-      <div class="card card-neon p-4 p-md-5 d-none" id="box-result-peserta">
-        
-        <!-- HEADER & TOMBOL LOGOUT -->
-        <div class="d-flex justify-content-between align-items-center mb-3">
-          <span class="badge bg-dark border border-secondary text-light"><i class="bi bi-building"></i> Dashboard Sekolah</span>
-          <button class="btn btn-sm btn-outline-danger" onclick="location.reload()"><i class="bi bi-box-arrow-right me-1"></i> Keluar</button>
-        </div>
-
-        <h4 class="text-center text-white fw-bold mb-0" id="res-sekolah">-</h4>
-        <p class="text-center text-muted small mb-4">NPSN: <span id="res-npsn-val">-</span> | <span id="res-subrayon-val" class="text-warning">-</span></p>
-
-        <!-- STATUS TRACKER UI -->
-        <div class="tracker-container">
-          <div class="track-step done" id="step-daftar">
-            <div class="track-icon"><i class="bi bi-check-lg"></i></div><div class="track-text">Terdaftar</div>
-          </div>
-          <div class="track-step" id="step-bayar">
-            <div class="track-icon"><i class="bi bi-cash-stack"></i></div><div class="track-text">Pembayaran</div>
-          </div>
-          <div class="track-step" id="step-lunas">
-            <div class="track-icon"><i class="bi bi-qr-code"></i></div><div class="track-text">Lunas / QR Aktif</div>
-          </div>
-        </div>
-
-        <div class="text-center mb-4"><div id="status-badge-box"></div></div>
-
-        <!-- TOMBOL CETAK KWITANSI (Tampil Jika Lunas) -->
-        <div id="receipt-download-box" class="d-none mb-4">
-          <button class="btn btn-neon-gold w-100" onclick="unduhKwitansiJPG(globalKwitansiNo)"
-        </div>
-
-        <!-- RINCIAN TAGIHAN & UPLOAD (Tampil Jika Belum Lunas) -->
-        <div class="card bg-dark border-secondary p-4 mb-4" id="box-invoice-detail">
-          <h5 class="neon-text-gold fw-bold mb-3">Tagihan Kontribusi</h5>
-          <div class="d-flex justify-content-between mb-2"><span>Total (2 Peserta)</span><span class="fw-bold text-warning fs-5">Rp 1.500.000</span></div>
-          <hr class="border-secondary">
-          
-          <div id="payment-options-box">
-            <div class="p-3 border border-info rounded bg-opacity-10 bg-info mb-3">
-              <h6 class="fw-bold text-white mb-2"><i class="bi bi-cloud-upload me-2"></i>Upload Bukti Transfer Bank</h6>
-              <p class="small text-muted mb-2">Transfer ke Bank NTT/Mandiri Rek: 123-000-999 (YPKR)</p>
-              <div class="mb-2">
-                <input type="text" class="form-control form-control-sm mb-2" id="upload-nama-pembayar" placeholder="Nama Penyetor">
-                <input type="file" class="form-control form-control-sm" id="upload-file-bukti" accept="image/*">
-              </div>
-              <button class="btn btn-sm btn-neon-cyan w-100" onclick="submitProofUpload()">Kirim Bukti Transfer</button>
-            </div>
-            <p class="text-center text-muted small mb-0">Atau bayar tunai ke Sekretariat Subrayon Anda.</p>
-          </div>
-        </div>
-
-        <!-- 2 CARD ID -->
-        <div class="row g-4">
-          <div class="col-md-6">
-            <div class="id-card-neon text-center p-3">
-              <div class="bg-primary text-white p-1 rounded mb-2"><small class="fw-bold">KEPALA SEKOLAH</small></div>
-              <h6 class="fw-bold text-white" id="res-kepsek-nama">-</h6>
-              <div class="bg-dark p-2 rounded mb-2 d-inline-block border border-secondary"><img id="res-kepsek-qr" src="" style="width: 120px;" alt="QR"></div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="id-card-neon text-center p-3">
-              <div class="bg-success text-white p-1 rounded mb-2"><small class="fw-bold">GURU PESERTA</small></div>
-              <h6 class="fw-bold text-white" id="res-guru-nama">-</h6>
-              <div class="bg-dark p-2 rounded mb-2 d-inline-block border border-secondary"><img id="res-guru-qr" src="" style="width: 120px;" alt="QR"></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ============================================== -->
-    <!-- PORTAL BENDAHARA -->
-    <!-- ============================================== -->
-    <div class="tab-pane fade" id="subrayon-pane">
-       <div class="card card-neon p-4 p-md-5" id="box-login-subrayon">
-        <h4 class="neon-text-cyan fw-bold mb-3"><i class="bi bi-shield-lock me-2"></i>Login Bendahara</h4>
-        <form onsubmit="handleSubrayonLogin(event)">
-          <div class="mb-3"><input type="email" class="form-control" id="sub-user" required placeholder="Email Bendahara"></div>
-          <div class="mb-4"><input type="password" class="form-control" id="sub-pass" required placeholder="Password"></div>
-          <button type="submit" class="btn btn-neon-cyan w-100">Masuk Portal</button>
-        </form>
-      </div>
-
-      <div class="card card-neon p-4 d-none" id="box-dash-subrayon">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <div><h4 class="neon-text-emerald fw-bold mb-0" id="disp-operator-name">-</h4><span class="text-warning small" id="disp-subrayon-id">-</span></div>
-          <button class="btn btn-sm btn-outline-danger" onclick="location.reload()"><i class="bi bi-box-arrow-right"></i> Logout</button>
-        </div>
-        <!-- MENU TABS BENDAHARA (DIPERBARUI) -->
-        <ul class="nav nav-tabs border-secondary mb-3">
-          <li class="nav-item"><button class="nav-link active text-warning" data-bs-toggle="tab" data-bs-target="#tab-pending">Validasi Transfer</button></li>
-          <li class="nav-item"><button class="nav-link text-info" data-bs-toggle="tab" data-bs-target="#tab-all-schools">Bayar Tunai</button></li>
-          <li class="nav-item"><button class="nav-link text-success fw-bold" data-bs-toggle="tab" data-bs-target="#tab-buku-besar">Buku Besar</button></li>
-        </ul>
-        
-        <div class="tab-content">
-          <!-- SUB-TAB 1: VALIDASI TRANSFER -->
-          <div class="tab-pane fade show active" id="tab-pending">
-            <div class="table-responsive"><table class="table table-dark table-hover border-secondary small"><thead><tr><th>Sekolah</th><th>Penyetor</th><th>Bukti</th><th>Aksi</th></tr></thead><tbody id="tbl-pending-transfers"></tbody></table></div>
-          </div>
-          <!-- SUB-TAB 2: BAYAR TUNAI -->
-          <div class="tab-pane fade" id="tab-all-schools">
-            <div class="table-responsive"><table class="table table-dark table-hover border-secondary small"><thead><tr><th>NPSN</th><th>Sekolah</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="tbl-subrayon-schools"></tbody></table></div>
-          </div>
-          <!-- SUB-TAB 3: BUKU BESAR (BARU) -->
-          <div class="tab-pane fade" id="tab-buku-besar">
-            <div class="d-flex justify-content-between align-items-center mb-3 print-hide">
-               <h6 class="text-muted mb-0">Rekap Status Pembayaran</h6>
-               <div>
-                 <button class="btn btn-sm btn-outline-info me-2" onclick="window.print()"><i class="bi bi-printer"></i> Cetak Laporan</button>
-                 <select id="filter-buku" class="form-select form-select-sm d-inline-block w-auto" style="background:#374151; color:white;" onchange="renderBukuBesar()">
-                   <option value="ALL">Semua Status</option>
-                   <option value="LUNAS">Sudah Lunas</option>
-                   <option value="MENUNGGU VERIFIKASI">Menunggu Verifikasi</option>
-                   <option value="BELUM LUNAS">Belum / Menunggak</option>
-                 </select>
-               </div>
-            </div>
-            <div class="table-responsive">
-              <table class="table table-dark table-hover border-secondary small">
-                <thead><tr><th>NPSN</th><th>Sekolah</th><th>Status</th><th>Kwitansi</th></tr></thead>
-                <tbody id="tbl-buku-besar"></tbody>
-              </table>
-            </div>
-          </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-  <!-- TEMPLATE KWITANSI TERSEMBUNYI (UNTUK GENERATE JPG) -->
-<div id="kwitansi-kertas" style="position: absolute; left: -9999px; top: -9999px; width: 800px; background: #0f172a; border: 2px solid #f59e0b; border-radius: 20px; padding: 40px; color: white; font-family: 'Plus Jakarta Sans', sans-serif;">
-  <div style="display: flex; justify-content: space-between; border-bottom: 2px dashed #334155; padding-bottom: 20px; margin-bottom: 30px;">
-    <div><h2 style="color: #f59e0b; font-weight: 800; margin:0;">E-KWITANSI RESMI</h2><small>Yayasan Pendidikan Kristo Regi (YPKR)</small></div>
-    <div style="background: #1e293b; padding: 8px 15px; border-radius: 8px; font-family: monospace; border: 1px solid #334155;" id="k-no">KW-XX</div>
-  </div>
-  <div style="font-size: 1.1rem; margin-bottom: 10px;"><b>Telah Terima Dari:</b> <span id="k-pembayar" style="color:#f59e0b; text-transform:uppercase;">-</span></div>
-  <div style="font-size: 1.1rem; margin-bottom: 10px;"><b>Asal Sekolah:</b> <span id="k-sekolah">-</span> (NPSN: <span id="k-npsn">-</span>)</div>
-  <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: black; padding: 15px 30px; font-size: 2rem; font-weight: 800; display: inline-block; border-radius: 12px; margin: 20px 0;" id="k-nominal">Rp 0</div>
-  <div style="font-size: 1.1rem; margin-bottom: 10px;"><b>Guna Pembayaran:</b> Kontribusi Workshop Kepsek SD/MI (1 Kepsek & 1 Guru)</div>
-  <div style="font-size: 1.1rem; margin-bottom: 10px;"><b>Metode Bayar:</b> <span id="k-metode">-</span></div>
-  <div style="display: flex; justify-content: space-between; margin-top: 40px; align-items: end;">
-    <div><img id="k-qr" src="" style="width: 100px; background: white; padding: 5px; border-radius: 8px;"></div>
-    <div style="text-align: center;">
-      <div style="margin-bottom: 50px;">Kupang, <span id="k-tgl">-</span><br><small>Bendahara Penerima</small></div>
-      <div style="border-top: 1px solid white; padding-top: 5px; font-weight: bold;" id="k-operator">-</div>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL BUKTI & TUNAI -->
-<div class="modal fade" id="modalPreview"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-neon text-white"><div class="modal-header border-secondary"><h5 class="modal-title neon-text-cyan">Foto Bukti Transfer</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body text-center"><img id="img-preview" src="" class="img-fluid rounded border-secondary"></div></div></div></div>
-<div class="modal fade" id="modalPayment"><div class="modal-dialog modal-dialog-centered"><div class="modal-content card-neon text-white"><div class="modal-header border-secondary"><h5 class="modal-title neon-text-emerald">Terima Pembayaran Tunai</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body"><input type="hidden" id="pay-npsn"><div class="mb-3"><label class="text-muted small">Sekolah</label><input type="text" class="form-control" id="pay-nama-sekolah" readonly></div><div class="mb-3"><label class="text-muted small">Nama Penyetor</label><input type="text" class="form-control" id="pay-nama-pembayar" required></div><div class="mb-3"><label class="text-muted small">Kontak (No WA)</label><input type="tel" class="form-control" id="pay-kontak-pembayar"></div></div><div class="modal-footer border-secondary"><button type="button" class="btn btn-neon-emerald w-100" onclick="submitCashPayment()">Konfirmasi Tunai & Cetak Kwitansi</button></div></div></div></div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Scripts -->
 <script>
-  // PASTE URL WEB APP APPS SCRIPT MAS BRO DI BAWAH INI:
-  const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
-  
-  let currentSchoolData = null; 
-  let currentSubrayonUser = null;
-  let globalKwitansiNo = "";
-  let globalBukuBesar = [];
-  
-  // Helper Swal Neon
-  function showAlert(icon, title, text) {
-    Swal.fire({ icon: icon, title: title, text: text, background: '#151c2e', color: '#fff', confirmButtonColor: '#00f2fe' });
-  }
+    // --- GANTI URL DI BAWAH INI DENGAN URL WEB APP BRO ---
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
 
-  function checkNPSN() {
-    const npsn = document.getElementById('input-npsn').value;
-    if(!npsn) { showAlert('warning', 'Oops!', 'Masukkan NPSN terlebih dahulu.'); return; }
-    document.getElementById('btn-search-npsn').innerHTML = 'Melacak...';
-    
-    fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'search_npsn', npsn: npsn }) })
-    .then(r => r.json()).then(res => {
-      document.getElementById('btn-search-npsn').innerHTML = 'Lacak Data';
-      if(res.success) {
-        currentSchoolData = res.school;
-        document.getElementById('box-search-npsn').classList.add('d-none');
-        
-        if(res.participants && res.participants.length > 0) {
-          showParticipantResult(res.school, res.participants, res.payment);
+    // Fungsi untuk ganti tampilan Login <-> Register
+    function toggleView(view) {
+        if(view === 'register') {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('registerSection').style.display = 'block';
         } else {
-          document.getElementById('box-form-peserta').classList.remove('d-none');
-          document.getElementById('disp-nama-sekolah').innerText = res.school.namaSekolah;
-          document.getElementById('disp-npsn').innerText = res.school.npsn;
-          document.getElementById('disp-subrayon').innerText = res.school.subrayon;
+            document.getElementById('registerSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'block';
         }
-      } else { showAlert('error', 'Gagal', res.message); }
-    });
-  }
-
-  function submitFullRegistration(e) {
-    e.preventDefault();
-    document.getElementById('btn-submit-reg').innerText = "Memproses...";
-    const params = new URLSearchParams({
-      action: 'register_full', npsn: currentSchoolData.npsn, namaSekolah: currentSchoolData.namaSekolah,
-      namaKepsek: document.getElementById('namaKepsek').value, noWaKepsek: document.getElementById('noWaKepsek').value,
-      namaGuru: document.getElementById('namaGuru').value, noWaGuru: document.getElementById('noWaGuru').value
-    });
-    fetch(API_URL, { method: 'POST', body: params }).then(r => r.json()).then(res => {
-      if(res.success) { checkNPSN(); } else { showAlert('error', 'Gagal', res.message); document.getElementById('btn-submit-reg').innerText = "Submit Data & Terbitkan Tagihan"; }
-    });
-  }
-
-  function showParticipantResult(school, participants, payment) {
-    document.getElementById('box-form-peserta').classList.add('d-none');
-    document.getElementById('box-result-peserta').classList.remove('d-none');
-    document.getElementById('res-sekolah').innerText = school.namaSekolah;
-    document.getElementById('res-npsn-val').innerText = school.npsn;
-    document.getElementById('res-subrayon-val').innerText = school.subrayon;
-
-    let isLunas = payment && payment.status === 'LUNAS';
-    let isPending = payment && payment.status === 'MENUNGGU VERIFIKASI';
-    
-    let stBayar = document.getElementById('step-bayar');
-    let stLunas = document.getElementById('step-lunas');
-    let badgeBox = document.getElementById('status-badge-box');
-    let paymentBox = document.getElementById('box-invoice-detail');
-    let receiptBox = document.getElementById('receipt-download-box');
-
-    stBayar.className = "track-step"; stLunas.className = "track-step";
-    
-    if(isLunas) {
-      stBayar.classList.add("done"); stLunas.classList.add("done");
-      badgeBox.innerHTML = '<span class="badge bg-success px-4 py-2 fs-6"><i class="bi bi-check-circle-fill me-1"></i> STATUS: LUNAS & QR AKTIF</span>';
-      paymentBox.classList.add('d-none'); // Sembunyikan tagihan
-      receiptBox.classList.remove('d-none'); // Tampilkan Cetak Kwitansi
-      globalKwitansiNo = payment.noKwitansi;
-    } else if(isPending) {
-      stBayar.classList.add("active");
-      badgeBox.innerHTML = '<span class="badge bg-warning text-dark px-4 py-2 fs-6 mb-2"><i class="bi bi-clock-history me-1"></i> BUKTI TERKIRIM - MENUNGGU VALIDASI</span><br><button class="btn btn-sm btn-outline-danger mt-2" onclick="cancelProofUpload()"><i class="bi bi-x-circle me-1"></i> Batalkan Pengajuan Transfer</button>';
-      paymentBox.classList.add('d-none');
-      receiptBox.classList.add('d-none');
-    } else {
-      stBayar.classList.add("active");
-      badgeBox.innerHTML = '<span class="badge bg-danger px-4 py-2 fs-6"><i class="bi bi-exclamation-triangle-fill me-1"></i> TAGIHAN BELUM DIBAYAR</span>';
-      paymentBox.classList.remove('d-none');
-      receiptBox.classList.add('d-none');
     }
 
-    let kepsek = participants.find(p => p.jabatan === 'Kepala Sekolah');
-    let guru = participants.find(p => p.jabatan === 'Guru Peserta');
-    if(kepsek) { document.getElementById('res-kepsek-nama').innerText = kepsek.nama; document.getElementById('res-kepsek-qr').src = kepsek.qrUrl; document.getElementById('res-kepsek-qr').style.opacity = isLunas ? '1' : '0.1'; }
-    if(guru) { document.getElementById('res-guru-nama').innerText = guru.nama; document.getElementById('res-guru-qr').src = guru.qrUrl; document.getElementById('res-guru-qr').style.opacity = isLunas ? '1' : '0.1'; }
-  }
+    // Fungsi fetch ke Google Apps Script
+    async function cekNpsnKeDatabase() {
+        const npsn = document.getElementById('inputNPSN').value;
+        const btnCek = document.getElementById('btnCekNPSN');
+        const statusText = document.getElementById('statusCek');
+        const formLanjutan = document.getElementById('formLanjutan');
 
-  // MESIN CETAK E-KWITANSI LANGSUNG JADI GAMBAR (JPG)
-  function unduhKwitansiJPG(noKwitansi) {
-    if(!noKwitansi) return;
-    Swal.fire({ title: 'Membuat E-Kwitansi...', html: 'Mengambil data dari database', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }, background: '#1f2937', color: '#fff'});
-    
-    fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_receipt_info', noKwitansi: noKwitansi }) })
-    .then(r => r.json()).then(res => {
-      if(res.success) {
-        // Isi template dengan data lengkap
-        document.getElementById('k-no').innerText = res.receipt.noKwitansi;
-        document.getElementById('k-pembayar').innerText = res.receipt.namaPembayar;
-        document.getElementById('k-sekolah').innerText = res.receipt.namaSekolah;
-        document.getElementById('k-npsn').innerText = res.receipt.npsn;
-        document.getElementById('k-nominal').innerText = "Rp " + Number(res.receipt.nominal).toLocaleString('id-ID');
-        document.getElementById('k-metode').innerText = res.receipt.metode;
-        let tgl = new Date(res.receipt.tglBayar);
-        document.getElementById('k-tgl').innerText = isNaN(tgl) ? res.receipt.tglBayar : tgl.toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'});
-        document.getElementById('k-operator').innerText = res.receipt.operator;
-        document.getElementById('k-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${res.receipt.noKwitansi}`;
-        
-        // Render ke JPG
-        setTimeout(() => {
-          html2canvas(document.getElementById('kwitansi-kertas'), { scale: 2, backgroundColor: '#0f172a' }).then(canvas => {
-            let link = document.createElement('a');
-            link.download = res.receipt.noKwitansi + '.jpg';
-            link.href = canvas.toDataURL('image/jpeg', 0.9);
-            link.click();
-            Swal.close();
-            showAlert('success', 'Berhasil', 'Kwitansi (JPG) berhasil disimpan ke perangkat Anda.');
-          });
-        }, 1200); // Tunggu QR render
-      } else {
-        Swal.close(); showAlert('error', 'Gagal', 'Kwitansi tidak ditemukan.');
-      }
-    });
-  }
+        if(!npsn) {
+            statusText.innerText = "NPSN tidak boleh kosong!";
+            return;
+        }
 
-  function submitProofUpload() {
-    const file = document.getElementById('upload-file-bukti').files[0];
-    const nama = document.getElementById('upload-nama-pembayar').value;
-    if(!file || !nama) { showAlert('warning', 'Perhatian', 'Isi nama penyetor & pilih gambar bukti!'); return; }
-    
-    // Loading pop up Swal
-    Swal.fire({ title: 'Mengunggah...', html: 'Mohon tunggu sebentar', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }, background: '#151c2e', color: '#fff'});
+        // Efek loading di tombol
+        btnCek.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+        statusText.innerText = "Mencari data ke database...";
+        statusText.className = "form-text text-info mt-2 small";
+        formLanjutan.style.display = 'none';
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'upload_proof', npsn: currentSchoolData.npsn, subrayon: currentSchoolData.subrayon, namaPembayar: nama, buktiUrl: e.target.result }) })
-      .then(r => r.json()).then(res => { Swal.close(); showAlert('success', 'Berhasil', res.message); checkNPSN(); });
-    };
-    reader.readAsDataURL(file);
-  }
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'cek_npsn',
+                    npsn: npsn
+                })
+            });
 
-  // FUNGSI BATALKAN PENGAJUAN TRANSFER
-  function cancelProofUpload() {
-    Swal.fire({
-      title: 'Batalkan Pengajuan?', text: 'Bukti transfer akan dihapus, Anda bisa memilih metode bayar tunai/transfer ulang.', icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Batalkan', cancelButtonText: 'Tutup', background: '#1f2937', color: '#fff'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({ title: 'Membatalkan...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }, background: '#1f2937', color: '#fff'});
-        fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'cancel_proof', npsn: currentSchoolData.npsn }) })
-        .then(r => r.json()).then(res => { Swal.close(); showAlert('success', 'Dibatalkan', res.message); checkNPSN(); });
-      }
-    });
-  }
+            const result = await response.json();
 
-  // PORTAL BENDAHARA
-  function handleSubrayonLogin(e) { e.preventDefault(); fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'login_subrayon', username: document.getElementById('sub-user').value, password: document.getElementById('sub-pass').value }) }).then(r => r.json()).then(res => { if(res.success) { currentSubrayonUser = res; document.getElementById('box-login-subrayon').classList.add('d-none'); document.getElementById('box-dash-subrayon').classList.remove('d-none'); document.getElementById('disp-operator-name').innerText = res.namaOperator; document.getElementById('disp-subrayon-id').innerText = res.idSubrayon; loadPendingTransfers(res.idSubrayon); loadSubrayonSchools(res.idSubrayon); loadBukuBesar(res.idSubrayon); } else { showAlert('error', 'Login Gagal', res.message); } }); }
-  function loadPendingTransfers(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_pending_transfers', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; if(res.list.length === 0) html = '<tr><td colspan="4" class="text-center text-muted">Tidak ada pending transfer.</td></tr>'; res.list.forEach(item => { html += `<tr><td><b>${item.namaSekolah}</b></td><td>${item.namaPembayar}</td><td><button class="btn btn-sm btn-info" onclick="previewImg('${item.buktiUrl}')"><i class="bi bi-eye"></i></button></td><td><button class="btn btn-sm btn-success" onclick="approveTransfer(${item.rowId}, '${item.npsn}')">Setujui</button></td></tr>`; }); document.getElementById('tbl-pending-transfers').innerHTML = html; }); }
-  function previewImg(url) { document.getElementById('img-preview').src = url; new bootstrap.Modal(document.getElementById('modalPreview')).show(); }
-  function approveTransfer(rowId, npsn) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', rowId: rowId, npsn: npsn, idSubrayon: currentSubrayonUser.idSubrayon, operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { showAlert('success', 'Terkonfirmasi', 'Transfer Berhasil Divalidasi & Status LUNAS!'); bootstrap.Modal.getInstance(document.getElementById('modalPreview'))?.hide(); loadPendingTransfers(currentSubrayonUser.idSubrayon); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
-  function loadSubrayonSchools(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_subrayon_schools', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; res.list.forEach(s => { let isLunas = s.statusBayar === 'LUNAS'; let badge = isLunas ? '<span class="badge bg-success">LUNAS</span>' : '<span class="badge bg-danger">BELUM</span>'; let btn = isLunas ? `<button class="btn btn-sm btn-outline-info" onclick="unduhKwitansiJPG('${s.noKwitansi}')"><i class="bi bi-printer"></i> Kwitansi</button>` : `<button class="btn btn-sm btn-warning" onclick="openCashModal('${s.npsn}', '${s.namaSekolah}')">Tunai</button>`; html += `<tr><td>${s.npsn}</td><td>${s.namaSekolah}</td><td>${badge}</td><td>${btn}</td></tr>`; }); document.getElementById('tbl-subrayon-schools').innerHTML = html; }); }
-  function openCashModal(npsn, nama) { document.getElementById('pay-npsn').value = npsn; document.getElementById('pay-nama-sekolah').value = nama; new bootstrap.Modal(document.getElementById('modalPayment')).show(); }
-  function submitCashPayment() { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', npsn: document.getElementById('pay-npsn').value, idSubrayon: currentSubrayonUser.idSubrayon, namaPembayar: document.getElementById('pay-nama-pembayar').value, kontakPembayar: document.getElementById('pay-kontak-pembayar').value, nominal: 1500000, metodeBayar: 'TUNAI', operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { showAlert('success', 'Berhasil', 'Pembayaran Tunai Dikonfirmasi & E-Kwitansi Diterbitkan!'); bootstrap.Modal.getInstance(document.getElementById('modalPayment')).hide(); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
-
-  // FUNGSI BUKU BESAR
-  function loadBukuBesar(idSubrayon) { 
-    fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_buku_besar', idSubrayon: idSubrayon }) })
-    .then(r => r.json()).then(res => { globalBukuBesar = res.list; renderBukuBesar(); }); 
-  }
-
-  function renderBukuBesar() {
-    let filter = document.getElementById('filter-buku').value;
-    let html = '';
-    globalBukuBesar.forEach(s => {
-      if(filter !== 'ALL' && s.statusBayar !== filter) return;
-      let badge = s.statusBayar === 'LUNAS' ? '<span class="badge bg-success">LUNAS</span>' : (s.statusBayar === 'MENUNGGU VERIFIKASI' ? '<span class="badge bg-warning text-dark">PENDING BUKTI</span>' : '<span class="badge bg-danger">MENUNGGAK</span>');
-      let btn = s.statusBayar === 'LUNAS' ? `<button class="btn btn-sm btn-neon-gold" onclick="unduhKwitansiJPG('${s.noKwitansi}')"><i class="bi bi-printer"></i> Cetak</button>` : '-';
-      html += `<tr><td>${s.npsn}</td><td>${s.namaSekolah}</td><td>${badge}</td><td>${btn}</td></tr>`;
-    });
-    if(html === '') html = '<tr><td colspan="4" class="text-center text-muted">Tidak ada data sesuai filter.</td></tr>';
-    document.getElementById('tbl-buku-besar').innerHTML = html;
-  }
-  
-
+            if(result.status === 'success') {
+                statusText.innerText = "Data ditemukan!";
+                statusText.className = "form-text text-success mt-2 small";
+                document.getElementById('namaSekolah').value = result.data.nama_sekolah + " (" + result.data.subrayon + ")";
+                formLanjutan.style.display = 'block';
+            } else {
+                statusText.innerText = result.message; // Menampilkan "NPSN tidak ditemukan"
+                statusText.className = "form-text text-danger mt-2 small";
+            }
+        } catch (error) {
+            statusText.innerText = "Terjadi kesalahan koneksi!";
+            statusText.className = "form-text text-danger mt-2 small";
+        } finally {
+            btnCek.innerHTML = 'Cek Data'; // Kembalikan teks tombol
+        }
+    }
 </script>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
