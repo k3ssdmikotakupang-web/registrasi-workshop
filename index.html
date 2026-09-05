@@ -37,6 +37,16 @@
     .nav-pills .nav-link { color: #cbd5e1; border-radius: 12px; font-weight: 600; }
     .nav-pills .nav-link.active { background: linear-gradient(135deg, var(--neon-cyan), var(--neon-blue)); color: #000; font-weight: 800; }
     .id-card-neon { background: #1f2937; border: 1px solid #e100ff; border-radius: 18px; box-shadow: 0 0 15px rgba(225, 0, 255, 0.15); overflow: hidden; }
+  
+  @media print {
+      body * { visibility: hidden; }
+      #tab-buku-besar, #tab-buku-besar * { visibility: visible; }
+      #tab-buku-besar { position: absolute; left: 0; top: 0; width: 100%; color: #000; }
+      .table-dark { color: #000; background: #fff; }
+      .print-hide { display: none !important; }
+      .badge { border: 1px solid #000; color: #000 !important; background: transparent !important; }
+    }
+  
   </style>
 </head>
 <body>
@@ -373,15 +383,7 @@
     document.getElementById('tbl-buku-besar').innerHTML = html;
   }
   
-@media print {
-      body * { visibility: hidden; }
-      #tab-buku-besar, #tab-buku-besar * { visibility: visible; }
-      #tab-buku-besar { position: absolute; left: 0; top: 0; width: 100%; color: #000; }
-      .table-dark { color: #000; background: #fff; }
-      .print-hide { display: none !important; }
-      .badge { border: 1px solid #000; color: #000 !important; background: transparent !important; }
-    }
-  
+
 </script>
 </body>
 </html>
