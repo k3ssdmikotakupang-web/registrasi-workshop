@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EMS Workshop K3S 2026</title>
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- Library QR Code Scanner -->
+    
+    <!-- Library Scanner & Popup Elegan (SweetAlert2) -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
         body {
@@ -39,11 +42,10 @@
             color: white;
             border-radius: 10px;
         }
-        .form-control:focus {
+        .form-control:focus, .form-control:read-only {
             background: rgba(0, 0, 0, 0.4);
             border-color: #00f2fe;
             color: white;
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.3);
         }
         .btn-neon {
             background: linear-gradient(45deg, #00f2fe, #4facfe);
@@ -64,22 +66,13 @@
             color: #f093fb;
             font-weight: 600;
             border-radius: 10px;
-            transition: all 0.3s ease;
         }
-        .btn-outline-neon:hover {
-            background: rgba(240, 147, 251, 0.1);
-            box-shadow: 0 0 20px rgba(240, 147, 251, 0.5);
-            color: #f093fb;
-        }
-        /* Custom QR Scanner Canvas */
-        #qr-reader {
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        #qr-reader video {
-            border-radius: 10px;
+        /* Penyesuaian Custom SweetAlert Tema Gelap */
+        .swal2-popup.swal-dark {
+            background: #1e293b !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 15px !important;
         }
     </style>
 </head>
@@ -111,7 +104,6 @@
 
                     <div class="text-center mb-3 text-white-50">ATAU</div>
 
-                    <!-- Wadah Kamera QR Scanner -->
                     <div id="qr-reader" style="display: none; width: 100%;"></div>
                     
                     <button class="btn btn-outline-neon w-100 py-2 mb-2" id="btnScanQR" onclick="startQRScanner()">
@@ -136,7 +128,6 @@
                                 <input type="number" id="inputNPSN" class="form-control" placeholder="Ketik NPSN" required>
                                 <button type="button" class="btn btn-neon" onclick="cekNpsnKeDatabase()" id="btnCekNPSN">Cek Data</button>
                             </div>
-                            <div id="statusCek" class="form-text text-warning mt-2 small"></div>
                         </div>
 
                         <div id="formLanjutan" style="display: none;">
@@ -170,103 +161,63 @@
 
 <!-- Scripts -->
 <script>
+    // MASUKKAN URL APP SCRIPT TERBARU BRO DI SINI!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec"; 
     let html5QrcodeScanner = null;
+
+    // Konfigurasi Tema SweetAlert agar elegan & gelap
+    const Toast = Swal.mixin({
+        customClass: { popup: 'swal-dark' },
+        confirmButtonColor: '#00f2fe'
+    });
 
     function toggleView(view) {
         if(view === 'register') {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('registerSection').style.display = 'block';
-            stopQRScanner(); // Matikan kamera jika pindah ke register
+            stopQRScanner();
         } else {
             document.getElementById('registerSection').style.display = 'none';
             document.getElementById('loginSection').style.display = 'block';
         }
     }
 
-    // --- FUNGSI MENCARI NPSN ---
     async function cekNpsnKeDatabase() {
         const npsn = document.getElementById('inputNPSN').value;
         const btnCek = document.getElementById('btnCekNPSN');
-        const statusText = document.getElementById('statusCek');
         const formLanjutan = document.getElementById('formLanjutan');
 
         if(!npsn) {
-            statusText.innerText = "NPSN tidak boleh kosong!";
-            statusText.className = "form-text text-danger mt-2 small";
+            Toast.fire({ icon: 'warning', title: 'Oops...', text: 'NPSN tidak boleh kosong!' });
             return;
         }
 
         btnCek.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
-        statusText.innerText = "Mencari data ke database...";
-        statusText.className = "form-text text-info mt-2 small";
         formLanjutan.style.display = 'none';
 
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Penting untuk mencegah blokir CORS Google
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'cek_npsn', npsn: npsn })
             });
-
             const result = await response.json();
 
             if(result.status === 'success') {
-                statusText.innerText = "Data ditemukan!";
-                statusText.className = "form-text text-success mt-2 small";
                 document.getElementById('namaSekolah').value = result.data.nama_sekolah;
                 document.getElementById('namaSubrayon').value = result.data.subrayon;
                 formLanjutan.style.display = 'block';
+                Toast.fire({ icon: 'success', title: 'Ditemukan!', text: 'Data sekolah valid.', timer: 1500, showConfirmButton: false });
             } else {
-                statusText.innerText = result.message; 
-                statusText.className = "form-text text-danger mt-2 small";
+                Toast.fire({ icon: 'error', title: 'Tidak Ditemukan', text: result.message });
             }
         } catch (error) {
-            statusText.innerText = "Terjadi kesalahan. Pastikan URL API sudah benar.";
-            statusText.className = "form-text text-danger mt-2 small";
-            console.error(error);
+            Toast.fire({ icon: 'error', title: 'Error Koneksi', text: 'Pastikan API URL benar.' });
         } finally {
             btnCek.innerHTML = 'Cek Data';
         }
     }
 
-    // --- FUNGSI QR CODE SCANNER ---
-    function startQRScanner() {
-        document.getElementById('qr-reader').style.display = 'block';
-        document.getElementById('btnScanQR').style.display = 'none';
-        document.getElementById('btnStopQR').style.display = 'block';
-
-        html5QrcodeScanner = new Html5Qrcode("qr-reader");
-        html5QrcodeScanner.start(
-            { facingMode: "environment" }, // Prioritas kamera belakang (HP)
-            { fps: 10, qrbox: { width: 250, height: 250 } },
-            (decodedText, decodedResult) => {
-                // Eksekusi jika QR berhasil terbaca
-                stopQRScanner();
-                alert("QR Berhasil dipindai!\nData: " + decodedText);
-                // Nanti kita tambahkan logika login otomatis di sini
-            },
-            (errorMessage) => {
-                // Abaikan error background saat mencari QR
-            }
-        ).catch(err => {
-            alert("Gagal mengakses kamera. Pastikan browser diizinkan menggunakan kamera.");
-            stopQRScanner();
-        });
-    }
-
-    function stopQRScanner() {
-        if (html5QrcodeScanner) {
-            html5QrcodeScanner.stop().then(() => {
-                document.getElementById('qr-reader').style.display = 'none';
-                document.getElementById('btnScanQR').style.display = 'block';
-                document.getElementById('btnStopQR').style.display = 'none';
-                html5QrcodeScanner = null;
-            }).catch(err => console.error("Gagal stop kamera", err));
-        }
-    }
-
-    // --- FUNGSI SIMPAN PENDAFTARAN ---
     async function simpanPendaftaran() {
         const npsn = document.getElementById('inputNPSN').value;
         const namaSekolah = document.getElementById('namaSekolah').value;
@@ -274,7 +225,7 @@
         const password = document.getElementById('passAdmin').value;
         
         if(!password || password.length < 6) {
-            alert("Password tidak boleh kosong dan minimal 6 karakter!");
+            Toast.fire({ icon: 'warning', title: 'Perhatian', text: 'Password minimal 6 karakter!' });
             return;
         }
 
@@ -295,25 +246,65 @@
                 })
             });
 
+            // Parsing hasil dari Google Apps Script
             const result = await response.json();
 
             if(result.status === 'success') {
-                alert("Mantap! Pendaftaran berhasil. Silakan login.");
-                toggleView('login'); // Otomatis balik ke halaman login
-                document.getElementById('formRegister').reset(); // Bersihkan form
-                document.getElementById('formLanjutan').style.display = 'none';
+                Toast.fire({ 
+                    icon: 'success', 
+                    title: 'Pendaftaran Sukses!', 
+                    text: 'Akun sekolah berhasil dibuat. Silakan login.',
+                }).then(() => {
+                    toggleView('login');
+                    document.getElementById('formRegister').reset();
+                    document.getElementById('formLanjutan').style.display = 'none';
+                });
             } else {
-                alert("Gagal: " + result.message);
+                Toast.fire({ icon: 'error', title: 'Gagal', text: result.message });
             }
         } catch (error) {
-            alert("Terjadi kesalahan sistem saat menyimpan.");
             console.error(error);
+            Toast.fire({ 
+                icon: 'error', 
+                title: 'Error Sistem', 
+                text: 'Gagal terkoneksi ke Database. Pastikan nama sheet adalah "Users" dan deploy sebagai "New Version".' 
+            });
         } finally {
             btnSimpan.innerHTML = 'Simpan Pendaftaran';
             btnSimpan.disabled = false;
         }
     }
-    
+
+    // Fungsi QR Camera (Sudah Jalan)
+    function startQRScanner() {
+        document.getElementById('qr-reader').style.display = 'block';
+        document.getElementById('btnScanQR').style.display = 'none';
+        document.getElementById('btnStopQR').style.display = 'block';
+        html5QrcodeScanner = new Html5Qrcode("qr-reader");
+        html5QrcodeScanner.start(
+            { facingMode: "environment" }, 
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            (decodedText) => {
+                stopQRScanner();
+                Toast.fire({ icon: 'success', title: 'QR Terbaca!', text: decodedText });
+            },
+            (err) => {}
+        ).catch(err => {
+            Toast.fire({ icon: 'error', title: 'Kamera Gagal', text: 'Pastikan izin kamera aktif.' });
+            stopQRScanner();
+        });
+    }
+
+    function stopQRScanner() {
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.stop().then(() => {
+                document.getElementById('qr-reader').style.display = 'none';
+                document.getElementById('btnScanQR').style.display = 'block';
+                document.getElementById('btnStopQR').style.display = 'none';
+                html5QrcodeScanner = null;
+            });
+        }
+    }
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
