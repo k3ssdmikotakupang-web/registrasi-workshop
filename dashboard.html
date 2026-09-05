@@ -120,6 +120,17 @@
                 </div>
             </div>
         </div>
+
+        <!-- Area Tiket & QR Peserta -->
+        <div class="col-md-6 mb-4" id="areaTiketPeserta" style="display: none;">
+            <div class="glass-card p-4 h-100 border-start border-success border-4">
+                <h5 class="text-neon mb-3">Tiket & QR Code Peserta</h5>
+                <p class="small text-white-50">Screenshot QR Code ini dan berikan kepada peserta untuk Login/Check-In di lokasi kegiatan.</p>
+                <div id="listTiket" class="mt-3">
+                    <!-- QR Code akan muncul di sini otomatis -->
+                </div>
+            </div>
+        </div>
         
     </div>
 </div>
@@ -174,7 +185,6 @@
         window.location.href = "index.html";
     }
 
-    // 5. Fungsi Tarik Status Tagihan
     async function cekStatusSekolah() {
         try {
             const response = await fetch(API_URL, {
@@ -184,10 +194,7 @@
             });
             const result = await response.json();
 
-            if (result.status === 'error') {
-                console.log("INFO SISTEM: " + result.message);
-                return;
-            }
+            if (result.status === 'error') return;
 
             if (result.status === 'success') {
                 const statusTagihan = document.getElementById('statusTagihan');
@@ -200,15 +207,48 @@
                 } 
                 else if (statBayar === 'lunas') {
                     document.getElementById('step3').classList.add('active');
-                    document.getElementById('step4').classList.add('active');
-                    
                     statusTagihan.innerHTML = '<i class="bi bi-check-circle"></i> Status: <strong>LUNAS</strong>';
                     statusTagihan.className = 'alert alert-success py-2 small';
                     
-                    kotakAksi.innerHTML = `
-                        <button onclick="bukaKwitansi('${result.data.id_transaksi}')" class="btn btn-outline-info btn-sm mb-2 w-100"><i class="bi bi-printer"></i> Cetak E-Kwitansi</button>
-                        <button onclick="window.location.href='form_peserta.html'" class="btn btn-neon w-100"><i class="bi bi-person-plus"></i> Input Data Peserta</button>
-                    `;
+                    // CEK APAKAH SUDAH INPUT PESERTA
+                    const resPeserta = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'get_peserta', npsn: userData.username })
+                    });
+                    const dataPeserta = await resPeserta.json();
+
+                    if (dataPeserta.status === 'success') {
+                        // SUDAH INPUT: Nyalakan Step 4 & 5, Tampilkan QR Code!
+                        document.getElementById('step4').classList.add('active');
+                        document.getElementById('step5').classList.add('active');
+                        
+                        kotakAksi.innerHTML = `<button onclick="bukaKwitansi('${result.data.id_transaksi}')" class="btn btn-outline-info btn-sm w-100"><i class="bi bi-printer"></i> Cetak E-Kwitansi</button>`;
+                        
+                        document.getElementById('areaTiketPeserta').style.display = 'block';
+                        let htmlTiket = '';
+                        dataPeserta.data.forEach(p => {
+                            let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=${encodeURIComponent(p.id_qr)}`;
+                            htmlTiket += `
+                                <div class="d-flex align-items-center mb-3 p-2 rounded" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                                    <img src="${qrUrl}" alt="QR" class="me-3 rounded bg-white p-1" width="80">
+                                    <div>
+                                        <h6 class="mb-0 text-info fw-bold">${p.nama}</h6>
+                                        <small class="text-white-50">${p.jabatan}</small><br>
+                                        <span class="badge bg-secondary" style="font-size: 0.65em;">${p.id_qr}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        document.getElementById('listTiket').innerHTML = htmlTiket;
+
+                    } else {
+                        // BELUM INPUT PESERTA: Tampilkan tombol input
+                        kotakAksi.innerHTML = `
+                            <button onclick="bukaKwitansi('${result.data.id_transaksi}')" class="btn btn-outline-info btn-sm mb-2 w-100"><i class="bi bi-printer"></i> Cetak E-Kwitansi</button>
+                            <button onclick="window.location.href='form_peserta.html'" class="btn btn-neon w-100"><i class="bi bi-person-plus"></i> Input Data Peserta</button>
+                        `;
+                    }
                 }
             }
         } catch (error) {
