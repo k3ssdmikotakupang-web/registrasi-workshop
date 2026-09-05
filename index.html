@@ -191,16 +191,18 @@
             <div class="table-responsive"><table class="table table-dark table-hover border-secondary small"><thead><tr><th>NPSN</th><th>Sekolah</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="tbl-subrayon-schools"></tbody></table></div>
           </div>
           <!-- SUB-TAB 3: BUKU BESAR (BARU) -->
-          <div class="tab-pane fade" id="tab-buku-besar">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-               <h6 class="text-muted mb-0">Rekap Status Pembayaran</h6>
-               <select id="filter-buku" class="form-select form-select-sm w-auto" style="background:#374151; color:white;" onchange="renderBukuBesar()">
-                 <option value="ALL">Semua Status</option>
-                 <option value="LUNAS">Sudah Lunas</option>
-                 <option value="MENUNGGU VERIFIKASI">Menunggu Verifikasi</option>
-                 <option value="BELUM LUNAS">Belum / Menunggak</option>
-               </select>
-            </div>
+          <div class="d-flex justify-content-between align-items-center mb-3 print-hide">
+   <h6 class="text-muted mb-0">Rekap Status Pembayaran</h6>
+   <div>
+     <button class="btn btn-sm btn-outline-info me-2" onclick="window.print()"><i class="bi bi-printer"></i> Cetak Laporan</button>
+     <select id="filter-buku" class="form-select form-select-sm d-inline-block w-auto" style="background:#374151; color:white;" onchange="renderBukuBesar()">
+       <option value="ALL">Semua Status</option>
+       <option value="LUNAS">Sudah Lunas</option>
+       <option value="MENUNGGU VERIFIKASI">Menunggu Verifikasi</option>
+       <option value="BELUM LUNAS">Belum / Menunggak</option>
+     </select>
+   </div>
+</div>
             <div class="table-responsive"><table class="table table-dark table-hover border-secondary small">
               <thead><tr><th>NPSN</th><th>Sekolah</th><th>Status</th><th>Kwitansi</th></tr></thead>
               <tbody id="tbl-buku-besar"></tbody>
@@ -370,6 +372,15 @@
     if(html === '') html = '<tr><td colspan="4" class="text-center text-muted">Tidak ada data sesuai filter.</td></tr>';
     document.getElementById('tbl-buku-besar').innerHTML = html;
   }
+  
+@media print {
+      body * { visibility: hidden; }
+      #tab-buku-besar, #tab-buku-besar * { visibility: visible; }
+      #tab-buku-besar { position: absolute; left: 0; top: 0; width: 100%; color: #000; }
+      .table-dark { color: #000; background: #fff; }
+      .print-hide { display: none !important; }
+      .badge { border: 1px solid #000; color: #000 !important; background: transparent !important; }
+    }
   
 </script>
 </body>
