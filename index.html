@@ -303,8 +303,12 @@
                     title: 'Login Berhasil!', 
                     text: `Selamat datang, ${result.data.nama_pic}` 
                 }).then(() => {
-                    // Langsung arahkan ke file dashboard
-                    window.location.href = "dashboard.html";
+                    // Arahkan ke dasbor masing-masing sesuai Role
+                    if(result.data.role === 'Admin_Sekolah') {
+                        window.location.href = "dashboard.html";
+                    } else if (result.data.role === 'Bendahara_Subrayon') {
+                        window.location.href = "dashboard_subrayon.html";
+                    }
                 });
             } else {
                 Toast.fire({ icon: 'error', title: 'Login Gagal', text: result.message });
