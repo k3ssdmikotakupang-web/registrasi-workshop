@@ -9,6 +9,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
   <!-- SWEETALERT 2 UNTUK POP-UP MODERN -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- LIBRARY KONVERSI HTML KE GAMBAR -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   
   <style>
     :root { --bg-dark: #111827; --card-bg: #1f2937; --neon-cyan: #00f2fe; --neon-blue: #4facfe; --neon-emerald: #10b981; --neon-purple: #e100ff; --neon-gold: #f59e0b; }
@@ -122,7 +124,7 @@
 
         <!-- TOMBOL CETAK KWITANSI (Tampil Jika Lunas) -->
         <div id="receipt-download-box" class="d-none mb-4">
-          <button class="btn btn-neon-gold w-100" onclick="cetakKwitansi()"><i class="bi bi-printer-fill me-2 fs-5"></i> Cetak E-Kwitansi Digital</button>
+          <button class="btn btn-neon-gold w-100" onclick="unduhKwitansiJPG(globalKwitansiNo)"
         </div>
 
         <!-- RINCIAN TAGIHAN & UPLOAD (Tampil Jika Belum Lunas) -->
@@ -201,25 +203,47 @@
             <div class="table-responsive"><table class="table table-dark table-hover border-secondary small"><thead><tr><th>NPSN</th><th>Sekolah</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="tbl-subrayon-schools"></tbody></table></div>
           </div>
           <!-- SUB-TAB 3: BUKU BESAR (BARU) -->
-          <div class="d-flex justify-content-between align-items-center mb-3 print-hide">
-             <h6 class="text-muted mb-0">Rekap Status Pembayaran</h6>
-          <div>
-          <button class="btn btn-sm btn-outline-info me-2" onclick="window.print()"><i class="bi bi-printer"></i> Cetak Laporan</button>
-          <select id="filter-buku" class="form-select form-select-sm d-inline-block w-auto" style="background:#374151; color:white;" onchange="renderBukuBesar()">
-             <option value="ALL">Semua Status</option>
-             <option value="LUNAS">Sudah Lunas</option>
-             <option value="MENUNGGU VERIFIKASI">Menunggu Verifikasi</option>
-             <option value="BELUM LUNAS">Belum / Menunggak</option>
-         </select>
-         </div>
-        </div>
-            <div class="table-responsive"><table class="table table-dark table-hover border-secondary small">
-              <thead><tr><th>NPSN</th><th>Sekolah</th><th>Status</th><th>Kwitansi</th></tr></thead>
-              <tbody id="tbl-buku-besar"></tbody>
-            </table></div>
+          <div class="tab-pane fade" id="tab-buku-besar">
+            <div class="d-flex justify-content-between align-items-center mb-3 print-hide">
+               <h6 class="text-muted mb-0">Rekap Status Pembayaran</h6>
+               <div>
+                 <button class="btn btn-sm btn-outline-info me-2" onclick="window.print()"><i class="bi bi-printer"></i> Cetak Laporan</button>
+                 <select id="filter-buku" class="form-select form-select-sm d-inline-block w-auto" style="background:#374151; color:white;" onchange="renderBukuBesar()">
+                   <option value="ALL">Semua Status</option>
+                   <option value="LUNAS">Sudah Lunas</option>
+                   <option value="MENUNGGU VERIFIKASI">Menunggu Verifikasi</option>
+                   <option value="BELUM LUNAS">Belum / Menunggak</option>
+                 </select>
+               </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-dark table-hover border-secondary small">
+                <thead><tr><th>NPSN</th><th>Sekolah</th><th>Status</th><th>Kwitansi</th></tr></thead>
+                <tbody id="tbl-buku-besar"></tbody>
+              </table>
+            </div>
           </div>
-        </div>
       </div>
+    </div>
+  </div>
+</div>
+
+  <!-- TEMPLATE KWITANSI TERSEMBUNYI (UNTUK GENERATE JPG) -->
+<div id="kwitansi-kertas" style="position: absolute; left: -9999px; top: -9999px; width: 800px; background: #0f172a; border: 2px solid #f59e0b; border-radius: 20px; padding: 40px; color: white; font-family: 'Plus Jakarta Sans', sans-serif;">
+  <div style="display: flex; justify-content: space-between; border-bottom: 2px dashed #334155; padding-bottom: 20px; margin-bottom: 30px;">
+    <div><h2 style="color: #f59e0b; font-weight: 800; margin:0;">E-KWITANSI RESMI</h2><small>Yayasan Pendidikan Kristo Regi (YPKR)</small></div>
+    <div style="background: #1e293b; padding: 8px 15px; border-radius: 8px; font-family: monospace; border: 1px solid #334155;" id="k-no">KW-XX</div>
+  </div>
+  <div style="font-size: 1.1rem; margin-bottom: 10px;"><b>Telah Terima Dari:</b> <span id="k-pembayar" style="color:#f59e0b; text-transform:uppercase;">-</span></div>
+  <div style="font-size: 1.1rem; margin-bottom: 10px;"><b>Asal Sekolah:</b> <span id="k-sekolah">-</span> (NPSN: <span id="k-npsn">-</span>)</div>
+  <div style="background: linear-gradient(135deg, #f59e0b, #d97706); color: black; padding: 15px 30px; font-size: 2rem; font-weight: 800; display: inline-block; border-radius: 12px; margin: 20px 0;" id="k-nominal">Rp 0</div>
+  <div style="font-size: 1.1rem; margin-bottom: 10px;"><b>Guna Pembayaran:</b> Kontribusi Workshop Kepsek SD/MI (1 Kepsek & 1 Guru)</div>
+  <div style="font-size: 1.1rem; margin-bottom: 10px;"><b>Metode Bayar:</b> <span id="k-metode">-</span></div>
+  <div style="display: flex; justify-content: space-between; margin-top: 40px; align-items: end;">
+    <div><img id="k-qr" src="" style="width: 100px; background: white; padding: 5px; border-radius: 8px;"></div>
+    <div style="text-align: center;">
+      <div style="margin-bottom: 50px;">Kupang, <span id="k-tgl">-</span><br><small>Bendahara Penerima</small></div>
+      <div style="border-top: 1px solid white; padding-top: 5px; font-weight: bold;" id="k-operator">-</div>
     </div>
   </div>
 </div>
@@ -322,8 +346,41 @@
     if(guru) { document.getElementById('res-guru-nama').innerText = guru.nama; document.getElementById('res-guru-qr').src = guru.qrUrl; document.getElementById('res-guru-qr').style.opacity = isLunas ? '1' : '0.1'; }
   }
 
-  function cetakKwitansi() {
-    if(globalKwitansiNo) { window.open('verify.html?kw=' + globalKwitansiNo, '_blank'); }
+  // MESIN CETAK E-KWITANSI LANGSUNG JADI GAMBAR (JPG)
+  function unduhKwitansiJPG(noKwitansi) {
+    if(!noKwitansi) return;
+    Swal.fire({ title: 'Membuat E-Kwitansi...', html: 'Mengambil data dari database', allowOutsideClick: false, didOpen: () => { Swal.showLoading() }, background: '#1f2937', color: '#fff'});
+    
+    fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_receipt_info', noKwitansi: noKwitansi }) })
+    .then(r => r.json()).then(res => {
+      if(res.success) {
+        // Isi template dengan data lengkap
+        document.getElementById('k-no').innerText = res.receipt.noKwitansi;
+        document.getElementById('k-pembayar').innerText = res.receipt.namaPembayar;
+        document.getElementById('k-sekolah').innerText = res.receipt.namaSekolah;
+        document.getElementById('k-npsn').innerText = res.receipt.npsn;
+        document.getElementById('k-nominal').innerText = "Rp " + Number(res.receipt.nominal).toLocaleString('id-ID');
+        document.getElementById('k-metode').innerText = res.receipt.metode;
+        let tgl = new Date(res.receipt.tglBayar);
+        document.getElementById('k-tgl').innerText = isNaN(tgl) ? res.receipt.tglBayar : tgl.toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'});
+        document.getElementById('k-operator').innerText = res.receipt.operator;
+        document.getElementById('k-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${res.receipt.noKwitansi}`;
+        
+        // Render ke JPG
+        setTimeout(() => {
+          html2canvas(document.getElementById('kwitansi-kertas'), { scale: 2, backgroundColor: '#0f172a' }).then(canvas => {
+            let link = document.createElement('a');
+            link.download = res.receipt.noKwitansi + '.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+            Swal.close();
+            showAlert('success', 'Berhasil', 'Kwitansi (JPG) berhasil disimpan ke perangkat Anda.');
+          });
+        }, 1200); // Tunggu QR render
+      } else {
+        Swal.close(); showAlert('error', 'Gagal', 'Kwitansi tidak ditemukan.');
+      }
+    });
   }
 
   function submitProofUpload() {
@@ -360,7 +417,7 @@
   function loadPendingTransfers(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_pending_transfers', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; if(res.list.length === 0) html = '<tr><td colspan="4" class="text-center text-muted">Tidak ada pending transfer.</td></tr>'; res.list.forEach(item => { html += `<tr><td><b>${item.namaSekolah}</b></td><td>${item.namaPembayar}</td><td><button class="btn btn-sm btn-info" onclick="previewImg('${item.buktiUrl}')"><i class="bi bi-eye"></i></button></td><td><button class="btn btn-sm btn-success" onclick="approveTransfer(${item.rowId}, '${item.npsn}')">Setujui</button></td></tr>`; }); document.getElementById('tbl-pending-transfers').innerHTML = html; }); }
   function previewImg(url) { document.getElementById('img-preview').src = url; new bootstrap.Modal(document.getElementById('modalPreview')).show(); }
   function approveTransfer(rowId, npsn) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', rowId: rowId, npsn: npsn, idSubrayon: currentSubrayonUser.idSubrayon, operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { showAlert('success', 'Terkonfirmasi', 'Transfer Berhasil Divalidasi & Status LUNAS!'); bootstrap.Modal.getInstance(document.getElementById('modalPreview'))?.hide(); loadPendingTransfers(currentSubrayonUser.idSubrayon); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
-  function loadSubrayonSchools(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_subrayon_schools', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; res.list.forEach(s => { let isLunas = s.statusBayar === 'LUNAS'; let badge = isLunas ? '<span class="badge bg-success">LUNAS</span>' : '<span class="badge bg-danger">BELUM</span>'; let btn = isLunas ? `<button class="btn btn-sm btn-outline-info" onclick="window.open('verify.html?kw=${s.noKwitansi}', '_blank')"><i class="bi bi-printer"></i> Kwitansi</button>` : `<button class="btn btn-sm btn-warning" onclick="openCashModal('${s.npsn}', '${s.namaSekolah}')">Tunai</button>`; html += `<tr><td>${s.npsn}</td><td>${s.namaSekolah}</td><td>${badge}</td><td>${btn}</td></tr>`; }); document.getElementById('tbl-subrayon-schools').innerHTML = html; }); }
+  function loadSubrayonSchools(idSubrayon) { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_subrayon_schools', idSubrayon: idSubrayon }) }).then(r => r.json()).then(res => { let html = ''; res.list.forEach(s => { let isLunas = s.statusBayar === 'LUNAS'; let badge = isLunas ? '<span class="badge bg-success">LUNAS</span>' : '<span class="badge bg-danger">BELUM</span>'; let btn = isLunas ? `<button class="btn btn-sm btn-outline-info" onclick="unduhKwitansiJPG('${s.noKwitansi}')"><i class="bi bi-printer"></i> Kwitansi</button>` : `<button class="btn btn-sm btn-warning" onclick="openCashModal('${s.npsn}', '${s.namaSekolah}')">Tunai</button>`; html += `<tr><td>${s.npsn}</td><td>${s.namaSekolah}</td><td>${badge}</td><td>${btn}</td></tr>`; }); document.getElementById('tbl-subrayon-schools').innerHTML = html; }); }
   function openCashModal(npsn, nama) { document.getElementById('pay-npsn').value = npsn; document.getElementById('pay-nama-sekolah').value = nama; new bootstrap.Modal(document.getElementById('modalPayment')).show(); }
   function submitCashPayment() { fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'confirm_payment', npsn: document.getElementById('pay-npsn').value, idSubrayon: currentSubrayonUser.idSubrayon, namaPembayar: document.getElementById('pay-nama-pembayar').value, kontakPembayar: document.getElementById('pay-kontak-pembayar').value, nominal: 1500000, metodeBayar: 'TUNAI', operatorSubrayon: currentSubrayonUser.namaOperator }) }).then(r => r.json()).then(res => { showAlert('success', 'Berhasil', 'Pembayaran Tunai Dikonfirmasi & E-Kwitansi Diterbitkan!'); bootstrap.Modal.getInstance(document.getElementById('modalPayment')).hide(); loadSubrayonSchools(currentSubrayonUser.idSubrayon); }); }
 
@@ -376,7 +433,7 @@
     globalBukuBesar.forEach(s => {
       if(filter !== 'ALL' && s.statusBayar !== filter) return;
       let badge = s.statusBayar === 'LUNAS' ? '<span class="badge bg-success">LUNAS</span>' : (s.statusBayar === 'MENUNGGU VERIFIKASI' ? '<span class="badge bg-warning text-dark">PENDING BUKTI</span>' : '<span class="badge bg-danger">MENUNGGAK</span>');
-      let btn = s.statusBayar === 'LUNAS' ? `<button class="btn btn-sm btn-neon-gold" onclick="window.open('verify.html?kw=${s.noKwitansi}', '_blank')"><i class="bi bi-printer"></i> Cetak</button>` : '-';
+      let btn = s.statusBayar === 'LUNAS' ? `<button class="btn btn-sm btn-neon-gold" onclick="unduhKwitansiJPG('${s.noKwitansi}')"><i class="bi bi-printer"></i> Cetak</button>` : '-';
       html += `<tr><td>${s.npsn}</td><td>${s.namaSekolah}</td><td>${badge}</td><td>${btn}</td></tr>`;
     });
     if(html === '') html = '<tr><td colspan="4" class="text-center text-muted">Tidak ada data sesuai filter.</td></tr>';
