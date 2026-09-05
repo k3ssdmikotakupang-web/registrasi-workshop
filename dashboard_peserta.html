@@ -69,6 +69,9 @@
 </div>
 
 <script>
+    // --- TEMPAT API_URL UNTUK PERSIAPAN MENU SELANJUTNYA ---
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec"; 
+
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData || userData.role !== 'Peserta') window.location.href = "index.html";
 
