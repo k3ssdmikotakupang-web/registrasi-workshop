@@ -167,31 +167,41 @@
             });
             const result = await response.json();
 
+            // Jika API merespons error (misal lupa Deploy Versi Baru), akan muncul pop-up ini!
+            if (result.status === 'error') {
+                alert("INFO SISTEM: " + result.message);
+                return;
+            }
+
             if (result.status === 'success') {
                 const statusTagihan = document.getElementById('statusTagihan');
                 const kotakAksi = document.getElementById('kotakAksiTagihan');
+                
+                // Ubah status jadi huruf kecil semua agar kebal salah ketik Lunas / LUNAS
+                const statBayar = result.data.status_bayar.toLowerCase(); 
 
-                if (result.data.status_bayar === 'Pending') {
+                if (statBayar === 'pending') {
                     statusTagihan.innerHTML = '<i class="bi bi-clock-history"></i> Status: <strong>Menunggu Validasi Subrayon</strong>';
                     statusTagihan.className = 'alert alert-info py-2 small';
                 } 
-                else if (result.data.status_bayar === 'Lunas') {
-                    // Nyalakan lampu progress bar step 3 & 4
+                else if (statBayar === 'lunas') {
+                    // Nyalakan lampu progress bar
                     document.getElementById('step3').classList.add('active');
                     document.getElementById('step4').classList.add('active');
                     
-                    // Ubah status dan ubah tombol aksi menjadi Kwitansi & Input Peserta
+                    // Ubah jadi LUNAS hijau
                     statusTagihan.innerHTML = '<i class="bi bi-check-circle"></i> Status: <strong>LUNAS</strong>';
                     statusTagihan.className = 'alert alert-success py-2 small';
                     
+                    // Tampilkan Tombol Kwitansi & Input Peserta
                     kotakAksi.innerHTML = `
-                        <button onclick="bukaKwitansi('${result.data.id_transaksi}')" class="btn btn-outline-info btn-sm"><i class="bi bi-printer"></i> Cetak E-Kwitansi</button>
-                        <button class="btn btn-neon"><i class="bi bi-person-plus"></i> Input Data Peserta</button>
+                        <button onclick="bukaKwitansi('${result.data.id_transaksi}')" class="btn btn-outline-info btn-sm mb-2 w-100"><i class="bi bi-printer"></i> Cetak E-Kwitansi</button>
+                        <button class="btn btn-neon w-100"><i class="bi bi-person-plus"></i> Input Data Peserta</button>
                     `;
                 }
             }
         } catch (error) {
-            console.error("Gagal menarik status dari database.");
+            alert("Gagal koneksi saat cek status: " + error.toString());
         }
     }
     
