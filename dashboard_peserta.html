@@ -113,8 +113,9 @@
                 const ctx = canvas.getContext('2d');
                 const img = new Image();
                 
-                // Sengaja kita hilangkan crossOrigin agar tidak terblokir (karena sudah 1 rumah di GitHub)
-                img.src = 'template_sertifikat.jpg?v=' + new Date().getTime(); 
+                // 1. KUNCI PERBAIKAN: Gunakan anonymous dan hilangkan trik ?v= waktu
+                img.crossOrigin = "anonymous"; 
+                img.src = 'template_sertifikat.jpg'; 
                 
                 img.onload = function() {
                     try {
@@ -124,36 +125,33 @@
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         
                         ctx.textAlign = 'center';
-                        ctx.fillStyle = '#000000'; // Warna tulisan hitam
+                        ctx.fillStyle = '#000000'; 
                         
-                        // Tulis Nama
                         ctx.font = 'bold 80px Arial'; 
                         ctx.fillText(namaPeserta, canvas.width / 2, (canvas.height / 2) + 50); 
                         
-                        // Tulis Jabatan
                         ctx.font = 'italic 50px Arial'; 
                         ctx.fillText('sebagai ' + jabatanPeserta, canvas.width / 2, (canvas.height / 2) + 150);
                         
+                        // 2. Jika proses di bawah ini diblokir, radar try-catch akan menangkapnya!
                         const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
                         
-                        // Tampilkan PREVIEW di Pop-Up (Lolos dari Blocker Browser)
                         Swal.fire({
                             title: 'Sertifikat Siap!',
-                            text: 'Sertifikat Anda telah diterbitkan secara digital.',
+                            text: 'Klik tombol di bawah untuk menyimpan ke HP/Laptop Anda.',
                             imageUrl: dataUrl,
                             imageWidth: '100%',
                             imageAlt: 'Sertifikat Preview',
                             showCancelButton: true,
-                            confirmButtonText: '<i class="bi bi-download"></i> Simpan ke Perangkat',
+                            confirmButtonText: '<i class="bi bi-download"></i> Download Sertifikat',
                             cancelButtonText: 'Tutup',
                             customClass: { popup: 'swal-dark' },
                             background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
                         }).then((res) => {
                             if (res.isConfirmed) {
-                                // Proses unduh saat user benar-benar menekan tombol
                                 const a = document.createElement('a');
                                 a.href = dataUrl;
-                                a.download = `Sertifikat_${namaPeserta.replace(/\s+/g, '_')}.jpg`;
+                                a.download = `Sertifikat_Workshop_${namaPeserta.replace(/\s+/g, '_')}.jpg`;
                                 document.body.appendChild(a);
                                 a.click();
                                 document.body.removeChild(a);
@@ -161,12 +159,13 @@
                         });
 
                     } catch (err) {
-                        Swal.fire('Error Sistem', 'Gagal memproses gambar: ' + err.message, 'error');
+                        // Jika diblokir oleh keamanan browser, errornya akan muncul di sini
+                        Swal.fire('Error Kanvas', 'Browser memblokir pembuatan gambar: ' + err.message, 'error');
                     }
                 };
                 
                 img.onerror = function() {
-                    Swal.fire('Gagal', 'File template_sertifikat.jpg tidak ditemukan. Pastikan sudah ada di GitHub.', 'error');
+                    Swal.fire('Gagal Memuat Gambar', 'File tidak ditemukan. Pastikan nama file di GitHub persis: template_sertifikat.jpg (huruf kecil semua, bukan .jpeg atau .png)', 'error');
                 };
 
             } else {
