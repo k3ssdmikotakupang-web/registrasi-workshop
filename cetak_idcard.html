@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cetak ID Card Massal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+        
+        /* Layout Grid untuk ID Card (Menyesuaikan kertas A4) */
+        .idcard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2 Kolom per baris */
+            gap: 15px;
+            padding: 20px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        /* Desain per ID Card (Ukuran Standar Name Tag B4/B3) */
+        .idcard-box {
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            width: 100%;
+            height: 480px; /* Tinggi proporsional */
+            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            page-break-inside: avoid; /* Jangan terpotong saat di-print */
+        }
+
+        .idcard-header {
+            background: #0f172a;
+            color: #00f2fe;
+            padding: 15px 5px;
+            border-bottom: 4px solid #4facfe;
+        }
+
+        .idcard-header h5 { margin: 0; font-size: 16px; font-weight: bold; }
+        .idcard-header p { margin: 0; font-size: 10px; color: #fff; }
+
+        .idcard-body { padding: 15px; flex-grow: 1; }
+        .nama-peserta { font-size: 20px; font-weight: bold; color: #000; margin-bottom: 2px; }
+        .jabatan-peserta { font-size: 14px; color: #dc3545; font-weight: bold; margin-bottom: 10px; }
+        .sekolah-peserta { font-size: 12px; color: #333; font-weight: 600; margin-bottom: 15px; }
+        
+        .qr-box img { width: 150px; height: 150px; border: 1px solid #ccc; padding: 5px; border-radius: 8px; }
+        .qr-text { font-size: 10px; margin-top: 5px; color: #666; font-family: monospace; }
+
+        /* Pengaturan Khusus Printer */
+        @media print {
+            body { background: #fff; }
+            .no-print { display: none !important; }
+            .idcard-grid { padding: 0; gap: 10px; max-width: 100%; display: grid; grid-template-columns: repeat(2, 1fr); }
+            .idcard-box { box-shadow: none; height: 450px; border: 1px dashed #999; } /* Border putus-putus untuk garis potong */
+            .idcard-header { background: #0f172a !important; -webkit-print-color-adjust: exact; color-adjust: exact; }
+            @page { margin: 10mm; size: A4 portrait; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container text-center my-4 no-print">
+    <h3 class="fw-bold">Mesin Cetak ID Card Massal</h3>
+    <p>Silakan tunggu hingga semua QR Code termuat, lalu tekan tombol Print.</p>
+    <button class="btn btn-secondary me-2" onclick="window.location.href='dashboard_admin.html'"><i class="bi bi-arrow-left"></i> Kembali</button>
+    <button class="btn btn-primary" onclick="window.print()"><i class="bi bi-printer"></i> Print / Save as PDF</button>
+</div>
+
+<!-- Tempat ID Card akan dimunculkan -->
+<div class="idcard-grid" id="areaCetak">
+    <div class="text-center w-100 py-5 col-span-2">
+        <div class="spinner-border text-primary" role="status"></div>
+        <p class="mt-2">Menarik data dari database...</p>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
+
+    async function loadIDCards() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_all_peserta' })
+            });
+            const result = await response.json();
+
+            if (result.status === 'success' && result.data.length > 0) {
+                let htmlCards = '';
+                
+                result.data.forEach(p => {
+                    // Generate QR menggunakan API qrserver
+                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(p.id_qr)}`;
+                    
+                    htmlCards += `
+                        <div class="idcard-box">
+                            <div class="idcard-header">
+                                <h5>WORKSHOP KEPALA SD/MI</h5>
+                                <p>Kota Kupang Tahun 2026</p>
+                            </div>
+                            <div class="idcard-body">
+                                <div class="nama-peserta">${p.nama}</div>
+                                <div class="jabatan-peserta">${p.jabatan}</div>
+                                <div class="sekolah-peserta">${p.sekolah}</div>
+                                
+                                <div class="qr-box">
+                                    <img src="${qrUrl}" alt="QR Code">
+                                    <div class="qr-text">${p.id_qr}</div>
+                                </div>
+                            </div>
+                            <div class="p-2" style="background:#eee; font-size:10px; font-weight:bold;">
+                                PANITIA YPKR KUPANG
+                            </div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('areaCetak').innerHTML = htmlCards;
+            } else {
+                document.getElementById('areaCetak').innerHTML = '<h5 class="text-center w-100 text-danger mt-5">Belum ada data peserta yang terdaftar.</h5>';
+            }
+        } catch (error) {
+            document.getElementById('areaCetak').innerHTML = '<h5 class="text-center w-100 text-danger mt-5">Gagal terhubung ke server.</h5>';
+        }
+    }
+
+    loadIDCards();
+</script>
+
+</body>
+</html>
