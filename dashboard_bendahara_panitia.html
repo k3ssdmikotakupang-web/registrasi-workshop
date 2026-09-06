@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bendahara Pusat - EMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+        .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+        .btn-neon { background: linear-gradient(45deg, #00f2fe, #4facfe); border: none; color: white; border-radius: 8px; font-weight: 600; }
+        
+        /* Kartu Saldo */
+        .card-saldo { background: linear-gradient(135deg, rgba(0,242,254,0.1) 0%, rgba(79,172,254,0.1) 100%); border-left: 5px solid #00f2fe; }
+        .card-masuk { border-left: 5px solid #198754; background: rgba(25,135,84,0.05); }
+        .card-keluar { border-left: 5px solid #dc3545; background: rgba(220,53,69,0.05); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
+    <div class="container">
+        <span class="navbar-brand text-neon">Bendahara Pusat EMS</span>
+        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold mb-0" id="namaPic">Memuat...</h4>
+            <p class="text-white-50 small mb-0">Buku Kas Umum (BKU) Panitia</p>
+        </div>
+    </div>
+
+    <!-- Panel Keuangan -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="glass-card card-saldo p-4 text-center">
+                <p class="text-info mb-1 small text-uppercase fw-bold">Saldo Kas Saat Ini</p>
+                <h2 class="fw-bold mb-0 text-white" id="txtSaldo">Rp 0</h2>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="glass-card card-masuk p-3 text-center h-100">
+                <i class="bi bi-arrow-down-circle text-success fs-3"></i>
+                <p class="text-white-50 mb-1 small">Total Penerimaan</p>
+                <h5 class="text-success fw-bold" id="txtMasuk">Rp 0</h5>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="glass-card card-keluar p-3 text-center h-100">
+                <i class="bi bi-arrow-up-circle text-danger fs-3"></i>
+                <p class="text-white-50 mb-1 small">Total Pengeluaran</p>
+                <h5 class="text-danger fw-bold" id="txtKeluar">Rp 0</h5>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tombol Navigasi Operasional -->
+    <h6 class="text-white-50 mb-3">Menu Operasional</h6>
+    <div class="row g-3">
+        <div class="col-12">
+            <button class="btn btn-outline-info w-100 py-3 text-start"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Rekap Daftar Sekolah & Penerimaan</button>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-neon w-100 py-3 text-start text-dark"><i class="bi bi-cart-dash me-2"></i> Catat Pengeluaran Panitia (Jasa/ATK)</button>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-journal-check me-2"></i> Laporan BKU / RKAS</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    if(!userData || userData.role !== 'Bendahara_Panitia') window.location.href = "index.html";
+    
+    document.getElementById('namaPic').innerText = userData.nama_pic;
+
+    // Fungsi format Rupiah
+    const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+
+    async function muatDataKeuangan() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_keuangan_panitia' })
+            });
+            const result = await response.json();
+
+            if(result.status === 'success') {
+                document.getElementById('txtSaldo').innerText = formatRp(result.data.saldo);
+                document.getElementById('txtMasuk').innerText = formatRp(result.data.masuk);
+                document.getElementById('txtKeluar').innerText = formatRp(result.data.keluar);
+            }
+        } catch (error) {
+            console.error("Gagal menarik data keuangan: ", error);
+        }
+    }
+
+    function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
+
+    muatDataKeuangan();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
