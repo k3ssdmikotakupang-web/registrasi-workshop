@@ -45,25 +45,24 @@
     <h6 class="text-white-50 mb-3">Menu Kegiatan</h6>
     <div class="row g-3">
         <div class="col-6">
-            <div class="menu-box">
+            <div class="menu-box" onclick="bukaLink('jadwal')">
                 <i class="bi bi-calendar-event menu-icon"></i>
                 <div class="small fw-bold">Jadwal</div>
             </div>
         </div>
         <div class="col-6">
-            <div class="menu-box">
+            <div class="menu-box" onclick="bukaLink('materi')">
                 <i class="bi bi-journal-text menu-icon"></i>
                 <div class="small fw-bold">Materi</div>
             </div>
         </div>
         <div class="col-6">
-            <div class="menu-box">
+            <div class="menu-box" onclick="bukaLink('dokumentasi')">
                 <i class="bi bi-images menu-icon"></i>
                 <div class="small fw-bold">Dokumentasi</div>
             </div>
         </div>
         <div class="col-6">
-            <!-- Tombol Sertifikat Aktif -->
             <div class="menu-box" onclick="unduhSertifikat()">
                 <i class="bi bi-award menu-icon"></i>
                 <div class="small fw-bold">Sertifikat</div>
@@ -98,6 +97,43 @@
     } else {
         boxStatus.className = "alert alert-warning py-2 small mb-0 text-start text-dark";
         boxStatus.innerHTML = `<i class="bi bi-geo-alt"></i> Status: <strong>Belum Check-In</strong><br><small>Tunjukkan QR Anda ke Panitia di lokasi.</small>`;
+    }
+
+    // Variabel penyimpan link dari server
+    let linkData = { jadwal: '', materi: '', dokumentasi: '' };
+
+    // 1. Fungsi menyedot link pengaturan secara diam-diam saat halaman dibuka
+    async function muatLinkBroadcast() {
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_pengaturan' })
+            });
+            const result = await res.json();
+            if(result.status === 'success') {
+                linkData = result.data;
+            }
+        } catch(e) { console.log("Gagal menarik link broadcast"); }
+    }
+    
+    // Jalankan penyedot otomatis
+    muatLinkBroadcast();
+
+    // 2. Fungsi untuk mengeksekusi klik tombol
+    function bukaLink(jenis) {
+        const url = linkData[jenis];
+        if (url && url.trim() !== '') {
+            window.open(url, '_blank'); // Buka di tab baru
+        } else {
+            // Kalau admin belum ngisi linknya, munculkan pesan ini:
+            Swal.fire({
+                icon: 'info',
+                title: 'Belum Tersedia',
+                text: `Panitia belum mengunggah link untuk ${jenis.toUpperCase()} ini.`,
+                customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff'
+            });
+        }
     }
 
     async function unduhSertifikat() {
