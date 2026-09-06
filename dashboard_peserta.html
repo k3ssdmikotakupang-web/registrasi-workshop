@@ -7,14 +7,18 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
+    <!-- INI DIA ALAT POP-UP YANG KEMARIN KELUPAAN KAPT! -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <style>
         body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 70px; }
         .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
-        .menu-box { text-align: center; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; transition: 0.3s; color: white; text-decoration: none; display: block; }
+        .menu-box { text-align: center; padding: 15px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; transition: 0.3s; color: white; text-decoration: none; display: block; cursor: pointer; }
         .menu-box:hover { background: rgba(0, 242, 254, 0.1); border-color: #00f2fe; color: white; transform: translateY(-3px); }
         .menu-icon { font-size: 2rem; margin-bottom: 8px; background: linear-gradient(45deg, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px !important; }
     </style>
 </head>
 <body>
@@ -27,7 +31,6 @@
 </nav>
 
 <div class="container">
-    <!-- Kartu ID Digital -->
     <div class="glass-card p-4 mb-4 text-center" style="border-top: 4px solid #00f2fe;">
         <img src="https://ui-avatars.com/api/?name=Peserta&background=00f2fe&color=0f172a&rounded=true" width="70" class="mb-3 shadow">
         <h5 class="fw-bold mb-0" id="p_nama">Memuat...</h5>
@@ -42,39 +45,44 @@
     <h6 class="text-white-50 mb-3">Menu Kegiatan</h6>
     <div class="row g-3">
         <div class="col-6">
-            <a href="#" class="menu-box">
+            <div class="menu-box">
                 <i class="bi bi-calendar-event menu-icon"></i>
                 <div class="small fw-bold">Jadwal</div>
-            </a>
+            </div>
         </div>
         <div class="col-6">
-            <a href="#" class="menu-box">
+            <div class="menu-box">
                 <i class="bi bi-journal-text menu-icon"></i>
                 <div class="small fw-bold">Materi</div>
-            </a>
+            </div>
         </div>
         <div class="col-6">
-            <a href="#" class="menu-box">
+            <div class="menu-box">
                 <i class="bi bi-images menu-icon"></i>
                 <div class="small fw-bold">Dokumentasi</div>
-            </a>
+            </div>
         </div>
         <div class="col-6">
-            <a href="#" class="menu-box" onclick="unduhSertifikat()">
+            <!-- Tombol Sertifikat Aktif -->
+            <div class="menu-box" onclick="unduhSertifikat()">
                 <i class="bi bi-award menu-icon"></i>
                 <div class="small fw-bold">Sertifikat</div>
-            </a>
+            </div>
         </div>
-
-    </div> <!-- Ini penutup div class="row" yang sudah ada -->
+    </div>
     
-    <!-- Kanvas Gaib untuk menggambar teks ke atas gambar (Disembunyikan) -->
+    <!-- Kanvas Gaib -->
     <canvas id="canvasSertifikat" style="display: none;"></canvas>
-</div> <!-- Ini penutup div class="container" -->
+</div>
 
 <script>
-    // --- TEMPAT API_URL UNTUK PERSIAPAN MENU SELANJUTNYA ---
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec"; 
+
+    // Deklarasi Toast SweetAlert
+    const Toast = Swal.mixin({
+        customClass: { popup: 'swal-dark' },
+        confirmButtonColor: '#00f2fe'
+    });
 
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData || userData.role !== 'Peserta') window.location.href = "index.html";
@@ -93,7 +101,13 @@
     }
 
     async function unduhSertifikat() {
-        Toast.fire({ title: 'Memeriksa Kehadiran...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+        // Cek dulu apakah status di HP sudah hadir (supaya tidak buang kuota hit API kalau belum hadir)
+        if(userData.status_hadir !== 'Hadir') {
+            Swal.fire({ icon: 'warning', title: 'Belum Check-In', text: 'Sertifikat hanya untuk peserta yang sudah hadir di lokasi.', customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
+            return;
+        }
+
+        Toast.fire({ title: 'Menyiapkan Sertifikat...', text: 'Mohon tunggu...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
         
         try {
             const response = await fetch(API_URL, {
@@ -104,7 +118,6 @@
             const result = await response.json();
 
             if (result.status === 'success') {
-                Toast.fire({ title: 'Menulis Sertifikat...', text: 'Memproses desain...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                 
                 const namaPeserta = result.data.nama;
                 const jabatanPeserta = result.data.jabatan;
@@ -113,7 +126,7 @@
                 const ctx = canvas.getContext('2d');
                 const img = new Image();
                 
-                // 1. KUNCI PERBAIKAN: Gunakan anonymous dan hilangkan trik ?v= waktu
+                // Panggil gambar dari GitHub Kapt
                 img.crossOrigin = "anonymous"; 
                 img.src = 'template_sertifikat.jpg'; 
                 
@@ -125,25 +138,26 @@
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         
                         ctx.textAlign = 'center';
-                        ctx.fillStyle = '#000000'; 
+                        ctx.fillStyle = '#000000'; // Warna teks hitam
                         
+                        // Tulis Nama
                         ctx.font = 'bold 80px Arial'; 
                         ctx.fillText(namaPeserta, canvas.width / 2, (canvas.height / 2) + 50); 
                         
+                        // Tulis Jabatan
                         ctx.font = 'italic 50px Arial'; 
                         ctx.fillText('sebagai ' + jabatanPeserta, canvas.width / 2, (canvas.height / 2) + 150);
                         
-                        // 2. Jika proses di bawah ini diblokir, radar try-catch akan menangkapnya!
                         const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
                         
+                        // Munculkan Pop-up Preview Keren!
                         Swal.fire({
-                            title: 'Sertifikat Siap!',
-                            text: 'Klik tombol di bawah untuk menyimpan ke HP/Laptop Anda.',
+                            title: 'Sertifikat Anda Siap!',
                             imageUrl: dataUrl,
                             imageWidth: '100%',
                             imageAlt: 'Sertifikat Preview',
                             showCancelButton: true,
-                            confirmButtonText: '<i class="bi bi-download"></i> Download Sertifikat',
+                            confirmButtonText: '<i class="bi bi-download"></i> Unduh Gambar',
                             cancelButtonText: 'Tutup',
                             customClass: { popup: 'swal-dark' },
                             background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
@@ -151,7 +165,7 @@
                             if (res.isConfirmed) {
                                 const a = document.createElement('a');
                                 a.href = dataUrl;
-                                a.download = `Sertifikat_Workshop_${namaPeserta.replace(/\s+/g, '_')}.jpg`;
+                                a.download = `Sertifikat_EMS_${namaPeserta.replace(/\s+/g, '_')}.jpg`;
                                 document.body.appendChild(a);
                                 a.click();
                                 document.body.removeChild(a);
@@ -159,13 +173,12 @@
                         });
 
                     } catch (err) {
-                        // Jika diblokir oleh keamanan browser, errornya akan muncul di sini
-                        Swal.fire('Error Kanvas', 'Browser memblokir pembuatan gambar: ' + err.message, 'error');
+                        Swal.fire('Error Kanvas', 'Gagal memproses gambar: ' + err.message, 'error');
                     }
                 };
                 
                 img.onerror = function() {
-                    Swal.fire('Gagal Memuat Gambar', 'File tidak ditemukan. Pastikan nama file di GitHub persis: template_sertifikat.jpg (huruf kecil semua, bukan .jpeg atau .png)', 'error');
+                    Swal.fire('Gagal Memuat Template', 'File template_sertifikat.jpg tidak ditemukan di server.', 'error');
                 };
 
             } else {
