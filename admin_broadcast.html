@@ -44,17 +44,21 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
 
-    // Tarik data yang sudah ada saat halaman dibuka
+    // Tarik data yang sudah ada
     async function muatData() {
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_pengaturan' }) });
+            const res = await fetch(API_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Kunci Paspor
+                body: JSON.stringify({ action: 'get_pengaturan' }) 
+            });
             const result = await res.json();
             if(result.status === 'success') {
                 document.getElementById('linkJadwal').value = result.data.jadwal;
                 document.getElementById('linkMateri').value = result.data.materi;
                 document.getElementById('linkDokumentasi').value = result.data.dokumentasi;
             }
-        } catch(e) {}
+        } catch(e) { console.error(e); }
     }
 
     async function simpanBroadcast() {
@@ -62,6 +66,7 @@
         try {
             const res = await fetch(API_URL, {
                 method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Kunci Paspor
                 body: JSON.stringify({
                     action: 'update_pengaturan',
                     jadwal: document.getElementById('linkJadwal').value,
@@ -70,9 +75,13 @@
                 })
             });
             const result = await res.json();
-            if(result.status === 'success') Swal.fire('Berhasil!', result.message, 'success');
+            if(result.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
+            }
         } catch(e) {
-            Swal.fire('Error', 'Gagal tersambung ke server.', 'error');
+            Swal.fire({ icon: 'error', title: 'Error Koneksi', text: 'Gagal tersambung ke server.', customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
         }
         document.getElementById('btnSimpan').innerHTML = '<i class="bi bi-send-check"></i> Simpan & Sebarkan (Broadcast)';
     }
