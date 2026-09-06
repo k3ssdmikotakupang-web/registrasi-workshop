@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin - EMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+        .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+        .stat-box { border-left: 4px solid #00f2fe; background: linear-gradient(90deg, rgba(0,242,254,0.1) 0%, transparent 100%); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
+    <div class="container">
+        <span class="navbar-brand text-neon"><i class="bi bi-shield-lock-fill"></i> Ruang Kendali Pusat</span>
+        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    </div>
+</nav>
+
+<div class="container">
+    <h5 class="fw-bold mb-3">Statistik Real-Time</h5>
+    
+    <div class="row g-3 mb-4">
+        <div class="col-6">
+            <div class="glass-card stat-box p-3">
+                <p class="small text-white-50 mb-1">Sekolah Lunas</p>
+                <h3 class="fw-bold mb-0 text-info" id="s_lunas">0</h3>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="glass-card stat-box p-3" style="border-left-color: #ffc107;">
+                <p class="small text-white-50 mb-1">Sekolah Pending</p>
+                <h3 class="fw-bold mb-0 text-warning" id="s_pending">0</h3>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="glass-card stat-box p-3" style="border-left-color: #f093fb;">
+                <p class="small text-white-50 mb-1">Total Peserta</p>
+                <h3 class="fw-bold mb-0" style="color: #f093fb;" id="s_peserta">0</h3>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="glass-card stat-box p-3" style="border-left-color: #20c997;">
+                <p class="small text-white-50 mb-1">Peserta Hadir</p>
+                <h3 class="fw-bold mb-0 text-success" id="s_hadir">0</h3>
+            </div>
+        </div>
+    </div>
+
+    <h5 class="fw-bold mb-3 mt-4">Menu Kesekretariatan 2.0</h5>
+    <div class="row g-3">
+        <div class="col-12">
+            <button class="btn btn-outline-info w-100 py-3 text-start"><i class="bi bi-person-lines-fill me-2"></i> Manajemen Akun & Reset Data</button>
+        </div>
+        <div class="col-12">
+            <!-- Ini tombol ajaib yang akan kita bangun berikutnya Kapt! -->
+            <button class="btn btn-neon text-dark w-100 py-3 text-start"><i class="bi bi-printer-fill me-2"></i> Cetak ID Card & Name Tag Massal</button>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-outline-warning w-100 py-3 text-start"><i class="bi bi-qr-code-scan me-2"></i> Setup Absensi Multi-Sesi</button>
+        </div>
+        <div class="col-12">
+            <button class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-cloud-arrow-up-fill me-2"></i> Broadcast Materi & Undangan</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    
+    // Keamanan: Hanya Admin_Pusat yang boleh masuk
+    if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
+
+    async function muatStatistik() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_stats_admin' })
+            });
+            const result = await response.json();
+
+            if(result.status === 'success') {
+                document.getElementById('s_lunas').innerText = result.data.lunas;
+                document.getElementById('s_pending').innerText = result.data.pending;
+                document.getElementById('s_peserta').innerText = result.data.peserta;
+                document.getElementById('s_hadir').innerText = result.data.hadir;
+            }
+        } catch (error) {
+            console.error("Gagal menarik data statistik.");
+        }
+    }
+
+    function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
+
+    muatStatistik();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
