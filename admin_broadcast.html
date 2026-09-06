@@ -36,6 +36,17 @@
             <input type="url" id="linkDokumentasi" class="form-control" placeholder="https://drive.google.com/...">
         </div>
 
+        <hr class="border-secondary mt-4 mb-3">
+        <h6 class="text-warning mb-3"><i class="bi bi-people-fill"></i> Tanda Tangan E-Kwitansi</h6>
+        <div class="mb-3">
+            <label class="form-label small text-warning">Nama Ketua Panitia (Lengkap dengan Gelar)</label>
+            <input type="text" id="namaKetua" class="form-control border-warning" placeholder="Contoh: Bpk. Gabriel, S.Pd., M.Pd.">
+        </div>
+        <div class="mb-4">
+            <label class="form-label small text-warning">Nama Bendahara Pusat</label>
+            <input type="text" id="namaBendahara" class="form-control border-warning" placeholder="Contoh: Ibu Yanti, S.E.">
+        </div>
+
         <button class="btn btn-primary w-100 py-2 fw-bold" id="btnSimpan" onclick="simpanBroadcast()"><i class="bi bi-send-check"></i> Simpan & Sebarkan (Broadcast)</button>
     </div>
 </div>
@@ -44,19 +55,16 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
 
-    // Tarik data yang sudah ada
     async function muatData() {
         try {
-            const res = await fetch(API_URL, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Kunci Paspor
-                body: JSON.stringify({ action: 'get_pengaturan' }) 
-            });
+            const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'get_pengaturan' }) });
             const result = await res.json();
             if(result.status === 'success') {
                 document.getElementById('linkJadwal').value = result.data.jadwal;
                 document.getElementById('linkMateri').value = result.data.materi;
                 document.getElementById('linkDokumentasi').value = result.data.dokumentasi;
+                document.getElementById('namaKetua').value = result.data.ketua || '';
+                document.getElementById('namaBendahara').value = result.data.bendahara || '';
             }
         } catch(e) { console.error(e); }
     }
@@ -65,25 +73,20 @@
         document.getElementById('btnSimpan').innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyebarkan...';
         try {
             const res = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Kunci Paspor
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
                     action: 'update_pengaturan',
                     jadwal: document.getElementById('linkJadwal').value,
                     materi: document.getElementById('linkMateri').value,
-                    dokumentasi: document.getElementById('linkDokumentasi').value
+                    dokumentasi: document.getElementById('linkDokumentasi').value,
+                    ketua: document.getElementById('namaKetua').value,
+                    bendahara: document.getElementById('namaBendahara').value
                 })
             });
             const result = await res.json();
-            if(result.status === 'success') {
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
-            } else {
-                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
-            }
-        } catch(e) {
-            Swal.fire({ icon: 'error', title: 'Error Koneksi', text: 'Gagal tersambung ke server.', customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
-        }
-        document.getElementById('btnSimpan').innerHTML = '<i class="bi bi-send-check"></i> Simpan & Sebarkan (Broadcast)';
+            Swal.fire({ icon: result.status==='success'?'success':'error', title: 'Info', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
+        } catch(e) { Swal.fire('Error', 'Koneksi gagal.', 'error'); }
+        document.getElementById('btnSimpan').innerHTML = '<i class="bi bi-send-check"></i> Simpan Pengaturan';
     }
 
     muatData();
