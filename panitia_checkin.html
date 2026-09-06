@@ -37,6 +37,16 @@
                 <h4 class="text-neon mb-1">SCAN QR PESERTA</h4>
                 <p class="text-white-50 small mb-4">Arahkan kamera ke QR Code peserta untuk memvalidasi kehadiran & penyerahan ATK.</p>
 
+                <div class="mb-3 text-start">
+                    <label class="small text-info fw-bold">Pilih Sesi Absensi:</label>
+                    <select id="pilihSesi" class="form-select bg-dark text-white border-info mt-1">
+                        <option value="Kehadiran_Utama">Check-In Utama (Ambil ATK)</option>
+                        <option value="Sesi_1">Absensi Hari 1 / Sesi 1</option>
+                        <option value="Sesi_2">Absensi Hari 2 / Sesi 2</option>
+                        <option value="Sesi_3">Absensi Penutupan / Sesi 3</option>
+                    </select>
+                </div>
+
                 <!-- Area Kamera Scanner -->
                 <div id="qr-reader" class="mb-3"></div>
                 
@@ -79,8 +89,11 @@
                     const response = await fetch(API_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'proses_checkin', id_qr: decodedText })
-                    });
+                        body: JSON.stringify({ 
+                            action: 'proses_checkin', 
+                            id_qr: decodedText,
+                            sesi: document.getElementById('pilihSesi').value 
+                        })
                     const result = await response.json();
 
                     if (result.status === 'success') {
