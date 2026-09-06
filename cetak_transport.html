@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kwitansi Transport Massal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #e9ecef; font-family: 'Times New Roman', serif; }
+        .kwt-box { background: #fff; border: 2px dashed #000; padding: 25px; margin-bottom: 20px; page-break-inside: avoid; height: 13.5cm; }
+        .kop { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 15px; text-align: center; }
+        .kop h5, .kop h6 { margin: 0; font-weight: bold; }
+        .judul { text-align: center; text-decoration: underline; font-weight: bold; margin-bottom: 20px; font-size: 18px; }
+        .table-kwt td { padding: 4px; border: none; font-size: 15px; }
+        .nominal { font-size: 18px; font-weight: bold; background: #f8f9fa; border: 1px solid #000; padding: 5px 15px; display: inline-block; margin-top: 10px; }
+        @media print { body { background: #fff; } .no-print { display: none !important; } .kwt-box { border: 1px solid #000; margin-bottom: 10px; } @page { margin: 10mm; size: A4 portrait; } }
+    </style>
+</head>
+<body>
+
+<div class="container no-print mt-4 mb-4">
+    <div class="card p-4 shadow-sm">
+        <h5 class="fw-bold text-primary">Mesin Cetak Transport Massal</h5>
+        <div class="row g-3 mt-2">
+            <div class="col-md-3">
+                <label class="small fw-bold">Pilih Subrayon</label>
+                <select id="fRayon" class="form-select"></select>
+            </div>
+            <div class="col-md-3">
+                <label class="small fw-bold">Pilih Jabatan</label>
+                <select id="fJabatan" class="form-select"></select>
+            </div>
+            <div class="col-md-3">
+                <label class="small fw-bold">Nominal Transport (Rp)</label>
+                <input type="number" id="fNominal" class="form-control" value="100000">
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary w-100 fw-bold" onclick="generateKwitansi()">Tampilkan & Cetak</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" id="areaCetak"></div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    let dataPeserta = [], namaBdh = '.......................';
+    const formatRp = (angka) => new Intl.NumberFormat('id-ID').format(angka);
+
+    async function muatData() {
+        try {
+            // Ambil nama bendahara
+            const rSet = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_pengaturan' }) });
+            const dSet = await rSet.json();
+            if(dSet.status === 'success') namaBdh = dSet.data.bendahara || namaBdh;
+
+            // Ambil data peserta
+            const rPes = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_peserta_transport' }) });
+            const dPes = await rPes.json();
+            if(dPes.status === 'success') {
+                dataPeserta = dPes.data;
+                let sRayon = new Set(), sJabatan = new Set();
+                dataPeserta.forEach(p => { if(p.subrayon !== '-') sRayon.add(p.subrayon); sJabatan.add(p.jabatan); });
+                
+                sRayon.forEach(v => document.getElementById('fRayon').innerHTML += `<option value="${v}">${v}</option>`);
+                sJabatan.forEach(v => document.getElementById('fJabatan').innerHTML += `<option value="${v}">${v}</option>`);
+            }
+        } catch(e) { alert("Gagal memuat data dari server."); }
+    }
+
+    function generateKwitansi() {
+        const rayon = document.getElementById('fRayon').value;
+        const jabatan = document.getElementById('fJabatan').value;
+        const nominal = document.getElementById('fNominal').value;
+        
+        let targetPeserta = dataPeserta.filter(p => p.subrayon === rayon && p.jabatan === jabatan);
+        
+        if(targetPeserta.length === 0) return document.getElementById('areaCetak').innerHTML = '<div class="alert alert-danger no-print">Tidak ada peserta yang cocok.</div>';
+
+        let html = '<div class="text-center no-print mb-3"><button class="btn btn-success" onclick="window.print()">Cetak (Print) Sekarang</button></div>';
+        
+        targetPeserta.forEach(p => {
+            html += `
+            <div class="kwt-box">
+                <div class="kop">
+                    <h5>K3S SD/MI KOTA KUPANG</h5>
+                    <h6>PANITIA WORKSHOP MANAJEMEN KEPALA SD/MI KOTA KUPANG 2026</h6>
+                </div>
+                <div class="judul">KWITANSI PEMBAYARAN TRANSPORTASI</div>
+                <table class="table-kwt w-100">
+                    <tr><td width="25%">Telah terima dari</td><td width="2%">:</td><td><strong>Bendahara Panitia</strong></td></tr>
+                    <tr><td>Uang Sejumlah</td><td>:</td><td><span class="nominal">Rp ${formatRp(nominal)}</span></td></tr>
+                    <tr><td>Untuk Pembayaran</td><td>:</td><td>Bantuan Transportasi Peserta Workshop a.n <strong>${p.nama}</strong> (${p.jabatan}) - Subrayon ${p.subrayon}</td></tr>
+                </table>
+                <div class="row mt-4 text-center">
+                    <div class="col-6">
+                        <p class="mb-5">Mengetahui/Menyetujui,<br><strong>Bendahara Pusat</strong></p>
+                        <p class="fw-bold text-decoration-underline mb-0">${namaBdh}</p>
+                    </div>
+                    <div class="col-6">
+                        <p class="mb-5">Kupang, ...................... 2026<br><strong>Penerima / Peserta</strong></p>
+                        <p class="fw-bold text-decoration-underline mb-0">${p.nama}</p>
+                    </div>
+                </div>
+            </div>`;
+        });
+        document.getElementById('areaCetak').innerHTML = html;
+    }
+    muatData();
+</script>
+</body>
+</html>
