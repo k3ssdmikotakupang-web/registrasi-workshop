@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
-    <!-- Library QR Scanner & SweetAlert2 -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
@@ -35,11 +34,12 @@
         <div class="col-md-6">
             <div class="glass-card p-4 text-center">
                 <h4 class="text-neon mb-1">SCAN QR PESERTA</h4>
-                <p class="text-white-50 small mb-4">Arahkan kamera ke QR Code peserta untuk memvalidasi kehadiran & penyerahan ATK.</p>
+                <p class="text-white-50 small mb-3">Arahkan kamera ke QR Code peserta untuk memvalidasi absensi.</p>
 
+                <!-- Pilihan Sesi Absensi -->
                 <div class="mb-3 text-start">
-                    <label class="small text-info fw-bold">Pilih Sesi Absensi:</label>
-                    <select id="pilihSesi" class="form-select bg-dark text-white border-info mt-1">
+                    <label class="small text-info fw-bold">Pilih Sesi Absensi Saat Ini:</label>
+                    <select id="pilihSesi" class="form-select bg-dark text-white border-info mt-1 shadow-sm">
                         <option value="Kehadiran_Utama">Check-In Utama (Ambil ATK)</option>
                         <option value="Sesi_1">Absensi Hari 1 / Sesi 1</option>
                         <option value="Sesi_2">Absensi Hari 2 / Sesi 2</option>
@@ -47,7 +47,6 @@
                     </select>
                 </div>
 
-                <!-- Area Kamera Scanner -->
                 <div id="qr-reader" class="mb-3"></div>
                 
                 <button class="btn btn-neon w-100 py-2 mb-2" id="btnMulaiScan" onclick="mulaiScanner()">
@@ -64,11 +63,7 @@
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     let html5QrCode = null;
-
-    const Toast = Swal.mixin({
-        customClass: { popup: 'swal-dark' },
-        confirmButtonColor: '#00f2fe'
-    });
+    const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
 
     function mulaiScanner() {
         document.getElementById('btnMulaiScan').style.display = 'none';
@@ -79,37 +74,29 @@
             { facingMode: "environment" },
             { fps: 10, qrbox: { width: 250, height: 250 } },
             async (decodedText) => {
-                // Hentikan sementara scanner agar tidak scan beruntun
                 matikanScanner();
-                
-                // Kirim ID QR ke server untuk diproses
                 Toast.fire({ title: 'Memvalidasi...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
                 try {
                     const response = await fetch(API_URL, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Ini kuncinya Kapt!
                         body: JSON.stringify({ 
                             action: 'proses_checkin', 
                             id_qr: decodedText,
                             sesi: document.getElementById('pilihSesi').value 
                         })
+                    });
                     const result = await response.json();
 
                     if (result.status === 'success') {
-                        Swal.fire({
-                            icon: 'success', title: 'CHECK-IN BERHASIL!', text: result.message,
-                            customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
-                        }).then(() => { mulaiScanner(); }); // Nyalakan lagi kameranya untuk peserta berikutnya
+                        Swal.fire({ icon: 'success', title: 'BERHASIL!', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
+                        }).then(() => { mulaiScanner(); });
                     } else if (result.status === 'warning') {
-                        Swal.fire({
-                            icon: 'warning', title: 'Sudah Check-In', text: result.message,
-                            customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#ffc107'
+                        Swal.fire({ icon: 'warning', title: 'Sudah Check-In', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#ffc107'
                         }).then(() => { mulaiScanner(); });
                     } else {
-                        Swal.fire({
-                            icon: 'error', title: 'Gagal', text: result.message,
-                            customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff'
+                        Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff'
                         }).then(() => { mulaiScanner(); });
                     }
                 } catch(e) {
