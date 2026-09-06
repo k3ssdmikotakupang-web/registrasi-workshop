@@ -41,7 +41,7 @@
             </div>
             <div class="mb-3">
                 <label class="form-label small">Nominal (Rp)</label>
-                <input type="number" id="nominal" class="form-control" placeholder="Contoh: 1500000" required>
+                <input type="text" id="nominal" class="form-control" placeholder="Contoh: 1.500.000" oninput="formatTitik(this)" required>
             </div>
             <div class="mb-3">
                 <label class="form-label small">Dibayarkan Kepada (Penerima)</label>
@@ -68,6 +68,20 @@
     
     const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
 
+    // Fungsi otomatis tambah titik saat mengetik
+    function formatTitik(e) {
+        let value = e.value.replace(/[^,\d]/g, '');
+        let split = value.split(',');
+        let sisa = split[0].length % 3;
+        let rupiah = split[0].substr(0, sisa);
+        let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+        if(ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        e.value = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+    }
+    
     function getBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -79,7 +93,8 @@
 
     async function prosesSimpanKeluar() {
         const kategori = document.getElementById('kategori').value;
-        const nominal = document.getElementById('nominal').value;
+        const nominalRaw = document.getElementById('nominal').value;
+        const nominal = nominalRaw.replace(/\./g, ''); // Hapus titik
         const penerima = document.getElementById('penerima').value;
         const keterangan = document.getElementById('keterangan').value;
         const fileInput = document.getElementById('fileNota');
