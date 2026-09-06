@@ -60,13 +60,17 @@
             </a>
         </div>
         <div class="col-6">
-            <a href="#" class="menu-box" style="opacity: 0.5;">
+            <a href="#" class="menu-box" onclick="unduhSertifikat()">
                 <i class="bi bi-award menu-icon"></i>
                 <div class="small fw-bold">Sertifikat</div>
             </a>
         </div>
-    </div>
-</div>
+
+    </div> <!-- Ini penutup div class="row" yang sudah ada -->
+    
+    <!-- Kanvas Gaib untuk menggambar teks ke atas gambar (Disembunyikan) -->
+    <canvas id="canvasSertifikat" style="display: none;"></canvas>
+</div> <!-- Ini penutup div class="container" -->
 
 <script>
     // --- TEMPAT API_URL UNTUK PERSIAPAN MENU SELANJUTNYA ---
@@ -86,6 +90,80 @@
     } else {
         boxStatus.className = "alert alert-warning py-2 small mb-0 text-start text-dark";
         boxStatus.innerHTML = `<i class="bi bi-geo-alt"></i> Status: <strong>Belum Check-In</strong><br><small>Tunjukkan QR Anda ke Panitia di lokasi.</small>`;
+    }
+
+    async function unduhSertifikat() {
+        Toast.fire({ title: 'Memeriksa Kehadiran...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+        
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'cek_sertifikat', id_qr: userData.id_qr })
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                Toast.fire({ title: 'Menulis Sertifikat...', text: 'Mohon tunggu sebentar.', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                
+                const namaPeserta = result.data.nama;
+                const jabatanPeserta = result.data.jabatan;
+
+                // Siapkan Kanvas
+                const canvas = document.getElementById('canvasSertifikat');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                img.crossOrigin = "Anonymous"; // Syarat tarik gambar di web
+                
+                // Panggil template dari GitHub (ditambah angka acak agar anti-cache/selalu update)
+                img.src = 'template_sertifikat.jpg?v=' + new Date().getTime(); 
+                
+                img.onload = function() {
+                    // 1. Ukuran kanvas menyesuaikan ukuran asli desain sertifikat Kapt
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    
+                    // 2. Tempelkan gambar desain kosongnya
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    
+                    // 3. Atur Kuas untuk menulis Nama (Warna Hitam, Rata Tengah)
+                    ctx.textAlign = 'center';
+                    ctx.fillStyle = '#000000'; // Kode warna hitam
+                    
+                    // --- SETTING POSISI TULISAN ---
+                    // X = canvas.width / 2 (Artinya pas di tengah-tengah kiri-kanan)
+                    // Y = canvas.height / 2 (Artinya pas di tengah-tengah atas-bawah)
+                    
+                    // Tulis Nama Peserta
+                    ctx.font = 'bold 80px Arial'; // Ukuran dan Font
+                    ctx.fillText(namaPeserta, canvas.width / 2, (canvas.height / 2) + 50); 
+                    
+                    // Tulis Jabatan di bawahnya
+                    ctx.font = 'italic 50px Arial'; 
+                    ctx.fillText('sebagai ' + jabatanPeserta, canvas.width / 2, (canvas.height / 2) + 150);
+                    
+                    // 4. Ubah jadi file dan Download Otomatis!
+                    const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.download = `Sertifikat_${namaPeserta.replace(/\s+/g, '_')}.jpg`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    
+                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Sertifikat berhasil di-download ke perangkat Anda.', customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
+                };
+                
+                img.onerror = function() {
+                    Toast.fire({ icon: 'error', title: 'Gagal Memuat Desain', text: 'Pastikan file template_sertifikat.jpg ada di GitHub.' });
+                };
+
+            } else {
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
+            }
+        } catch (e) {
+            Toast.fire({ icon: 'error', title: 'Error Koneksi', text: 'Gagal terhubung ke server.' });
+        }
     }
 
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
