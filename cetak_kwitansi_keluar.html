@@ -9,10 +9,10 @@
         body { background: #e9ecef; font-family: 'Times New Roman', serif; }
         .kwitansi-box { background: #fff; max-width: 800px; margin: 30px auto; padding: 40px; border: 2px solid #000; position: relative; }
         .kop-surat { border-bottom: 3px solid #000; padding-bottom: 15px; margin-bottom: 20px; text-align: center; }
-        .kop-surat h4, .kop-surat h5 { margin: 0; font-weight: bold; }
+        .kop-surat h4 { margin: 0; font-weight: bold; font-size: 20px; }
+        .kop-surat h5 { margin: 0; font-weight: bold; font-size: 16px; margin-top: 5px; }
         .judul-kwitansi { text-align: center; text-decoration: underline; font-weight: bold; margin-bottom: 30px; }
         .table-rincian th, .table-rincian td { padding: 5px; border: none; font-size: 16px; }
-        .box-nominal { border: 2px dashed #000; padding: 10px; text-align: center; font-size: 20px; font-weight: bold; background: #f8f9fa; margin-top: 20px; }
         .qr-ttd { width: 120px; height: 120px; }
         @media print { body { background: #fff; } .no-print { display: none; } .kwitansi-box { margin: 0; border: none; } }
     </style>
@@ -22,7 +22,7 @@
 <div class="text-center no-print mt-3">
     <button class="btn btn-secondary" onclick="window.location.href='dashboard_bendahara_panitia.html'">Kembali</button>
     <button class="btn btn-primary" onclick="window.print()">Cetak PDF / Print</button>
-    <p class="small text-muted mt-2">Minta Tanda Tangan Penerima pada file ini lalu Upload kembali.</p>
+    <p class="small text-muted mt-2">Cetak, minta tanda tangan basah, lalu Upload kembali di Dasbor BKU.</p>
 </div>
 
 <div class="kwitansi-box" id="areaCetak">
@@ -30,10 +30,17 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const API_URL = "URL_WEB_APP_GAS_BRO_DISINI";
     const urlParams = new URLSearchParams(window.location.search);
     const idTrx = urlParams.get('id');
     const formatRp = (angka) => new Intl.NumberFormat('id-ID').format(angka);
+
+    // Tarik nama Bendahara dari data Login
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    const namaBendahara = userData ? userData.nama_pic : "Bendahara Pusat";
+    
+    // UBAH NAMA KETUA PANITIA DI SINI KAPT:
+    const namaKetuaPanitia = "TULIS NAMA KETUA DISINI, S.Pd., M.Pd.";
 
     async function muatKwitansi() {
         if(!idTrx) return document.getElementById('areaCetak').innerHTML = "Data ID tidak valid.";
@@ -48,10 +55,14 @@
                 const d = result.data;
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(d.id)}`;
                 
+                // Pisahkan string pajak untuk didetailkan (Misal: "0.15|PPh 21 - ASN Gol IV (15%)")
+                let detailPajak = d.pajak.includes('|') ? d.pajak.split('|')[1] : d.pajak;
+                if(detailPajak === "Tanpa Potongan Pajak") detailPajak = "Tanpa Potongan (0%)";
+                
                 document.getElementById('areaCetak').innerHTML = `
                     <div class="kop-surat">
-                        <h4>YAYASAN PENDIDIKAN KRISTO REGI (YPKR)</h4>
-                        <h5>PANITIA WORKSHOP KEPALA SD/MI KOTA KUPANG</h5>
+                        <h4>Kelompok Kerja Kepala Sekolah (K3S) SD/MI Kota Kupang 2026</h4>
+                        <h5>PANITIA WORKSHOP MANAJEMEN KEPALA SD/MI KOTA KUPANG 2026</h5>
                     </div>
                     <h5 class="judul-kwitansi">BUKTI PENGELUARAN KAS (BPK)</h5>
                     
@@ -67,15 +78,15 @@
                     </table>
 
                     <div class="row mt-4">
-                        <div class="col-md-7">
+                        <div class="col-md-8">
                             <table class="table table-sm table-bordered">
-                                <tr class="table-light"><th>Rincian Biaya</th><th class="text-end">Nominal (Rp)</th></tr>
+                                <tr class="table-light"><th>Rincian Detail Biaya & Potongan Pajak</th><th class="text-end">Nominal (Rp)</th></tr>
                                 <tr><td>1. Nominal Bruto (Kotor)</td><td class="text-end">${formatRp(d.bruto)}</td></tr>
-                                <tr><td>2. Potongan (${d.pajak.split('|')[1] || d.pajak})</td><td class="text-end text-danger">- ${formatRp(d.bruto - d.netto)}</td></tr>
-                                <tr class="fw-bold bg-light"><td>TOTAL DIBAYARKAN (NETTO)</td><td class="text-end">Rp ${formatRp(d.netto)}</td></tr>
+                                <tr><td>2. Potongan Pajak : <strong>${detailPajak}</strong></td><td class="text-end text-danger">- ${formatRp(d.bruto - d.netto)}</td></tr>
+                                <tr class="fw-bold bg-light"><td>TOTAL DIBAYARKAN (NETTO BERSIH)</td><td class="text-end">Rp ${formatRp(d.netto)}</td></tr>
                             </table>
                         </div>
-                        <div class="col-md-5 d-flex justify-content-end align-items-center">
+                        <div class="col-md-4 d-flex justify-content-end align-items-center">
                             <div class="text-center">
                                 <img src="${qrUrl}" class="qr-ttd border p-1 rounded"><br>
                                 <small class="text-muted">QR Validasi Sistem</small>
@@ -86,15 +97,15 @@
                     <div class="row mt-5 text-center">
                         <div class="col-4">
                             <p class="mb-5">Menyetujui,<br><strong>Ketua Panitia</strong></p>
-                            <p>( ................................. )</p>
+                            <p class="fw-bold text-decoration-underline mb-0">${namaKetuaPanitia}</p>
                         </div>
                         <div class="col-4">
                             <p class="mb-5">Lunas Dibayar,<br><strong>Bendahara Pusat</strong></p>
-                            <p>( ................................. )</p>
+                            <p class="fw-bold text-decoration-underline mb-0">${namaBendahara}</p>
                         </div>
                         <div class="col-4">
                             <p class="mb-5">Telah Menerima,<br><strong>Penerima Dana</strong></p>
-                            <p>( ${d.penerima} )</p>
+                            <p class="fw-bold text-decoration-underline mb-0">${d.penerima}</p>
                         </div>
                     </div>
                 `;
