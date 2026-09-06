@@ -3,160 +3,174 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Input Pengeluaran - EMS</title>
+    <title>Catat Pengeluaran - EMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
     <style>
-        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
-        .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
-        .btn-neon { background: linear-gradient(45deg, #00f2fe, #4facfe); border: none; color: white; border-radius: 8px; font-weight: 600; }
-        .form-control, .form-select { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.2); color: white; }
-        .form-control:focus, .form-select:focus { background: rgba(0, 0, 0, 0.4); border-color: #00f2fe; color: white; box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); }
-        .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px !important; }
+        body { background-color: #f8f9fa; color: #333; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .header-panel { background: #0f172a; color: #00f2fe; padding: 20px; border-bottom: 5px solid #dc3545; }
+        .form-card { background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); padding: 25px; border-top: 4px solid #dc3545; }
+        .kalkulator-box { background: #f1f5f9; border-radius: 8px; padding: 15px; border: 1px dashed #cbd5e1; }
+        .text-netto { color: #198754; font-size: 1.5rem; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="container mt-4">
-    <button class="btn btn-outline-secondary mb-3" onclick="window.location.href='dashboard_bendahara_panitia.html'"><i class="bi bi-arrow-left"></i> Kembali ke BKU</button>
-    
-    <div class="glass-card p-4 mx-auto" style="max-width: 600px; border-left: 4px solid #dc3545;">
-        <h4 class="text-neon text-center mb-1">CATAT PENGELUARAN</h4>
-        <p class="text-center text-white-50 small mb-4">Input transaksi uang keluar (jasa, ATK, konsumsi, dll).</p>
+<div class="header-panel mb-4">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div>
+            <h4 class="fw-bold mb-0 text-white">CATAT PENGELUARAN</h4>
+            <p class="mb-0 text-white-50">Kalkulator Pajak Otomatis</p>
+        </div>
+        <button class="btn btn-outline-light" onclick="window.location.href='dashboard_bendahara_panitia.html'"><i class="bi bi-arrow-left"></i> Batal</button>
+    </div>
+</div>
 
-        <form id="formKeluar">
-            <div class="mb-3">
-                <label class="form-label small">Kategori Pengeluaran</label>
-                <select id="kategori" class="form-select" required>
-                    <option value="Jasa Pemateri">Jasa Pemateri</option>
-                    <option value="ATK & Penggandaan">ATK & Penggandaan</option>
-                    <option value="Konsumsi">Konsumsi</option>
-                    <option value="Sewa Tempat/Alat">Sewa Tempat/Alat</option>
-                    <option value="Lembur Panitia">Lembur Panitia</option>
-                    <option value="Lainnya">Lainnya</option>
+<div class="container">
+    <div class="form-card mx-auto" style="max-width: 700px;">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Kategori Belanja</label>
+                <select class="form-select" id="f_kategori">
+                    <option value="Jasa Pemateri / Narasumber">Jasa Pemateri / Narasumber</option>
+                    <option value="Konsumsi & Snack">Konsumsi & Snack</option>
+                    <option value="Belanja ATK & Penggandaan">Belanja ATK & Penggandaan</option>
+                    <option value="Sewa Gedung / Alat">Sewa Gedung / Alat</option>
+                    <option value="Transportasi / Operasional">Transportasi / Operasional</option>
                 </select>
             </div>
-            <div class="mb-3">
-                <label class="form-label small">Nominal (Rp)</label>
-                <input type="text" id="nominal" class="form-control" placeholder="Contoh: 1.500.000" oninput="formatTitik(this)" required>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Nama Penerima Dana</label>
+                <input type="text" id="f_penerima" class="form-control" placeholder="Contoh: Bpk. Gabriel (Pemateri)">
             </div>
-            <div class="mb-3">
-                <label class="form-label small">Dibayarkan Kepada (Penerima)</label>
-                <input type="text" id="penerima" class="form-control" placeholder="Nama orang/toko" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label small">Keterangan Detail</label>
-                <textarea id="keterangan" class="form-control" rows="2" placeholder="Uraian pembayaran..."></textarea>
-            </div>
-            <div class="mb-4">
-                <label class="form-label small text-info">Upload Bukti/Nota (Opsional, PDF/JPG)</label>
-                <input type="file" id="fileNota" class="form-control" accept=".pdf, .jpg, .jpeg, .png">
+            
+            <div class="col-12 mt-4">
+                <h6 class="fw-bold border-bottom pb-2"><i class="bi bi-calculator"></i> Rincian & Kalkulator Pajak</h6>
             </div>
 
-            <button type="button" id="btnSimpanKeluar" class="btn btn-danger w-100 py-2 fw-bold" onclick="prosesSimpanKeluar()">Simpan Pengeluaran</button>
-        </form>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Nominal Bruto (Kotor) Rp</label>
+                <input type="number" id="f_bruto" class="form-control" placeholder="Ketik angka saja, cth: 1000000" oninput="hitungPajak()">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold text-muted">Potongan Pajak</label>
+                <select class="form-select border-warning" id="f_pajak" onchange="hitungPajak()">
+                    <option value="0|Tanpa Potongan Pajak">Tanpa Potongan (0%)</option>
+                    <option value="0.05|PPh 21 - ASN Gol III (5%)">PPh 21 - ASN Gol III (5%)</option>
+                    <option value="0.15|PPh 21 - ASN Gol IV (15%)">PPh 21 - ASN Gol IV (15%)</option>
+                    <option value="0.025|PPh 21 - Non ASN Ber-NPWP (2,5%)">PPh 21 - Non ASN Ber-NPWP (2,5%)</option>
+                    <option value="0.03|PPh 21 - Non ASN Tanpa NPWP (3%)">PPh 21 - Non ASN Tanpa NPWP (3%)</option>
+                </select>
+            </div>
+
+            <!-- Layar Kalkulator -->
+            <div class="col-12">
+                <div class="kalkulator-box mt-2">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Potongan Pajak:</span>
+                        <span class="text-danger fw-bold" id="tampilPotongan">- Rp 0</span>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center border-top pt-2">
+                        <span class="fw-bold">Nominal Netto (Bersih):</span>
+                        <span class="text-netto" id="tampilNetto">Rp 0</span>
+                    </div>
+                    <p class="small text-muted mt-2 mb-0 fst-italic">*Nominal Netto ini yang akan dicairkan ke penerima dan tercatat memotong Saldo Kas.</p>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label small fw-bold text-muted">Keterangan / Uraian Belanja</label>
+                <textarea id="f_keterangan" class="form-control" rows="2" placeholder="Contoh: Honor materi Implementasi Kurikulum Merdeka 2 Sesi"></textarea>
+            </div>
+
+            <div class="col-12 mt-4">
+                <button class="btn btn-danger w-100 py-3 fw-bold" id="btnSimpan" onclick="prosesSimpan()">
+                    <i class="bi bi-save-fill me-2"></i> Simpan & Buat Kwitansi Pencairan
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const API_URL = "URL_WEB_APP_GAS_BRO_DISINI"; 
+
+    // Mencegah selain Bendahara Pusat masuk
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData || userData.role !== 'Bendahara_Panitia') window.location.href = "index.html";
-    
-    const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
 
-    // Fungsi otomatis tambah titik saat mengetik
-    function formatTitik(e) {
-        let value = e.value.replace(/[^,\d]/g, '');
-        let split = value.split(',');
-        let sisa = split[0].length % 3;
-        let rupiah = split[0].substr(0, sisa);
-        let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
-        if(ribuan) {
-            let separator = sisa ? '.' : '';
-            rupiah += separator + ribuan.join('.');
-        }
-        e.value = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
-    }
+    const formatRp = (angka) => new Intl.NumberFormat('id-ID').format(angka);
     
-    function getBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = error => reject(error);
-        });
+    // Variabel penyimpan hasil hitung
+    let hasilNetto = 0;
+    let hasilPajak = 0;
+    let namaPajakTerpilih = "";
+
+    function hitungPajak() {
+        let bruto = parseFloat(document.getElementById('f_bruto').value) || 0;
+        
+        // Memecah value select (cth: "0.05|PPh 21 - ASN Gol III (5%)")
+        let pajakPilihan = document.getElementById('f_pajak').value.split("|"); 
+        let persenPajak = parseFloat(pajakPilihan[0]);
+        namaPajakTerpilih = pajakPilihan[1];
+
+        hasilPajak = bruto * persenPajak;
+        hasilNetto = bruto - hasilPajak;
+
+        document.getElementById('tampilPotongan').innerText = '- Rp ' + formatRp(hasilPajak);
+        document.getElementById('tampilNetto').innerText = 'Rp ' + formatRp(hasilNetto);
     }
 
-    async function prosesSimpanKeluar() {
-        const kategori = document.getElementById('kategori').value;
-        const nominalRaw = document.getElementById('nominal').value;
-        const nominal = nominalRaw.replace(/\./g, ''); // Hapus titik
-        const penerima = document.getElementById('penerima').value;
-        const keterangan = document.getElementById('keterangan').value;
-        const fileInput = document.getElementById('fileNota');
+    async function prosesSimpan() {
+        let kategori = document.getElementById('f_kategori').value;
+        let penerima = document.getElementById('f_penerima').value;
+        let bruto = document.getElementById('f_bruto').value;
+        let keterangan = document.getElementById('f_keterangan').value;
 
-        if(!nominal || !penerima) {
-            Toast.fire({ icon: 'warning', title: 'Data belum lengkap!' });
+        if(!bruto || !penerima || bruto <= 0) {
+            Swal.fire('Data Belum Lengkap', 'Nominal Bruto dan Nama Penerima wajib diisi!', 'warning');
             return;
         }
 
-        let base64Data = null;
-        let mimeType = null;
-        let fileName = null;
-
-        if(fileInput.files.length > 0) {
-            if(fileInput.files[0].size > 2 * 1024 * 1024) {
-                Toast.fire({ icon: 'warning', title: 'Ukuran nota maksimal 2MB!' });
-                return;
-            }
-            base64Data = await getBase64(fileInput.files[0]);
-            mimeType = fileInput.files[0].type;
-            fileName = `Nota_${new Date().getTime()}_${fileInput.files[0].name}`;
-        }
-
-        const btnSimpan = document.getElementById('btnSimpanKeluar');
-        btnSimpan.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
-        btnSimpan.disabled = true;
-
+        document.getElementById('btnSimpan').innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
+        
         try {
             const response = await fetch(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
-                    action: 'catat_pengeluaran',
+                    action: 'simpan_pengeluaran',
                     kategori: kategori,
-                    nominal: nominal,
                     penerima: penerima,
-                    keterangan: keterangan,
-                    base64Data: base64Data,
-                    mimeType: mimeType,
-                    fileName: fileName
+                    bruto: bruto,
+                    pajak_persen: namaPajakTerpilih, // Kita simpan nama pajaknya sbg bukti
+                    netto: hasilNetto,
+                    keterangan: keterangan
                 })
             });
+            
             const result = await response.json();
-
+            
             if(result.status === 'success') {
                 Swal.fire({
-                    icon: 'success', title: 'Berhasil!', text: result.message,
-                    customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
+                    icon: 'success',
+                    title: 'Berhasil Dicatat!',
+                    text: 'Pengeluaran berhasil memotong BKU.',
+                    confirmButtonText: 'OK'
                 }).then(() => {
+                    // Nantinya tombol OK ini akan kita arahkan ke halaman Cetak Kwitansi
                     window.location.href = 'dashboard_bendahara_panitia.html';
                 });
             } else {
-                Toast.fire({ icon: 'error', title: 'Gagal', text: result.message });
+                Swal.fire('Gagal', result.message, 'error');
+                document.getElementById('btnSimpan').innerHTML = '<i class="bi bi-save-fill me-2"></i> Simpan & Buat Kwitansi Pencairan';
             }
-        } catch (error) {
-            Toast.fire({ icon: 'error', title: 'Error Koneksi', text: 'Server tidak merespons.' });
-        } finally {
-            btnSimpan.innerHTML = 'Simpan Pengeluaran';
-            btnSimpan.disabled = false;
+        } catch(e) {
+            Swal.fire('Error', 'Gagal terhubung ke server', 'error');
+            document.getElementById('btnSimpan').innerHTML = '<i class="bi bi-save-fill me-2"></i> Simpan & Buat Kwitansi Pencairan';
         }
     }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
