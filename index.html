@@ -310,7 +310,9 @@
                         window.location.href = "dashboard_subrayon.html";
                     } else if (result.data.role === 'Bendahara_Panitia') {
                         window.location.href = "dashboard_bendahara_panitia.html";
-                    }
+                    } else if (result.data.role === 'Admin_Pusat') {
+                        window.location.href = "dashboard_admin.html"; // JALUR BARU
+                    }    
                 });
             } else {
                 Toast.fire({ icon: 'error', title: 'Login Gagal', text: result.message });
