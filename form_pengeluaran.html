@@ -38,6 +38,7 @@
                     <option value="Belanja ATK & Penggandaan">Belanja ATK & Penggandaan</option>
                     <option value="Sewa Gedung / Alat">Sewa Gedung / Alat</option>
                     <option value="Transportasi / Operasional">Transportasi / Operasional</option>
+                    <option value="Lembur Panitia">Lembur Panitia</option>
                 </select>
             </div>
             <div class="col-md-6">
@@ -61,6 +62,7 @@
                     <option value="0.15|PPh 21 - ASN Gol IV (15%)">PPh 21 - ASN Gol IV (15%)</option>
                     <option value="0.025|PPh 21 - Non ASN Ber-NPWP (2,5%)">PPh 21 - Non ASN Ber-NPWP (2,5%)</option>
                     <option value="0.03|PPh 21 - Non ASN Tanpa NPWP (3%)">PPh 21 - Non ASN Tanpa NPWP (3%)</option>
+                    <option value="0.02|PPh 23 - Jasa Konsumsi/Catering (2%)">PPh 23 - Jasa Konsumsi/Catering (2%)</option>
                 </select>
             </div>
 
@@ -160,7 +162,7 @@
                     confirmButtonText: 'OK'
                 }).then(() => {
                     // Nantinya tombol OK ini akan kita arahkan ke halaman Cetak Kwitansi
-                    window.location.href = 'dashboard_bendahara_panitia.html';
+                    window.location.href = 'cetak_kwitansi_keluar.html?id=' + result.id_trx;
                 });
             } else {
                 Swal.fire('Gagal', result.message, 'error');
