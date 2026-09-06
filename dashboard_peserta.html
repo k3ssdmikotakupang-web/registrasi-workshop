@@ -104,58 +104,69 @@
             const result = await response.json();
 
             if (result.status === 'success') {
-                Toast.fire({ title: 'Menulis Sertifikat...', text: 'Mohon tunggu sebentar.', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                Toast.fire({ title: 'Menulis Sertifikat...', text: 'Memproses desain...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                 
                 const namaPeserta = result.data.nama;
                 const jabatanPeserta = result.data.jabatan;
 
-                // Siapkan Kanvas
                 const canvas = document.getElementById('canvasSertifikat');
                 const ctx = canvas.getContext('2d');
                 const img = new Image();
-                img.crossOrigin = "Anonymous"; // Syarat tarik gambar di web
                 
-                // Panggil template dari GitHub (ditambah angka acak agar anti-cache/selalu update)
+                // Sengaja kita hilangkan crossOrigin agar tidak terblokir (karena sudah 1 rumah di GitHub)
                 img.src = 'template_sertifikat.jpg?v=' + new Date().getTime(); 
                 
                 img.onload = function() {
-                    // 1. Ukuran kanvas menyesuaikan ukuran asli desain sertifikat Kapt
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    
-                    // 2. Tempelkan gambar desain kosongnya
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    
-                    // 3. Atur Kuas untuk menulis Nama (Warna Hitam, Rata Tengah)
-                    ctx.textAlign = 'center';
-                    ctx.fillStyle = '#000000'; // Kode warna hitam
-                    
-                    // --- SETTING POSISI TULISAN ---
-                    // X = canvas.width / 2 (Artinya pas di tengah-tengah kiri-kanan)
-                    // Y = canvas.height / 2 (Artinya pas di tengah-tengah atas-bawah)
-                    
-                    // Tulis Nama Peserta
-                    ctx.font = 'bold 80px Arial'; // Ukuran dan Font
-                    ctx.fillText(namaPeserta, canvas.width / 2, (canvas.height / 2) + 50); 
-                    
-                    // Tulis Jabatan di bawahnya
-                    ctx.font = 'italic 50px Arial'; 
-                    ctx.fillText('sebagai ' + jabatanPeserta, canvas.width / 2, (canvas.height / 2) + 150);
-                    
-                    // 4. Ubah jadi file dan Download Otomatis!
-                    const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
-                    const a = document.createElement('a');
-                    a.href = dataUrl;
-                    a.download = `Sertifikat_${namaPeserta.replace(/\s+/g, '_')}.jpg`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    
-                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Sertifikat berhasil di-download ke perangkat Anda.', customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
+                    try {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        ctx.textAlign = 'center';
+                        ctx.fillStyle = '#000000'; // Warna tulisan hitam
+                        
+                        // Tulis Nama
+                        ctx.font = 'bold 80px Arial'; 
+                        ctx.fillText(namaPeserta, canvas.width / 2, (canvas.height / 2) + 50); 
+                        
+                        // Tulis Jabatan
+                        ctx.font = 'italic 50px Arial'; 
+                        ctx.fillText('sebagai ' + jabatanPeserta, canvas.width / 2, (canvas.height / 2) + 150);
+                        
+                        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+                        
+                        // Tampilkan PREVIEW di Pop-Up (Lolos dari Blocker Browser)
+                        Swal.fire({
+                            title: 'Sertifikat Siap!',
+                            text: 'Sertifikat Anda telah diterbitkan secara digital.',
+                            imageUrl: dataUrl,
+                            imageWidth: '100%',
+                            imageAlt: 'Sertifikat Preview',
+                            showCancelButton: true,
+                            confirmButtonText: '<i class="bi bi-download"></i> Simpan ke Perangkat',
+                            cancelButtonText: 'Tutup',
+                            customClass: { popup: 'swal-dark' },
+                            background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
+                        }).then((res) => {
+                            if (res.isConfirmed) {
+                                // Proses unduh saat user benar-benar menekan tombol
+                                const a = document.createElement('a');
+                                a.href = dataUrl;
+                                a.download = `Sertifikat_${namaPeserta.replace(/\s+/g, '_')}.jpg`;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                            }
+                        });
+
+                    } catch (err) {
+                        Swal.fire('Error Sistem', 'Gagal memproses gambar: ' + err.message, 'error');
+                    }
                 };
                 
                 img.onerror = function() {
-                    Toast.fire({ icon: 'error', title: 'Gagal Memuat Desain', text: 'Pastikan file template_sertifikat.jpg ada di GitHub.' });
+                    Swal.fire('Gagal', 'File template_sertifikat.jpg tidak ditemukan. Pastikan sudah ada di GitHub.', 'error');
                 };
 
             } else {
