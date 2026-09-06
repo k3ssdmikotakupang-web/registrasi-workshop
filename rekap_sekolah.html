@@ -100,7 +100,8 @@
                         <th width="10%">NPSN</th>
                         <th width="30%">Nama Sekolah</th>
                         <th width="15%">Subrayon</th>
-                        <th width="15%">Jenjang & Status</th>
+                        <th width="8%">Jenjang</th>
+                        <th width="10%">Status</th>
                         <th width="15%" class="text-center">Status Bayar</th>
                         <th width="10%" class="text-end">Nominal (Rp)</th>
                     </tr>
@@ -173,7 +174,8 @@
                         <td class="text-muted">${sek.npsn}</td>
                         <td class="fw-bold">${sek.nama}</td>
                         <td>${sek.subrayon}</td>
-                        <td><span class="badge bg-light text-dark border">${sek.jenjang} - ${sek.status_sekolah}</span></td>
+                        <td>${sek.jenjang}</td>
+                        <td>${sek.status_sekolah}</td>
                         <td class="text-center"><span class="badge ${badgeClass}">${sek.status_bayar}</span></td>
                         <td class="text-end fw-bold ${sek.nominal > 0 ? 'text-success' : 'text-muted'}">${formatRp(sek.nominal)}</td>
                     </tr>
