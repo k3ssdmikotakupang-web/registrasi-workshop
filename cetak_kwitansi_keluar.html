@@ -46,16 +46,20 @@
         if(!idTrx) return document.getElementById('areaCetak').innerHTML = "Data ID tidak valid.";
         
         try {
-            const res = await fetch(API_URL, {
-                method: 'POST', body: JSON.stringify({ action: 'get_kwitansi_keluar', id_trx: idTrx })
-            });
+            // 1. Sedot Pengaturan Nama Panitia
+            const resSet = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_pengaturan' }) });
+            const resultSet = await resSet.json();
+            let nKetua = resultSet.data?.ketua || '...........................';
+            let nBendahara = resultSet.data?.bendahara || '...........................';
+
+            // 2. Sedot Data Kwitansi
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_kwitansi_keluar', id_trx: idTrx }) });
             const result = await res.json();
             
             if(result.status === 'success') {
                 const d = result.data;
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(d.id)}`;
                 
-                // Pisahkan string pajak untuk didetailkan (Misal: "0.15|PPh 21 - ASN Gol IV (15%)")
                 let detailPajak = d.pajak.includes('|') ? d.pajak.split('|')[1] : d.pajak;
                 if(detailPajak === "Tanpa Potongan Pajak") detailPajak = "Tanpa Potongan (0%)";
                 
@@ -97,11 +101,11 @@
                     <div class="row mt-5 text-center">
                         <div class="col-4">
                             <p class="mb-5">Menyetujui,<br><strong>Ketua Panitia</strong></p>
-                            <p class="fw-bold text-decoration-underline mb-0">${namaKetuaPanitia}</p>
+                            <p class="fw-bold text-decoration-underline mb-0">${nKetua}</p>
                         </div>
                         <div class="col-4">
                             <p class="mb-5">Lunas Dibayar,<br><strong>Bendahara Pusat</strong></p>
-                            <p class="fw-bold text-decoration-underline mb-0">${namaBendahara}</p>
+                            <p class="fw-bold text-decoration-underline mb-0">${nBendahara}</p>
                         </div>
                         <div class="col-4">
                             <p class="mb-5">Telah Menerima,<br><strong>Penerima Dana</strong></p>
