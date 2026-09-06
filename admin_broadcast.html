@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcast Materi - EMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; }
+        .glass-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
+        .form-control { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.2); color: white; }
+        .form-control:focus { background: rgba(0, 0, 0, 0.4); border-color: #00f2fe; color: white; box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); }
+        .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border-radius: 15px !important; }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <button class="btn btn-outline-secondary mb-3" onclick="window.location.href='dashboard_admin.html'"><i class="bi bi-arrow-left"></i> Kembali</button>
+    
+    <div class="glass-card p-4 mx-auto" style="max-width: 600px; border-top: 4px solid #00f2fe;">
+        <h4 class="text-info text-center fw-bold mb-1">BROADCAST MATERI</h4>
+        <p class="text-center text-white-50 small mb-4">Paste Link Google Drive / Canva di sini. Link akan otomatis muncul di aplikasi HP seluruh peserta.</p>
+
+        <div class="mb-3">
+            <label class="form-label small text-info"><i class="bi bi-calendar-event"></i> Link Jadwal Acara / Undangan</label>
+            <input type="url" id="linkJadwal" class="form-control" placeholder="https://drive.google.com/...">
+        </div>
+        <div class="mb-3">
+            <label class="form-label small text-info"><i class="bi bi-journal-text"></i> Link Materi Workshop</label>
+            <input type="url" id="linkMateri" class="form-control" placeholder="https://drive.google.com/...">
+        </div>
+        <div class="mb-4">
+            <label class="form-label small text-info"><i class="bi bi-images"></i> Link Dokumentasi Foto Kegiatan</label>
+            <input type="url" id="linkDokumentasi" class="form-control" placeholder="https://drive.google.com/...">
+        </div>
+
+        <button class="btn btn-primary w-100 py-2 fw-bold" id="btnSimpan" onclick="simpanBroadcast()"><i class="bi bi-send-check"></i> Simpan & Sebarkan (Broadcast)</button>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
+
+    // Tarik data yang sudah ada saat halaman dibuka
+    async function muatData() {
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_pengaturan' }) });
+            const result = await res.json();
+            if(result.status === 'success') {
+                document.getElementById('linkJadwal').value = result.data.jadwal;
+                document.getElementById('linkMateri').value = result.data.materi;
+                document.getElementById('linkDokumentasi').value = result.data.dokumentasi;
+            }
+        } catch(e) {}
+    }
+
+    async function simpanBroadcast() {
+        document.getElementById('btnSimpan').innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyebarkan...';
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'update_pengaturan',
+                    jadwal: document.getElementById('linkJadwal').value,
+                    materi: document.getElementById('linkMateri').value,
+                    dokumentasi: document.getElementById('linkDokumentasi').value
+                })
+            });
+            const result = await res.json();
+            if(result.status === 'success') Swal.fire('Berhasil!', result.message, 'success');
+        } catch(e) {
+            Swal.fire('Error', 'Gagal tersambung ke server.', 'error');
+        }
+        document.getElementById('btnSimpan').innerHTML = '<i class="bi bi-send-check"></i> Simpan & Sebarkan (Broadcast)';
+    }
+
+    muatData();
+</script>
+</body>
+</html>
