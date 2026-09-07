@@ -78,16 +78,25 @@
 
                         if(d.status === 'Pending' || d.status === 'Belum Mendaftar') {
                             badgeStatus = '<span class="badge bg-warning text-dark">Menunggu Validasi</span>';
-                            if(d.link_bukti && d.link_bukti !== '-') {
+                            
+                            // Logika Baru: Deteksi berdasarkan metode pembayaran
+                            if(d.metode === 'Transfer') {
+                                // Pastikan link bukti valid (diawali http)
+                                let btnCekBukti = (d.link_bukti && d.link_bukti.startsWith('http')) 
+                                    ? `<a href="${d.link_bukti}" target="_blank" class="btn btn-sm btn-outline-info w-100 mb-1"><i class="bi bi-eye"></i> Cek Bukti Transfer</a>` 
+                                    : `<button class="btn btn-sm btn-secondary w-100 mb-1" disabled><i class="bi bi-eye-slash"></i> Bukti Belum Tersedia</button>`;
+                                
                                 btnAksi = `
-                                    <a href="${d.link_bukti}" target="_blank" class="btn btn-sm btn-outline-info w-100 mb-1"><i class="bi bi-eye"></i> Cek Bukti Transfer</a>
-                                    <button class="btn btn-sm btn-success fw-bold w-100" onclick="prosesValidasi('${d.id_trx}', 'Transfer')"><i class="bi bi-check2-all"></i> Validasi Sah</button>
+                                    ${btnCekBukti}
+                                    <button class="btn btn-sm btn-success fw-bold w-100" onclick="prosesValidasi('${d.id_trx}', 'Transfer')"><i class="bi bi-check2-all"></i> Validasi Transfer</button>
                                 `;
                             } else {
+                                // Jika metode Tunai atau kosong
                                 btnAksi = `
                                     <button class="btn btn-sm btn-primary fw-bold w-100" onclick="prosesValidasi('${d.id_trx}', 'Tunai')"><i class="bi bi-cash"></i> Terima Tunai (Sah)</button>
                                 `;
                             }
+                        
                         } else if (d.status === 'Lunas') {
                             badgeStatus = '<span class="badge bg-success">Lunas</span>';
                             // JALUR KWITANSI SUDAH DILURUSKAN KE PARAMETER ?kw=
