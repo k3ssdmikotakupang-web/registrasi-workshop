@@ -123,7 +123,8 @@
     }
 
     function hitungPajak() {
-        let bruto = parseFloat(document.getElementById('f_bruto').value) || 0;
+        // Bersihkan titik sebelum diubah jadi angka
+        let bruto = parseFloat(document.getElementById('f_bruto').value.replace(/\./g, '')) || 0;
         
         // Memecah value select (cth: "0.05|PPh 21 - ASN Gol III (5%)")
         let pajakPilihan = document.getElementById('f_pajak').value.split("|"); 
