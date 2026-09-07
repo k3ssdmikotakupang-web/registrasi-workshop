@@ -68,13 +68,19 @@
   </div>
 
 <script>
-  // PASTE URL WEB APP APPS SCRIPT MAS BRO DI BAWAH INI:
-  const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+  // 1. PASTIKAN PASTE LINK API TERBARU KAPTEN DI SINI! (Jangan pakai link lama)
+  const API_URL = "URL_WEB_APP_GAS_YANG_BARU_PASTE_DISINI";
+  
   const urlParams = new URLSearchParams(window.location.search);
   const kw = urlParams.get('kw');
 
   if(kw) {
-    fetch(API_URL, { method: 'POST', body: new URLSearchParams({ action: 'get_receipt_info', noKwitansi: kw }) })
+    // 2. KABEL BAHASA SUDAH DISAMAKAN MENGGUNAKAN JSON.stringify
+    fetch(API_URL, { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: 'get_receipt_info', noKwitansi: kw }) 
+    })
     .then(r => r.json()).then(res => {
       document.getElementById('box-loading').classList.add('d-none');
       if(res.success) {
