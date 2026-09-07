@@ -49,7 +49,15 @@
 
     async function muatRekap() {
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_rekap_sekolah' }) });
+            const userData = JSON.parse(localStorage.getItem('userLogin')) || {};
+const res = await fetch(API_URL, { 
+    method: 'POST', 
+    body: JSON.stringify({ 
+        action: 'get_rekap_sekolah', 
+        role: userData.role, 
+        subrayon: userData.subrayon 
+    }) 
+});
             const result = await res.json();
             if(result.status === 'success') {
                 dataAsli = result.data;
