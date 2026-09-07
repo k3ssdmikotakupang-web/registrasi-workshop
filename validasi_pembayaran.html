@@ -49,13 +49,15 @@
 </div>
 
 <script>
+    // BENSIN SUDAH DIISI PENUH KAPT!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     const formatRp = (angka) => new Intl.NumberFormat('id-ID').format(angka);
 
     function kembali() {
         if(userData.role === 'Bendahara_Panitia') window.location.href = 'dashboard_bendahara_panitia.html';
-        else window.location.href = 'dashboard_bendahara_subrayon.html';
+        else window.location.href = 'dashboard_subrayon.html';
     }
 
     async function muatAntrian() {
@@ -76,7 +78,6 @@
 
                         if(d.status === 'Pending' || d.status === 'Belum Mendaftar') {
                             badgeStatus = '<span class="badge bg-warning text-dark">Menunggu Validasi</span>';
-                            // Cek apakah ada bukti upload dari sekolah
                             if(d.link_bukti && d.link_bukti !== '-') {
                                 btnAksi = `
                                     <a href="${d.link_bukti}" target="_blank" class="btn btn-sm btn-outline-info w-100 mb-1"><i class="bi bi-eye"></i> Cek Bukti Transfer</a>
@@ -89,7 +90,7 @@
                             }
                         } else if (d.status === 'Lunas') {
                             badgeStatus = '<span class="badge bg-success">Lunas</span>';
-                            // Pastikan link ini mengarah ke file cetak kwitansi pendaftaran Kapt
+                            // JALUR KWITANSI SUDAH DILURUSKAN KE PARAMETER ?kw=
                             btnAksi = `<button class="btn btn-sm btn-dark w-100" onclick="window.open('verify.html?kw=${d.id_trx}', '_blank')"><i class="bi bi-printer"></i> Cetak Kwitansi</button>`;
                         }
 
