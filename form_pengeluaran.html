@@ -52,7 +52,7 @@
 
             <div class="col-md-6">
                 <label class="form-label small fw-bold text-muted">Nominal Bruto (Kotor) Rp</label>
-                <input type="number" id="f_bruto" class="form-control" placeholder="Ketik angka saja, cth: 1000000" oninput="hitungPajak()">
+                <input type="text" id="f_bruto" class="form-control" placeholder="Contoh: 1.000.000" oninput="formatRibuan(this); hitungPajak()">
             </div>
             <div class="col-md-6">
                 <label class="form-label small fw-bold text-muted">Potongan Pajak</label>
@@ -108,6 +108,19 @@
     let hasilNetto = 0;
     let hasilPajak = 0;
     let namaPajakTerpilih = "";
+
+    // Fungsi otomatis menambah titik saat mengetik
+    function formatRibuan(input) {
+        let value = input.value.replace(/[^,\d]/g, '');
+        let sisa = value.length % 3;
+        let rupiah = value.substr(0, sisa);
+        let ribuan = value.substr(sisa).match(/\d{3}/g);
+        if (ribuan) {
+            let separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+        input.value = rupiah;
+    }
 
     function hitungPajak() {
         let bruto = parseFloat(document.getElementById('f_bruto').value) || 0;
