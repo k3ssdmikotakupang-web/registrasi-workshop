@@ -90,7 +90,7 @@
                         } else if (d.status === 'Lunas') {
                             badgeStatus = '<span class="badge bg-success">Lunas</span>';
                             // Pastikan link ini mengarah ke file cetak kwitansi pendaftaran Kapt
-                            btnAksi = `<button class="btn btn-sm btn-dark w-100" onclick="window.open('cetak_kwitansi_masuk.html?id=${d.id_trx}', '_blank')"><i class="bi bi-printer"></i> Cetak Kwitansi</button>`;
+                            btnAksi = `<button class="btn btn-sm btn-dark w-100" onclick="window.open('verify.html?kw=${d.id_trx}', '_blank')"><i class="bi bi-printer"></i> Cetak Kwitansi</button>`;
                         }
 
                         html += `
