@@ -91,7 +91,7 @@
                         } else if (d.status === 'Lunas') {
                             badgeStatus = '<span class="badge bg-success">Lunas</span>';
                             // JALUR KWITANSI SUDAH DILURUSKAN KE PARAMETER ?kw=
-                            btnAksi = `<button class="btn btn-sm btn-dark w-100" onclick="window.open('verify.html?kw=${d.id_trx}', '_blank')"><i class="bi bi-printer"></i> Cetak Kwitansi</button>`;
+                            btnAksi = `<a href="verify.html?kw=${d.id_trx}" target="_blank" class="btn btn-sm btn-dark w-100"><i class="bi bi-printer"></i> Cetak Kwitansi</a>`;
                         }
 
                         html += `
@@ -122,7 +122,7 @@
                 try {
                     const res = await fetch(API_URL, {
                         method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'eksekusi_validasi', id_trx: idTrx, metode: metode, nama_validator: userData.nama_pic })
+                        body: JSON.stringify({ action: 'eksekusi_validasi', id_trx: idTrx, metode: metode, nama_validator: userData.nama_pic || 'Bendahara Subrayon' })
                     });
                     const result = await res.json();
                     if(result.status === 'success') {
