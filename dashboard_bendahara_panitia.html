@@ -164,7 +164,10 @@
     async function downloadExcelTransport() {
         const subrayon = document.getElementById('trans-subrayon').value;
         const jabatan = document.getElementById('trans-jabatan').value;
-        const nominal = document.getElementById('trans-nominal').value;
+        
+        // Sedot nilai dan hapus titik pemisah ribuan agar database tidak bingung
+        const nominalRaw = document.getElementById('trans-nominal').value;
+        const nominal = nominalRaw.replace(/\./g, ''); 
 
         if(!nominal) {
             Swal.fire({
@@ -214,7 +217,7 @@
                 Swal.fire({
                     icon: 'info',
                     title: 'Data Kosong',
-                    text: `Tidak ditemukan data ${jabatan} untuk wilayah ${subrayon}. Pastikan mereka sudah terdaftar di sistem.`,
+                    text: `Data ${jabatan} di ${subrayon} tidak ditemukan. (Cek apakah NPSN di Data_Peserta sudah sama persis dengan di DB_Sekolah).`,
                     confirmButtonColor: '#0dcaf0'
                 });
             }
