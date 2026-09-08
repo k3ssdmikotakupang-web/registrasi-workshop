@@ -21,7 +21,7 @@
     </div>
 
     <!-- Filter Section -->
-    <div class="row mb-4">
+    <div class="row mb-3">
         <div class="col-md-4">
             <label class="form-label text-white-50 small">Filter Subrayon</label>
             <select id="filterSubrayon" class="form-select bg-dark text-white border-secondary" onchange="renderTabel()">
@@ -30,7 +30,21 @@
         </div>
     </div>
 
-    <!-- Kartu Statistik Analitik -->
+    <!-- Kartu Statistik Induk (Total Keseluruhan) -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="stat-card text-center" style="background: linear-gradient(135deg, #2b5876 0%, #4e4376 100%);">
+                <div class="small fw-bold text-uppercase mb-2 text-info">Total Keseluruhan Sekolah</div>
+                <div class="fs-3 fw-bold text-white mb-2"><span id="stat-total-sekolah">0</span> Sekolah</div>
+                <div class="d-flex justify-content-center gap-4 small">
+                    <span>Sudah Lunas: <strong id="stat-total-lunas" class="text-success fs-5">0</strong></span>
+                    <span>Belum Bayar: <strong id="stat-total-belum" class="text-warning fs-5">0</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kartu Statistik Rincian -->
     <div class="row g-3 mb-4 text-center">
         <div class="col-6 col-md-3">
             <div class="stat-card" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
@@ -70,11 +84,12 @@
         </div>
     </div>
 
-    <!-- Tabel Data Dipisah 6 Kolom -->
+    <!-- Tabel Data (Ditambah Nomor Urut) -->
     <div class="table-responsive rounded-3 border border-secondary">
         <table class="table table-dark table-hover mb-0 align-middle">
             <thead class="text-info border-bottom border-info">
                 <tr>
+                    <th class="text-center" width="5%">No</th>
                     <th>NPSN</th>
                     <th>Nama Sekolah</th>
                     <th>Subrayon</th>
@@ -84,7 +99,7 @@
                 </tr>
             </thead>
             <tbody id="tabelRekap">
-                <tr><td colspan="6" class="text-center py-4">Memuat data rekapitulasi...</td></tr>
+                <tr><td colspan="7" class="text-center py-4">Memuat data rekapitulasi...</td></tr>
             </tbody>
         </table>
     </div>
@@ -124,7 +139,7 @@
                 
                 renderTabel();
             }
-        } catch(e) { document.getElementById('tabelRekap').innerHTML = '<tr><td colspan="6" class="text-center text-danger">Gagal terhubung ke server.</td></tr>'; }
+        } catch(e) { document.getElementById('tabelRekap').innerHTML = '<tr><td colspan="7" class="text-center text-danger">Gagal terhubung ke server.</td></tr>'; }
     }
 
     function renderTabel() {
@@ -144,10 +159,12 @@
         let html = '';
         let sNegeriL=0, sNegeriB=0, sSwastaL=0, sSwastaB=0;
         let sSDL=0, sSDB=0, sMIL=0, sMIB=0;
+        let totalLunas = 0, totalBelum = 0;
 
         if(filtered.length === 0) {
-            html = '<tr><td colspan="6" class="text-center text-muted">Belum ada data pendaftaran di wilayah ini. Pastikan kolom Subrayon di DB_Sekolah sudah terisi.</td></tr>';
+            html = '<tr><td colspan="7" class="text-center text-muted">Belum ada data pendaftaran di wilayah ini. Pastikan kolom Subrayon di DB_Sekolah sudah terisi.</td></tr>';
         } else {
+            let no = 1;
             filtered.forEach(d => {
                 let badge = d.status_bayar === 'Lunas' ? '<span class="badge bg-success">Lunas</span>' : '<span class="badge bg-danger">Belum Bayar</span>';
                 
@@ -155,7 +172,9 @@
                 let st = (d.status_sekolah || '').toLowerCase();
                 let jen = (d.jenjang || '').toLowerCase();
 
-                // Logika Hitungan Akurat (Mencegah salah masuk kamar)
+                // Hitungan Akurat
+                if(isLunas) totalLunas++; else totalBelum++;
+
                 if(st.includes('negeri')) { isLunas ? sNegeriL++ : sNegeriB++; } 
                 else if (st.includes('swasta')) { isLunas ? sSwastaL++ : sSwastaB++; }
                 
@@ -164,6 +183,7 @@
 
                 html += `
                     <tr>
+                        <td class="text-center">${no++}</td>
                         <td class="text-white-50">${d.npsn}</td>
                         <td class="fw-bold">${d.nama}</td>
                         <td>${d.subrayon}</td>
@@ -177,6 +197,12 @@
         
         document.getElementById('tabelRekap').innerHTML = html;
         
+        // Update Kartu Total
+        document.getElementById('stat-total-sekolah').innerText = filtered.length;
+        document.getElementById('stat-total-lunas').innerText = totalLunas;
+        document.getElementById('stat-total-belum').innerText = totalBelum;
+
+        // Update Kartu Rincian
         document.getElementById('stat-n-lunas').innerText = sNegeriL;
         document.getElementById('stat-n-belum').innerText = sNegeriB;
         document.getElementById('stat-s-lunas').innerText = sSwastaL;
