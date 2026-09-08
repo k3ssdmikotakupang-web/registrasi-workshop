@@ -20,7 +20,7 @@
         <button class="btn btn-outline-light btn-sm" onclick="kembali()"><i class="bi bi-arrow-left"></i> Kembali</button>
     </div>
 
-    <!-- Filter Section (Wajib Ada) -->
+    <!-- Filter Section -->
     <div class="row mb-4">
         <div class="col-md-4">
             <label class="form-label text-white-50 small">Filter Subrayon</label>
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <!-- Kartu Statistik Analitik (Wajib Ada) -->
+    <!-- Kartu Statistik Analitik -->
     <div class="row g-3 mb-4 text-center">
         <div class="col-6 col-md-3">
             <div class="stat-card" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
@@ -70,7 +70,7 @@
         </div>
     </div>
 
-    <!-- Tabel Data (Wajib Ada) -->
+    <!-- Tabel Data Dipisah 6 Kolom -->
     <div class="table-responsive rounded-3 border border-secondary">
         <table class="table table-dark table-hover mb-0 align-middle">
             <thead class="text-info border-bottom border-info">
@@ -78,18 +78,20 @@
                     <th>NPSN</th>
                     <th>Nama Sekolah</th>
                     <th>Subrayon</th>
-                    <th>Jenjang / Status</th>
+                    <th>Jenjang</th>
+                    <th>Status</th>
                     <th class="text-center">Status Bayar</th>
                 </tr>
             </thead>
             <tbody id="tabelRekap">
-                <tr><td colspan="5" class="text-center py-4">Memuat data rekapitulasi...</td></tr>
+                <tr><td colspan="6" class="text-center py-4">Memuat data rekapitulasi...</td></tr>
             </tbody>
         </table>
     </div>
 </div>
 
 <script>
+    // WAJIB: Paste Link URL Web App yang baru Kapten buat di dalam tanda kutip ini!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
     const userData = JSON.parse(localStorage.getItem('userLogin')) || {};
@@ -122,7 +124,7 @@
                 
                 renderTabel();
             }
-        } catch(e) { document.getElementById('tabelRekap').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Gagal terhubung ke server.</td></tr>'; }
+        } catch(e) { document.getElementById('tabelRekap').innerHTML = '<tr><td colspan="6" class="text-center text-danger">Gagal terhubung ke server.</td></tr>'; }
     }
 
     function renderTabel() {
@@ -144,7 +146,7 @@
         let sSDL=0, sSDB=0, sMIL=0, sMIB=0;
 
         if(filtered.length === 0) {
-            html = '<tr><td colspan="5" class="text-center text-muted">Belum ada data pendaftaran di wilayah ini. Pastikan kolom Subrayon di DB_Sekolah sudah terisi.</td></tr>';
+            html = '<tr><td colspan="6" class="text-center text-muted">Belum ada data pendaftaran di wilayah ini. Pastikan kolom Subrayon di DB_Sekolah sudah terisi.</td></tr>';
         } else {
             filtered.forEach(d => {
                 let badge = d.status_bayar === 'Lunas' ? '<span class="badge bg-success">Lunas</span>' : '<span class="badge bg-danger">Belum Bayar</span>';
@@ -153,15 +155,20 @@
                 let st = (d.status_sekolah || '').toLowerCase();
                 let jen = (d.jenjang || '').toLowerCase();
 
-                if(st.includes('negeri')) { isLunas ? sNegeriL++ : sNegeriB++; } else { isLunas ? sSwastaL++ : sSwastaB++; }
-                if(jen.includes('sd')) { isLunas ? sSDL++ : sSDB++; } else { isLunas ? sMIL++ : sMIB++; }
+                // Logika Hitungan Akurat (Mencegah salah masuk kamar)
+                if(st.includes('negeri')) { isLunas ? sNegeriL++ : sNegeriB++; } 
+                else if (st.includes('swasta')) { isLunas ? sSwastaL++ : sSwastaB++; }
+                
+                if(jen.includes('sd')) { isLunas ? sSDL++ : sSDB++; } 
+                else if (jen.includes('mi')) { isLunas ? sMIL++ : sMIB++; }
 
                 html += `
                     <tr>
                         <td class="text-white-50">${d.npsn}</td>
                         <td class="fw-bold">${d.nama}</td>
                         <td>${d.subrayon}</td>
-                        <td>${d.jenjang} - ${d.status_sekolah}</td>
+                        <td>${d.jenjang}</td>
+                        <td>${d.status_sekolah}</td>
                         <td class="text-center">${badge}</td>
                     </tr>
                 `;
