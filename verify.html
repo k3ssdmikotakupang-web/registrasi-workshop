@@ -111,11 +111,11 @@
         }
         
         document.getElementById('v-operator').innerText = res.receipt.operator;
-        // Rangkai teks struk untuk QR Code
-        let isiQR = `No. TRX: ${res.receipt.noKwitansi}\nPembayar: ${res.receipt.namaSekolah}\nTotal: Rp ${Number(res.receipt.nominal).toLocaleString('id-ID')}\nWaktu: ${document.getElementById('v-tgl').innerText}`;
+        // Format teks mengalir tanpa 'Enter' agar kompatibel dengan 100% jenis Scanner HP
+        let isiQR = "No. TRX: " + res.receipt.noKwitansi + " | Pembayar: " + res.receipt.namaSekolah + " | Total: Rp " + Number(res.receipt.nominal).toLocaleString('id-ID') + " | Waktu: " + document.getElementById('v-tgl-pendek').innerText;
         
-        // Cetak ke dalam QR
-        document.getElementById('v-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(isiQR)}`;
+        // Resolusi diperbesar (300x300) agar kerapatan titik QR mudah dibaca kamera
+        document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
       } else {
         document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Data Kwitansi Tidak Ditemukan.</h4>';
       }
