@@ -3,102 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rekap Sekolah - EMS</title>
+    <title>Rekap Pendaftaran Subrayon</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
-        body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
-        .header-panel { background: #0f172a; color: #00f2fe; padding: 20px; border-bottom: 5px solid #4facfe; }
-        .table-custom th { background-color: #e9ecef; font-size: 14px; }
-        .table-custom td { font-size: 14px; vertical-align: middle; }
+        body { background-color: #0f172a; color: #fff; font-family: 'Segoe UI', sans-serif; }
+        .stat-card { border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); padding: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        .table-dark { background-color: rgba(255, 255, 255, 0.05) !important; backdrop-filter: blur(10px); }
     </style>
 </head>
 <body>
-<div class="header-panel mb-4">
-    <div class="container d-flex justify-content-between">
-        <h4 class="fw-bold mb-0">REKAPITULASI PENDAFTARAN SEKOLAH</h4>
-        <button class="btn btn-outline-light" onclick="window.location.href='dashboard_bendahara_panitia.html'">Kembali</button>
+
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom border-secondary pb-3">
+        <h4 class="fw-bold text-info"><i class="bi bi-bar-chart-fill me-2"></i>Rekapitulasi Wilayah</h4>
+        <button class="btn btn-outline-light btn-sm" onclick="kembali()"><i class="bi bi-arrow-left"></i> Kembali</button>
     </div>
-</div>
-<div class="container mb-5">
+
+    <!-- Filter Section (Terkunci untuk Subrayon) -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <label class="form-label text-white-50 small">Filter Subrayon</label>
+            <select id="filterSubrayon" class="form-select bg-dark text-white border-secondary" onchange="renderTabel()">
+                <option value="Semua">Semua Subrayon</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Kartu Statistik Analitik -->
     <div class="row g-3 mb-4 text-center">
-        <div class="col-4"><div class="p-3 bg-white shadow-sm border-start border-4 border-primary"><h3 id="sumTotal">0</h3><small>Target Sekolah</small></div></div>
-        <div class="col-4"><div class="p-3 bg-white shadow-sm border-start border-4 border-success"><h3 id="sumLunas">0</h3><small>Lunas</small></div></div>
-        <div class="col-4"><div class="p-3 bg-white shadow-sm border-start border-4 border-danger"><h3 id="sumBelum">0</h3><small>Belum Mendaftar</small></div></div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);">
+                <div class="small fw-bold text-uppercase mb-2 text-info">Sekolah Negeri</div>
+                <div class="d-flex justify-content-between small">
+                    <span>Lunas: <strong id="stat-n-lunas" class="text-success fs-5">0</strong></span>
+                    <span>Belum: <strong id="stat-n-belum" class="text-warning fs-5">0</strong></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #0f2027 0%, #203a43 100%);">
+                <div class="small fw-bold text-uppercase mb-2 text-info">Sekolah Swasta</div>
+                <div class="d-flex justify-content-between small">
+                    <span>Lunas: <strong id="stat-s-lunas" class="text-success fs-5">0</strong></span>
+                    <span>Belum: <strong id="stat-s-belum" class="text-warning fs-5">0</strong></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);">
+                <div class="small fw-bold text-uppercase mb-2 text-warning">Jenjang SD</div>
+                <div class="d-flex justify-content-between small">
+                    <span>Lunas: <strong id="stat-sd-lunas" class="text-success fs-5">0</strong></span>
+                    <span>Belum: <strong id="stat-sd-belum" class="text-warning fs-5">0</strong></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="stat-card" style="background: linear-gradient(135deg, #3a1c71 0%, #d76d77 100%);">
+                <div class="small fw-bold text-uppercase mb-2 text-warning">Jenjang MI</div>
+                <div class="d-flex justify-content-between small">
+                    <span>Lunas: <strong id="stat-mi-lunas" class="text-success fs-5">0</strong></span>
+                    <span>Belum: <strong id="stat-mi-belum" class="text-warning fs-5">0</strong></span>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Filter Dinamis -->
-    <div class="bg-white p-3 rounded shadow-sm mb-4 row g-2">
-        <div class="col-md-3"><select class="form-select form-select-sm" id="filRayon" onchange="terapkanFilter()"><option value="Semua">Semua Subrayon</option></select></div>
-        <div class="col-md-3"><select class="form-select form-select-sm" id="filJenjang" onchange="terapkanFilter()"><option value="Semua">Semua Jenjang</option></select></div>
-        <div class="col-md-3"><select class="form-select form-select-sm" id="filStatusSek" onchange="terapkanFilter()"><option value="Semua">Semua Status Sekolah</option></select></div>
-        <div class="col-md-3"><select class="form-select form-select-sm" id="filBayar" onchange="terapkanFilter()">
-            <option value="Semua">Semua Pembayaran</option><option value="Lunas">Lunas</option><option value="Pending">Pending</option><option value="Belum Mendaftar">Belum Mendaftar</option>
-        </select></div>
+    <!-- Tabel Data -->
+    <div class="table-responsive rounded-3 border border-secondary">
+        <table class="table table-dark table-hover mb-0 align-middle">
+            <thead class="text-info border-bottom border-info">
+                <tr>
+                    <th>NPSN</th>
+                    <th>Nama Sekolah</th>
+                    <th>Subrayon</th>
+                    <th>Jenjang / Status</th>
+                    <th class="text-center">Status Bayar</th>
+                </tr>
+            </thead>
+            <tbody id="tabelRekap">
+                <tr><td colspan="5" class="text-center py-4">Memuat data rekapitulasi...</td></tr>
+            </tbody>
+        </table>
     </div>
-
-    <table class="table table-hover table-custom bg-white shadow-sm">
-        <thead><tr><th>No</th><th>NPSN</th><th>Nama Sekolah</th><th>Subrayon</th><th>Jenjang</th><th>Status</th><th>Status Bayar</th><th>Nominal</th></tr></thead>
-        <tbody id="tabelRekap"><tr><td colspan="8" class="text-center py-4">Memuat data...</td></tr></tbody>
-    </table>
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
-    let dataAsli = [];
-    const formatRp = (angka) => new Intl.NumberFormat('id-ID').format(angka);
+    // PASTIKAN LINK WEB APP APPS SCRIPT KAPTEN ADA DI SINI
+    const API_URL = "AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS";
+    const userData = JSON.parse(localStorage.getItem('userLogin')) || {};
+    let dataGlobal = [];
+
+    function kembali() {
+        if(userData.role === 'Bendahara_Panitia') window.location.href = 'dashboard_bendahara_panitia.html';
+        else window.location.href = 'dashboard_subrayon.html';
+    }
 
     async function muatRekap() {
         try {
-            const userData = JSON.parse(localStorage.getItem('userLogin')) || {};
-const res = await fetch(API_URL, { 
-    method: 'POST', 
-    body: JSON.stringify({ 
-        action: 'get_rekap_sekolah', 
-        role: userData.role, 
-        subrayon: userData.subrayon 
-    }) 
-});
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'get_rekap_sekolah', role: userData.role, subrayon: userData.subrayon })
+            });
             const result = await res.json();
+            
             if(result.status === 'success') {
-                dataAsli = result.data;
-                document.getElementById('sumTotal').innerText = result.summary.total;
-                document.getElementById('sumLunas').innerText = result.summary.lunas;
-                document.getElementById('sumBelum').innerText = result.summary.belum;
+                dataGlobal = result.data;
                 
-                // Mesin Pencetak Filter Otomatis
-                let sRayon = new Set(), sJenjang = new Set(), sStatus = new Set();
-                dataAsli.forEach(d => {
-                    if(d.subrayon && d.subrayon !== '-') sRayon.add(d.subrayon.trim());
-                    if(d.jenjang && d.jenjang !== '-') sJenjang.add(d.jenjang.trim());
-                    if(d.status_sekolah && d.status_sekolah !== '-') sStatus.add(d.status_sekolah.trim());
-                });
+                // Set Dropdown Filter
+                const selFilter = document.getElementById('filterSubrayon');
+                if(userData.role === 'Bendahara_Subrayon') {
+                    // Kunci filter hanya untuk subrayonnya sendiri
+                    selFilter.innerHTML = `<option value="${userData.subrayon}">${userData.subrayon} (Terkunci)</option>`;
+                    selFilter.disabled = true;
+                } else {
+                    // Jika Bendahara Pusat, ambil daftar unik subrayon
+                    let unik = [...new Set(dataGlobal.map(d => d.subrayon))].filter(s => s !== '-');
+                    unik.forEach(s => { selFilter.innerHTML += `<option value="${s}">${s}</option>`; });
+                }
                 
-                const isiDropdown = (id, set) => { set.forEach(v => document.getElementById(id).innerHTML += `<option value="${v}">${v}</option>`); };
-                isiDropdown('filRayon', sRayon); isiDropdown('filJenjang', sJenjang); isiDropdown('filStatusSek', sStatus);
-                
-                terapkanFilter();
+                renderTabel();
             }
-        } catch(e) {}
+        } catch(e) { document.getElementById('tabelRekap').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Gagal terhubung ke server.</td></tr>'; }
     }
 
-    function terapkanFilter() {
-        const fr = document.getElementById('filRayon').value, fj = document.getElementById('filJenjang').value;
-        const fs = document.getElementById('filStatusSek').value, fb = document.getElementById('filBayar').value;
-
-        let filtered = dataAsli.filter(sek => {
-            return (fr === 'Semua' || sek.subrayon.trim() === fr) &&
-                   (fj === 'Semua' || sek.jenjang.trim() === fj) &&
-                   (fs === 'Semua' || sek.status_sekolah.trim() === fs) &&
-                   (fb === 'Semua' || sek.status_bayar === fb);
-        });
-
+    function renderTabel() {
+        let selectedSub = document.getElementById('filterSubrayon').value;
+        let filtered = (selectedSub === 'Semua') ? dataGlobal : dataGlobal.filter(d => d.subrayon === selectedSub);
+        
         let html = '';
-        filtered.forEach((sek, i) => {
-            let bdg = sek.status_bayar === 'Lunas' ? 'bg-success' : sek.status_bayar === 'Pending' ? 'bg-warning text-dark' : 'bg-danger';
-            html += `<tr><td>${i+1}</td><td>${sek.npsn}</td><td class="fw-bold">${sek.nama}</td><td>${sek.subrayon}</td><td>${sek.jenjang}</td><td>${sek.status_sekolah}</td><td><span class="badge ${bdg}">${sek.status_bayar}</span></td><td>${formatRp(sek.nominal)}</td></tr>`;
-        });
-        document.getElementById('tabelRekap').innerHTML = html || '<tr><td colspan="8" class="text-center">Data tidak ditemukan.</td></tr>';
+        let sNegeriL=0, sNegeriB=0, sSwastaL=0, sSwastaB=0;
+        let sSDL=0, sSDB=0, sMIL=0, sMIB=0;
+
+        if(filtered.length === 0) {
+            html = '<tr><td colspan="5" class="text-center text-muted">Tidak ada data.</td></tr>';
+        } else {
+            filtered.forEach(d => {
+                let badge = d.status_bayar === 'Lunas' ? '<span class="badge bg-success">Lunas</span>' : '<span class="badge bg-danger">Belum Bayar</span>';
+                
+                // Hitung Statistik
+                let isLunas = d.status_bayar === 'Lunas';
+                let st = (d.status_sekolah || '').toLowerCase();
+                let jen = (d.jenjang || '').toLowerCase();
+
+                if(st.includes('negeri')) { isLunas ? sNegeriL++ : sNegeriB++; } else { isLunas ? sSwastaL++ : sSwastaB++; }
+                if(jen.includes('sd')) { isLunas ? sSDL++ : sSDB++; } else { isLunas ? sMIL++ : sMIB++; }
+
+                html += `
+                    <tr>
+                        <td class="text-white-50">${d.npsn}</td>
+                        <td class="fw-bold">${d.nama}</td>
+                        <td>${d.subrayon}</td>
+                        <td>${d.jenjang} - ${d.status_sekolah}</td>
+                        <td class="text-center">${badge}</td>
+                    </tr>
+                `;
+            });
+        }
+        
+        document.getElementById('tabelRekap').innerHTML = html;
+        
+        // Update Kartu Info
+        document.getElementById('stat-n-lunas').innerText = sNegeriL;
+        document.getElementById('stat-n-belum').innerText = sNegeriB;
+        document.getElementById('stat-s-lunas').innerText = sSwastaL;
+        document.getElementById('stat-s-belum').innerText = sSwastaB;
+        document.getElementById('stat-sd-lunas').innerText = sSDL;
+        document.getElementById('stat-sd-belum').innerText = sSDB;
+        document.getElementById('stat-mi-lunas').innerText = sMIL;
+        document.getElementById('stat-mi-belum').innerText = sMIB;
     }
+
     muatRekap();
 </script>
 </body>
