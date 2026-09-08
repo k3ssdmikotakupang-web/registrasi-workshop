@@ -63,9 +63,8 @@
 
     <!-- Tombol Navigasi Operasional -->
     <h6 class="text-white-50 mb-3">Menu Operasional</h6>
-    <div class="row g-3">
+    <div class="row g-3 mb-4">
         <div class="col-12">
-            <!-- INI TOMBOL YANG SUDAH MUALIM PERBAIKI KAPT -->
             <button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-info w-100 py-3 text-start"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Rekap Daftar Sekolah & Penerimaan</button>
         </div>
         <div class="col-12">
@@ -80,8 +79,52 @@
             <button onclick="window.location.href='laporan_bku.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-journal-check me-2"></i> Laporan BKU / RKAS</button>
         </div>
     </div>
-</div>
 
+    <!-- KARTU CETAK TRANSPORT -->
+    <div class="card bg-dark text-white border-secondary mb-4 shadow">
+        <div class="card-header border-secondary text-info fw-bold">
+            <i class="bi bi-file-earmark-excel-fill me-2"></i> Cetak Format Transport Peserta
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="small text-white-50">Sub Rayon</label>
+                    <select id="trans-subrayon" class="form-select bg-dark text-white border-secondary">
+                        <option value="Oebobo">Oebobo</option>
+                        <option value="Kelapa Lima">Kelapa Lima</option>
+                        <option value="Maulafa">Maulafa</option>
+                        <option value="Alak">Alak</option>
+                        <option value="Kota Raja">Kota Raja</option>
+                        <option value="Kota Lama">Kota Lama</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="small text-white-50">Kategori Peserta</label>
+                    <select id="trans-jabatan" class="form-select bg-dark text-white border-secondary">
+                        <option value="Guru">Guru</option>
+                        <option value="Kepala Sekolah">Kepala Sekolah</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="small text-white-50">Nominal Transport (Rp)</label>
+                    <input type="number" id="trans-nominal" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: 150000">
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button class="btn btn-success w-100 fw-bold" onclick="downloadExcelTransport()">
+                        <i class="bi bi-download me-2"></i> Unduh Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div> <!-- Akhir dari Container Utama -->
+
+<!-- Library Eksternal Dimuat di Luar Tag Script Khusus -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Mesin Logika Javascript -->
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     const userData = JSON.parse(localStorage.getItem('userLogin'));
@@ -113,7 +156,55 @@
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
 
     muatDataKeuangan();
+
+    async function downloadExcelTransport() {
+        const subrayon = document.getElementById('trans-subrayon').value;
+        const jabatan = document.getElementById('trans-jabatan').value;
+        const nominal = document.getElementById('trans-nominal').value;
+
+        if(!nominal) {
+            alert("Kapten! Mohon isi besaran nominal transport terlebih dahulu.");
+            return;
+        }
+
+        let btn = document.querySelector('button[onclick="downloadExcelTransport()"]');
+        let teksAsli = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyusun Data...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ 
+                    action: 'get_data_transport', 
+                    subrayon: subrayon, 
+                    jabatan: jabatan,
+                    nominal: parseInt(nominal)
+                })
+            });
+            const result = await res.json();
+
+            if(result.status === 'success' && result.data.length > 0) {
+                const ws = XLSX.utils.json_to_sheet(result.data);
+                const wscols = [ {wch:5}, {wch:35}, {wch:30}, {wch:15}, {wch:20}, {wch:20}, {wch:25} ];
+                ws['!cols'] = wscols;
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Tanda_Terima_Transport");
+
+                let namaFile = `Transport_${jabatan}_${subrayon}.xlsx`;
+                XLSX.writeFile(wb, namaFile);
+            } else {
+                alert("Data kosong! Tidak ada peserta dengan kriteria tersebut.");
+            }
+        } catch (error) {
+            alert("Gagal menghubungi server.");
+        } finally {
+            btn.innerHTML = teksAsli;
+            btn.disabled = false;
+        }
+    }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
