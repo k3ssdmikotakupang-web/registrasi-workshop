@@ -111,7 +111,11 @@
         }
         
         document.getElementById('v-operator').innerText = res.receipt.operator;
-        document.getElementById('v-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`;
+        // Rangkai teks struk untuk QR Code
+        let isiQR = `No. TRX: ${res.receipt.noKwitansi}\nPembayar: ${res.receipt.namaSekolah}\nTotal: Rp ${Number(res.receipt.nominal).toLocaleString('id-ID')}\nWaktu: ${document.getElementById('v-tgl').innerText}`;
+        
+        // Cetak ke dalam QR
+        document.getElementById('v-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(isiQR)}`;
       } else {
         document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Data Kwitansi Tidak Ditemukan.</h4>';
       }
