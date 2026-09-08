@@ -1,8 +1,44 @@
-function renderTabel() {
+<script>
+    // WAJIB: Paste Link URL Web App yang baru Kapten buat di dalam tanda kutip ini!
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    
+    const userData = JSON.parse(localStorage.getItem('userLogin')) || {};
+    let dataGlobal = [];
+
+    function kembali() {
+        if(userData.role === 'Bendahara_Panitia') window.location.href = 'dashboard_bendahara_panitia.html';
+        else window.location.href = 'dashboard_subrayon.html';
+    }
+
+    async function muatRekap() {
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'get_rekap_sekolah', role: userData.role, subrayon: userData.subrayon })
+            });
+            const result = await res.json();
+            
+            if(result.status === 'success') {
+                dataGlobal = result.data;
+                
+                const selFilter = document.getElementById('filterSubrayon');
+                if(userData.role === 'Bendahara_Subrayon') {
+                    selFilter.innerHTML = `<option value="${userData.subrayon}">${userData.subrayon} (Wilayah Wewenang Anda)</option>`;
+                    selFilter.disabled = true;
+                } else {
+                    let unik = [...new Set(dataGlobal.map(d => d.subrayon))].filter(s => s !== '-');
+                    unik.forEach(s => { selFilter.innerHTML += `<option value="${s}">${s}</option>`; });
+                }
+                
+                renderTabel();
+            }
+        } catch(e) { document.getElementById('tabelRekap').innerHTML = '<tr><td colspan="5" class="text-center text-danger">Gagal terhubung ke server.</td></tr>'; }
+    }
+
+    function renderTabel() {
         let selectedSub = document.getElementById('filterSubrayon').value;
         let filtered = dataGlobal;
         
-        // Logika Saringan Cerdas di Browser
         if(userData.role === 'Bendahara_Subrayon') {
             let subAkurat = userData.subrayon.toLowerCase().replace(/\s+/g, '');
             filtered = dataGlobal.filter(d => {
@@ -53,3 +89,6 @@ function renderTabel() {
         document.getElementById('stat-mi-lunas').innerText = sMIL;
         document.getElementById('stat-mi-belum').innerText = sMIB;
     }
+
+    muatRekap();
+</script>
