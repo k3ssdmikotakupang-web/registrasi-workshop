@@ -76,8 +76,9 @@
   </div>
 
 <script>
-  // PASTIKAN LINK WEB APP APPS SCRIPT KAPTEN ADA DI SINI
+  // WAJIB: Paste Link URL Web App yang baru Kapten buat di dalam tanda kutip ini!
   const API_URL = "AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS";
+  
   const urlParams = new URLSearchParams(window.location.search);
   const kw = urlParams.get('kw');
 
@@ -98,7 +99,6 @@
         document.getElementById('v-nominal').innerText = "Rp " + Number(res.receipt.nominal).toLocaleString('id-ID');
         document.getElementById('v-metode').innerText = res.receipt.metode;
         
-        // Format Tanggal dan Jam Presisi
         let tgl = new Date(res.receipt.tglBayar);
         if(!isNaN(tgl)) {
             let optionsDate = { day: '2-digit', month: 'long', year: 'numeric' };
@@ -114,8 +114,10 @@
         document.getElementById('v-qr').src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.href)}`;
       } else {
         document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Data Kwitansi Tidak Ditemukan.</h4>';
-        document.getElementById('box-loading').classList.remove('d-none');
       }
+    }).catch(err => {
+      // Fitur baru: Jika gagal terhubung, hentikan loading dan beri tahu errornya
+      document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Gagal Menghubungi Server. Pastikan API_URL sudah diisi!</h4>';
     });
   }
 
