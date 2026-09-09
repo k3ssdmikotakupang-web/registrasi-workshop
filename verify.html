@@ -17,12 +17,13 @@
             color: #000; box-sizing: border-box; 
         }
         
-        /* WATERMARK MODERN SVG (MENYEBAR RATA) */
+        /* WATERMARK SVG (Bekerja menyebar rata ke seluruh kertas) */
         .watermark-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' opacity='0.04'%3E%3Ctext x='50%25' y='50%25' transform='rotate(-30 200 100)' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='%23000'%3EK3S SD/MI KOTA KUPANG%3C/text%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='150' opacity='0.05'%3E%3Ctext x='50%25' y='50%25' transform='rotate(-25 175 75)' text-anchor='middle' font-family='Arial, sans-serif' font-size='22' font-weight='bold' fill='%23000'%3EK3S SD/MI KOTA KUPANG%3C/text%3E%3C/svg%3E");
             background-repeat: repeat;
+            background-position: center;
             z-index: 0;
             pointer-events: none;
         }
@@ -59,7 +60,7 @@
 
     <div id="box-valid" class="d-none">
         <div class="kwitansi-box" id="kwitansi-capture">
-            <!-- Elemen Watermark Baru -->
+            <!-- Elemen Watermark -->
             <div class="watermark-bg"></div>
 
             <div class="k-header">
@@ -100,7 +101,7 @@
 
 <script>
     // WAJIB PASTE API URL KAPTEN DI SINI!
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const API_URL = "URL_WEB_APP_GAS_KAPTEN_PASTE_DISINI";
     
     const urlParams = new URLSearchParams(window.location.search);
     const kw = urlParams.get('kw');
