@@ -1,153 +1,177 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>E-Kwitansi BPKP</title>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <style>
-    body { background-color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; color: #000; }
-    
-    /* SET UKURAN FISIK (Tinggi dibuat auto agar tidak memotong isi) */
-    .kwitansi-box { 
-      background: #fff; 
-      border: 2px solid #000; 
-      width: 21cm; 
-      min-height: 10.5cm; 
-      height: auto;
-      margin: 20px auto; 
-      padding: 15px 25px; 
-      position: relative; 
-      overflow: hidden; 
-      color: #000; 
-      box-sizing: border-box; 
-    }
-    
-    /* Watermark Masif K3S */
-    .kwitansi-box::before {
-      content: "K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG";
-      white-space: pre-wrap; position: absolute; top: -50%; left: -20%; width: 200%; height: 200%;
-      font-size: 14px; font-weight: 800; color: rgba(0, 0, 0, 0.03); transform: rotate(-25deg); z-index: 0; pointer-events: none; line-height: 3; text-align: center;
-    }
-    
-    .k-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; position: relative; z-index: 1; }
-    .k-title { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
-    .k-subtitle { font-size: 0.75rem; font-weight: 700; }
-    .k-no { display: inline-block; padding: 2px 10px; border: 1px solid #000; font-family: monospace; font-size: 0.8rem; margin-top: 5px; font-weight: bold; background: #fff; }
-    
-    /* Ukuran font dirapatkan agar pas */
-    .k-body { position: relative; z-index: 1; font-size: 0.8rem; line-height: 1.4; }
-    .k-row { display: flex; margin-bottom: 4px; }
-    .k-label { width: 30%; font-weight: 600; color: #000; }
-    .k-value { width: 70%; font-weight: 700; border-bottom: 1px dotted #000; padding-bottom: 1px; }
-    .k-nominal-box { border: 2px solid #000; padding: 4px 15px; font-size: 1.1rem; font-weight: 800; display: inline-block; margin: 8px 0; background: #f8f9fa; }
-    
-    .k-footer { display: flex; justify-content: space-between; margin-top: 5px; position: relative; z-index: 1; align-items: end; }
-    .k-qr-box { padding: 3px; border: 1px solid #000; display: inline-block; background: #fff; }
-    .k-sign { text-align: center; width: 200px; font-size: 0.8rem; }
-    .k-sign-name { border-top: 1px solid #000; padding-top: 3px; margin-top: 25px; font-weight: 800; }
-    .btn-print { background: #000; color: #fff; font-weight: 700; padding: 10px 25px; display: block; width: fit-content; margin: 0 auto; border-radius: 5px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Kwitansi Resmi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { background-color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; color: #000; }
+        
+        .kwitansi-box { 
+            background: #fff; border: 2px solid #000; 
+            width: 21cm; min-height: 10.5cm; height: auto;
+            margin: 20px auto; padding: 15px 25px; 
+            position: relative; overflow: hidden; 
+            color: #000; box-sizing: border-box; 
+        }
+        
+        .kwitansi-box::before {
+            content: "K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG";
+            white-space: pre-wrap; position: absolute; top: -50%; left: -20%; width: 200%; height: 200%;
+            font-size: 14px; font-weight: 800; color: rgba(0, 0, 0, 0.03); transform: rotate(-25deg); z-index: 0; pointer-events: none; line-height: 3; text-align: center;
+        }
+        
+        .k-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; position: relative; z-index: 1; }
+        .k-title { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+        .k-subtitle { font-size: 0.75rem; font-weight: 700; }
+        .k-no { display: inline-block; padding: 2px 10px; border: 1px solid #000; font-family: monospace; font-size: 0.8rem; margin-top: 5px; font-weight: bold; background: #fff; }
+        
+        .k-body { position: relative; z-index: 1; font-size: 0.8rem; line-height: 1.4; }
+        .k-row { display: flex; margin-bottom: 4px; }
+        .k-label { width: 30%; font-weight: 600; color: #000; }
+        .k-value { width: 70%; font-weight: 700; border-bottom: 1px dotted #000; padding-bottom: 1px; }
+        .k-nominal-box { border: 2px solid #000; padding: 4px 15px; font-size: 1.1rem; font-weight: 800; display: inline-block; margin: 8px 0; background: #f8f9fa; }
+        
+        .k-footer { display: flex; justify-content: space-between; align-items: end; margin-top: 5px; position: relative; z-index: 1; }
+        .k-qr-box { padding: 3px; border: 1px solid #000; display: inline-block; background: #fff; }
+        
+        .k-ttd-container { display: flex; justify-content: space-around; width: 70%; text-align: center; font-size: 0.8rem; }
+        .k-sign { width: 45%; }
+        .k-sign-name { border-top: 1px solid #000; padding-top: 3px; margin-top: 40px; font-weight: 800; }
+        .btn-print { background: #000; color: #fff; font-weight: 700; padding: 10px 25px; display: block; width: fit-content; margin: 0 auto; border-radius: 5px; }
+    </style>
 </head>
 <body>
 
-  <div id="box-loading" class="text-center mt-5">
-    <div class="spinner-border text-dark" style="width: 3rem; height: 3rem;"></div>
-    <h5 class="mt-3 fw-bold">Memverifikasi Data...</h5>
-  </div>
-
-  <div class="container d-none" id="box-valid">
-    <div class="kwitansi-box" id="kwitansi-capture">
-      <div class="k-header">
-        <div class="k-title">E-Kwitansi Penerimaan</div>
-        <div class="k-subtitle">Panitia Pelaksana Kegiatan Workshop Manajemen Kepala SD/MI Kota Kupang 2026</div>
-        <div class="k-no" id="v-no">KW-SRXX-XXXX-XXX</div>
-      </div>
-      <div class="k-body">
-        <div class="k-row"><div class="k-label">Telah Terima Dari</div><div class="k-value text-uppercase" id="v-pembayar">-</div></div>
-        <div class="k-row"><div class="k-label">Asal Sekolah</div><div class="k-value"><span id="v-sekolah">-</span> (NPSN: <span id="v-npsn">-</span>)</div></div>
-        <div class="k-nominal-box" id="v-nominal">Rp 0</div>
-        <div class="k-row"><div class="k-label">Guna Pembayaran</div><div class="k-value" style="border: none;">Kontribusi Workshop Manajemen Kepsek SD/MI Kota Kupang 2026</div></div>
-        <div class="k-row"><div class="k-label">Metode Transaksi</div><div class="k-value" style="border: none;" id="v-metode">-</div></div>
-        <div class="k-row"><div class="k-label">Waktu Pengesahan</div><div class="k-value" style="border: none;" id="v-tgl">-</div></div>
-      </div>
-      <div class="k-footer">
-        <div>
-          <div class="k-qr-box mb-1"><img id="v-qr" src="" style="width: 90px; height: 90px;" alt="QR Validasi"></div>
-          <div class="small fw-bold mt-1">✓ Tervalidasi Sistem EMS</div>
-        </div>
-        <div class="k-sign">
-          <div class="mb-1">Kupang, <span id="v-tgl-pendek">-</span></div>
-          <div class="small fw-bold">Penerima / Bendahara Subrayon</div>
-          <div class="k-sign-name" id="v-operator">-</div>
-        </div>
-      </div>
+<div class="container py-4">
+    <div id="box-loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <h5 class="mt-3 text-secondary">Memverifikasi Transaksi...</h5>
     </div>
-    <button class="btn btn-print mb-5" onclick="downloadSebagaiGambar()"><i class="bi bi-printer me-2"></i>Simpan Bukti (JPG)</button>
-  </div>
+
+    <div id="box-valid" class="d-none">
+        <div class="kwitansi-box" id="kwitansi-capture">
+            <div class="k-header">
+                <div class="k-title">E-Kwitansi Pembayaran</div>
+                <div class="k-subtitle">K3S SD/MI Kota Kupang</div>
+                <div class="k-no">NO: <span id="v-no"></span></div>
+            </div>
+            
+            <div class="k-body">
+                <div class="k-row"><div class="k-label">Telah Terima Dari</div><div class="k-value" id="v-pembayar"></div></div>
+                <div class="k-row"><div class="k-label">Asal Sekolah</div><div class="k-value"><span id="v-sekolah"></span> (NPSN: <span id="v-npsn"></span>)</div></div>
+                <div class="k-row"><div class="k-label">Metode Pembayaran</div><div class="k-value" id="v-metode"></div></div>
+                <div class="k-row"><div class="k-label">Waktu Transaksi</div><div class="k-value" id="v-tgl"></div></div>
+                <div class="k-row"><div class="k-label">Tujuan Pembayaran</div><div class="k-value" style="border: none;">Kontribusi Workshop Manajemen Kepala SD/MI Kota Kupang 2026</div></div>
+                
+                <div class="k-nominal-box" id="v-nominal"></div>
+            </div>
+            
+            <div class="k-footer">
+                <div class="k-qr-box"><img id="v-qr" src="" width="70" height="70"></div>
+                
+                <!-- BLOK TANDA TANGAN GANDA -->
+                <div class="k-ttd-container">
+                    <div class="k-sign">
+                        <div>Mengetahui,</div>
+                        <div class="fw-bold">Ketua Panitia</div>
+                        <div class="k-sign-name" id="nama-ketua">Memuat...</div>
+                    </div>
+                    <div class="k-sign">
+                        <div>Kupang, <span id="v-tgl-pendek"></span></div>
+                        <div class="fw-bold">Bendahara Panitia</div>
+                        <div class="k-sign-name" id="nama-bendahara">Memuat...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-print mb-5 shadow" onclick="downloadSebagaiGambar()">
+            UNDUH KWITANSI DIGITAL
+        </button>
+    </div>
+</div>
 
 <script>
-  // WAJIB: Paste Link URL Web App yang baru Kapten buat di dalam tanda kutip ini!
-  const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
-  
-  const urlParams = new URLSearchParams(window.location.search);
-  const kw = urlParams.get('kw');
+    // WAJIB PASTE API URL KAPTEN DI SINI!
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const kw = urlParams.get('kw');
 
-  if(kw) {
-    fetch(API_URL, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'get_receipt_info', noKwitansi: kw }) 
-    })
-    .then(r => r.json()).then(res => {
-      document.getElementById('box-loading').classList.add('d-none');
-      if(res.success) {
-        document.getElementById('box-valid').classList.remove('d-none');
-        document.getElementById('v-no').innerText = res.receipt.noKwitansi;
-        document.getElementById('v-pembayar').innerText = res.receipt.namaPembayar;
-        document.getElementById('v-sekolah').innerText = res.receipt.namaSekolah;
-        document.getElementById('v-npsn').innerText = res.receipt.npsn;
-        document.getElementById('v-nominal').innerText = "Rp " + Number(res.receipt.nominal).toLocaleString('id-ID');
-        document.getElementById('v-metode').innerText = res.receipt.metode;
-        
-        let tgl = new Date(res.receipt.tglBayar);
-        if(!isNaN(tgl)) {
-            let optionsDate = { day: '2-digit', month: 'long', year: 'numeric' };
-            let optionsTime = { hour: '2-digit', minute:'2-digit' };
-            document.getElementById('v-tgl').innerText = tgl.toLocaleDateString('id-ID', optionsDate) + ' | Pukul ' + tgl.toLocaleTimeString('id-ID', optionsTime) + ' WITA';
-            document.getElementById('v-tgl-pendek').innerText = tgl.toLocaleDateString('id-ID', optionsDate);
-        } else {
-            document.getElementById('v-tgl').innerText = res.receipt.tglBayar;
-            document.getElementById('v-tgl-pendek').innerText = res.receipt.tglBayar.split(' ')[0];
-        }
-        
-        document.getElementById('v-operator').innerText = res.receipt.operator;
-        // Format teks mengalir tanpa 'Enter' agar kompatibel dengan 100% jenis Scanner HP
-        let isiQR = "No. TRX: " + res.receipt.noKwitansi + " | Pembayar: " + res.receipt.namaSekolah + " | Total: Rp " + Number(res.receipt.nominal).toLocaleString('id-ID') + " | Waktu: " + document.getElementById('v-tgl-pendek').innerText;
-        
-        // Resolusi diperbesar (300x300) agar kerapatan titik QR mudah dibaca kamera
-        document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
-      } else {
-        document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Data Kwitansi Tidak Ditemukan.</h4>';
-      }
-    }).catch(err => {
-      // Fitur baru: Jika gagal terhubung, hentikan loading dan beri tahu errornya
-      document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Gagal Menghubungi Server. Pastikan API_URL sudah diisi!</h4>';
-    });
-  }
+    if(kw) {
+        // 1. Tarik Data Transaksi
+        fetch(API_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'get_receipt_info', noKwitansi: kw }) 
+        })
+        .then(r => r.json()).then(res => {
+            document.getElementById('box-loading').classList.add('d-none');
+            
+            if(res.success) {
+                document.getElementById('box-valid').classList.remove('d-none');
+                document.getElementById('v-no').innerText = res.receipt.noKwitansi;
+                document.getElementById('v-pembayar').innerText = res.receipt.namaPembayar;
+                document.getElementById('v-sekolah').innerText = res.receipt.namaSekolah;
+                document.getElementById('v-npsn').innerText = res.receipt.npsn;
+                document.getElementById('v-nominal').innerText = "Rp " + Number(res.receipt.nominal).toLocaleString('id-ID');
+                document.getElementById('v-metode').innerText = res.receipt.metode;
+                
+                let tgl = new Date(res.receipt.tglBayar);
+                if(!isNaN(tgl)) {
+                    let optionsDate = { day: '2-digit', month: 'long', year: 'numeric' };
+                    let optionsTime = { hour: '2-digit', minute:'2-digit' };
+                    document.getElementById('v-tgl').innerText = tgl.toLocaleDateString('id-ID', optionsDate) + ' | Pukul ' + tgl.toLocaleTimeString('id-ID', optionsTime) + ' WITA';
+                    document.getElementById('v-tgl-pendek').innerText = tgl.toLocaleDateString('id-ID', optionsDate);
+                } else {
+                    document.getElementById('v-tgl').innerText = res.receipt.tglBayar;
+                    document.getElementById('v-tgl-pendek').innerText = res.receipt.tglBayar.split(' ')[0];
+                }
+                
+                let isiQR = "No. TRX: " + res.receipt.noKwitansi + " | Pembayar: " + res.receipt.namaSekolah + " | Total: Rp " + Number(res.receipt.nominal).toLocaleString('id-ID') + " | Waktu: " + document.getElementById('v-tgl-pendek').innerText;
+                document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
+                
+                // 2. Tarik Data Jabatan (Ketua & Bendahara)
+                fetchPejabat();
+            } else {
+                document.getElementById('box-loading').classList.remove('d-none');
+                document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Data Kwitansi Tidak Ditemukan.</h4>';
+            }
+        }).catch(err => {
+            document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Gagal Menghubungi Server.</h4>';
+        });
+    }
 
-  function downloadSebagaiGambar() {
-    const box = document.getElementById('kwitansi-capture');
-    html2canvas(box, { scale: 2 }).then(canvas => {
-      let link = document.createElement('a');
-      link.download = document.getElementById('v-no').innerText + '.jpg';
-      link.href = canvas.toDataURL('image/jpeg', 0.9);
-      link.click();
-    });
-  }
+    // Fungsi Khusus Menarik Nama Panitia
+    function fetchPejabat() {
+        fetch(API_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'get_pejabat_kepanitiaan' }) 
+        })
+        .then(r => r.json()).then(resP => {
+            if(resP.status === 'success') {
+                document.getElementById('nama-ketua').innerText = resP.data.ketua;
+                document.getElementById('nama-bendahara').innerText = resP.data.bendahara;
+            } else {
+                document.getElementById('nama-ketua').innerText = "Belum Diatur";
+                document.getElementById('nama-bendahara').innerText = "Belum Diatur";
+            }
+        });
+    }
+
+    function downloadSebagaiGambar() {
+        const box = document.getElementById('kwitansi-capture');
+        html2canvas(box, { scale: 2 }).then(canvas => {
+            let link = document.createElement('a');
+            link.download = document.getElementById('v-no').innerText + '.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        });
+    }
 </script>
 </body>
 </html>
