@@ -72,9 +72,61 @@
                 <i class="bi bi-check-circle-fill me-2"></i> Validasi Transfer & Terima Tunai
             </button>
         </div>
-        <div class="col-12">
-            <button onclick="window.location.href='form_pengeluaran.html'" class="btn btn-neon w-100 py-3 text-start text-dark"><i class="bi bi-cart-dash me-2"></i> Catat Pengeluaran Panitia (Jasa/ATK)</button>
+        <div class="card bg-dark text-light border-info mb-4">
+    <div class="card-header border-info">
+        <h5 class="mb-0"><i class="fas fa-shopping-cart me-2"></i> Manajemen Pengeluaran</h5>
+    </div>
+    <div class="card-body">
+        
+        <!-- Navigasi Tabs -->
+        <ul class="nav nav-pills mb-4" id="pengeluaranTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="input-tab" data-bs-toggle="pill" data-bs-target="#input-pane" type="button" role="tab">1. Catat Pengeluaran</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="upload-tab" data-bs-toggle="pill" data-bs-target="#upload-pane" type="button" role="tab">2. Upload Bukti</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="transport-tab" data-bs-toggle="pill" data-bs-target="#transport-pane" type="button" role="tab">3. Transport Massal</button>
+          </li>
+        </ul>
+
+        <!-- Isi Tabs -->
+        <div class="tab-content" id="pengeluaranTabContent">
+          
+          <!-- TAB 1: FORM PENGELUARAN LAMA -->
+          <div class="tab-pane fade show active" id="input-pane" role="tabpanel">
+              <!-- PASTE KODE FORM "Catat Pengeluaran Panitia" MAS BRO DI SINI -->
+          </div>
+
+          <!-- TAB 2: UPLOAD BUKTI BARU -->
+          <div class="tab-pane fade" id="upload-pane" role="tabpanel">
+              <form id="formUploadPengeluaran">
+                  <div class="row">
+                      <div class="col-md-6 mb-3">
+                          <label class="form-label">ID Transaksi / Pengeluaran</label>
+                          <input type="text" id="id_trx_pengeluaran" class="form-control" placeholder="Contoh: OUT-123456" required>
+                          <small class="text-info">*Lihat ID Transaksi di menu Laporan BKU</small>
+                      </div>
+                      <div class="col-md-6 mb-3">
+                          <label class="form-label">File Bukti (Foto/PDF)</label>
+                          <input type="file" id="file_bukti_pengeluaran" class="form-control" accept="image/*,application/pdf" required>
+                      </div>
+                  </div>
+                  <button type="button" class="btn btn-primary w-100" onclick="prosesUploadPengeluaran()">
+                      <i class="fas fa-upload me-2"></i> Unggah Bukti Pengeluaran
+                  </button>
+              </form>
+          </div>
+
+          <!-- TAB 3: CETAK TRANSPORT (Pindahan dari gambar mas bro) -->
+          <div class="tab-pane fade" id="transport-pane" role="tabpanel">
+              <!-- PASTE KODE FORM "Cetak Format Transport Peserta" DI SINI -->
+          </div>
+
         </div>
+    </div>
+</div>
         <div class="col-12">
             <button onclick="window.location.href='laporan_bku.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-journal-check me-2"></i> Laporan BKU / RKAS</button>
         </div>
@@ -330,6 +382,57 @@
             btn.disabled = false;
         }
     }
+
+    function prosesUploadPengeluaran() {
+    const idTrx = document.getElementById('id_trx_pengeluaran').value.trim();
+    const fileInput = document.getElementById('file_bukti_pengeluaran');
+
+    if (!idTrx || fileInput.files.length === 0) {
+        Swal.fire({ icon: 'warning', title: 'Data Tidak Lengkap', text: 'Mohon isi ID Transaksi dan pilih file bukti nota.' });
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const base64Data = e.target.result.split(',')[1];
+        
+        Swal.fire({
+            title: 'Mengunggah...',
+            text: 'Mohon tunggu, bukti sedang disimpan ke database.',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        const payload = {
+            action: 'upload_bukti_pengeluaran', // Memanggil rute yang baru kita buat
+            id_trx: idTrx,
+            fileBase64: base64Data,
+            mimeType: file.type,
+            filename: file.name
+        };
+
+        fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(result => {
+            if (result.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Berhasil', text: result.message });
+                document.getElementById('formUploadPengeluaran').reset(); // Kosongkan form
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message });
+            }
+        })
+        .catch(err => {
+            Swal.fire({ icon: 'error', title: 'Terjadi Kesalahan', text: err.toString() });
+        });
+    };
+    
+    reader.readAsDataURL(file);
+}
 </script>
 </body>
 </html>
