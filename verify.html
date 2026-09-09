@@ -18,7 +18,7 @@
         }
         
         .kwitansi-box::before {
-            content: "K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG";
+            content: "K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG";
             white-space: pre-wrap; position: absolute; top: -50%; left: -20%; width: 200%; height: 200%;
             font-size: 14px; font-weight: 800; color: rgba(0, 0, 0, 0.03); transform: rotate(-25deg); z-index: 0; pointer-events: none; line-height: 3; text-align: center;
         }
@@ -37,10 +37,10 @@
         .k-footer { display: flex; justify-content: space-between; align-items: end; margin-top: 5px; position: relative; z-index: 1; }
         .k-qr-box { padding: 3px; border: 1px solid #000; display: inline-block; background: #fff; }
         
-        .k-ttd-container { display: flex; justify-content: space-around; width: 75%; text-align: center; font-size: 0.8rem; }
-        .k-sign { width: 48%; }
+        /* Penyesuaian Tanda Tangan Tunggal (Bendahara Saja di Kanan) */
+        .k-ttd-container { width: 35%; text-align: center; font-size: 0.8rem; margin-left: auto; }
         .k-sign-box { margin-top: 45px; }
-        .k-sign-name { font-weight: 800; border-bottom: 1px solid #000; padding-bottom: 2px; display: inline-block; width: 80%; }
+        .k-sign-name { font-weight: 800; border-bottom: 1px solid #000; padding-bottom: 2px; display: inline-block; width: 100%; }
         .k-sign-nip { font-size: 0.75rem; margin-top: 2px; }
         
         .btn-print { background: #000; color: #fff; font-weight: 700; padding: 10px 25px; display: block; width: fit-content; margin: 0 auto; border-radius: 5px; }
@@ -75,22 +75,13 @@
             <div class="k-footer">
                 <div class="k-qr-box"><img id="v-qr" src="" width="70" height="70"></div>
                 
+                <!-- BLOK TANDA TANGAN (Hanya Bendahara Panitia) -->
                 <div class="k-ttd-container">
-                    <div class="k-sign">
-                        <div>Mengetahui,</div>
-                        <div class="fw-bold">Ketua Panitia</div>
-                        <div class="k-sign-box">
-                            <div class="k-sign-name" id="nama-ketua">Memuat...</div>
-                            <div class="k-sign-nip">NIP. <span id="nip-ketua">-</span></div>
-                        </div>
-                    </div>
-                    <div class="k-sign">
-                        <div>Kupang, <span id="v-tgl-pendek"></span></div>
-                        <div class="fw-bold">Bendahara Panitia</div>
-                        <div class="k-sign-box">
-                            <div class="k-sign-name" id="nama-bendahara">Memuat...</div>
-                            <div class="k-sign-nip">NIP. <span id="nip-bendahara">-</span></div>
-                        </div>
+                    <div>Kupang, <span id="v-tgl-pendek"></span></div>
+                    <div class="fw-bold">Bendahara Panitia</div>
+                    <div class="k-sign-box">
+                        <div class="k-sign-name" id="nama-bendahara">Memuat...</div>
+                        <div class="k-sign-nip">NIP. <span id="nip-bendahara">-</span></div>
                     </div>
                 </div>
             </div>
@@ -156,14 +147,9 @@
             body: JSON.stringify({ action: 'get_pejabat_kepanitiaan' }) 
         }).then(r => r.json()).then(resP => {
             if(resP.status === 'success') {
-                document.getElementById('nama-ketua').innerText = resP.data.ketua.nama;
-                document.getElementById('nip-ketua').innerText = (resP.data.ketua.nip === '-' || !resP.data.ketua.nip) ? '' : resP.data.ketua.nip;
-                
                 document.getElementById('nama-bendahara').innerText = resP.data.bendahara.nama;
                 document.getElementById('nip-bendahara').innerText = (resP.data.bendahara.nip === '-' || !resP.data.bendahara.nip) ? '' : resP.data.bendahara.nip;
             } else {
-                document.getElementById('nama-ketua').innerText = "Belum Diatur";
-                document.getElementById('nip-ketua').innerText = "-";
                 document.getElementById('nama-bendahara').innerText = "Belum Diatur";
                 document.getElementById('nip-bendahara').innerText = "-";
             }
