@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Kepanitiaan - EMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+        .baris-anggota { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.2); }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
+    <div class="container">
+        <span class="navbar-brand fw-bold text-info"><i class="bi bi-people-fill"></i> Manajemen Kepanitiaan</span>
+        <button class="btn btn-sm btn-outline-light" onclick="window.location.href='dashboard_admin.html'"><i class="bi bi-arrow-left"></i> Kembali</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="glass-card p-4 mb-4" style="border-left: 4px solid #f093fb;">
+        <h5 class="fw-bold mb-4 text-warning">Form Input SK & Anggota (Kolektif)</h5>
+        <form id="formPanitia" onsubmit="uploadPanitiaKolektif(event)">
+            
+            <div class="mb-4 pb-3 border-bottom border-secondary">
+                <label class="form-label fw-bold">1. Upload File SK Kepanitiaan</label>
+                <input type="file" id="panitia_file" class="form-control bg-dark text-white border-secondary" required accept=".pdf, .doc, .docx, .jpg, .png">
+                <div class="form-text text-white-50 small mt-1">*Maksimal 3 MB. File ini akan otomatis ditautkan ke seluruh nama anggota di bawah.</div>
+            </div>
+
+            <label class="form-label fw-bold mb-3">2. Masukkan Daftar Anggota</label>
+            
+            <div id="wadah-anggota">
+                <div class="row g-2 mb-3 baris-anggota">
+                    <div class="col-md-3">
+                        <label class="small text-white-50">Nama Anggota</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary i-nama" required placeholder="Contoh: Drs. Johanes">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="small text-white-50">Jabatan</label>
+                        <select class="form-select bg-dark text-white border-secondary i-jabatan" required>
+                            <option value="">-- Pilih --</option>
+                            <option value="Pelindung / Penasehat">Pelindung / Penasehat</option>
+                            <option value="Pengarah">Pengarah</option>
+                            <option value="Penanggung Jawab">Penanggung Jawab</option>
+                            <option value="Ketua">Ketua</option>
+                            <option value="Sekretaris 1">Sekretaris 1</option>
+                            <option value="Sekretaris 2">Sekretaris 2</option>
+                            <option value="Bendahara Panitia">Bendahara Panitia</option>
+                            <option value="Seksi Acara">Seksi Acara</option>
+                            <option value="Seksi Perlengkapan">Seksi Perlengkapan</option>
+                            <option value="Seksi Konsumsi">Seksi Konsumsi</option>
+                            <option value="Seksi Humas / Dokumentasi">Seksi Humas / Dokumentasi</option>
+                            <option value="Tim Teknis">Tim Teknis</option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="small text-white-50">Job Deskripsi</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" required placeholder="Tugas pokok / fungsi singkat">
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="button" class="btn btn-outline-danger w-100 disabled" style="opacity: 0.5;"><i class="bi bi-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+                <button type="button" class="btn btn-outline-info" onclick="tambahBaris()"><i class="bi bi-plus-lg me-2"></i>Tambah Anggota Lain</button>
+                <button type="submit" id="btnUploadPanitia" class="btn btn-primary fw-bold px-4">
+                    <i class="bi bi-cloud-arrow-up-fill me-2"></i> Simpan Seluruh Data
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // MASUKKAN URL API KAPTEN DI SINI
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    
+    if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
+
+    function tambahBaris() {
+        const wadah = document.getElementById('wadah-anggota');
+        const barisBaru = document.createElement('div');
+        barisBaru.className = 'row g-2 mb-3 baris-anggota';
+        barisBaru.innerHTML = `
+            <div class="col-md-3"><input type="text" class="form-control bg-dark text-white border-secondary i-nama" required placeholder="Nama Anggota"></div>
+            <div class="col-md-3">
+                <select class="form-select bg-dark text-white border-secondary i-jabatan" required>
+                    <option value="">-- Pilih --</option>
+                    <option value="Pelindung / Penasehat">Pelindung / Penasehat</option>
+                    <option value="Pengarah">Pengarah</option>
+                    <option value="Penanggung Jawab">Penanggung Jawab</option>
+                    <option value="Ketua">Ketua</option>
+                    <option value="Sekretaris 1">Sekretaris 1</option>
+                    <option value="Sekretaris 2">Sekretaris 2</option>
+                    <option value="Bendahara Panitia">Bendahara Panitia</option>
+                    <option value="Seksi Acara">Seksi Acara</option>
+                    <option value="Seksi Perlengkapan">Seksi Perlengkapan</option>
+                    <option value="Seksi Konsumsi">Seksi Konsumsi</option>
+                    <option value="Seksi Humas / Dokumentasi">Seksi Humas / Dokumentasi</option>
+                    <option value="Tim Teknis">Tim Teknis</option>
+                </select>
+            </div>
+            <div class="col-md-5"><input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" required placeholder="Tugas pokok / fungsi singkat"></div>
+            <div class="col-md-1 d-flex align-items-end"><button type="button" class="btn btn-danger w-100" onclick="this.parentElement.parentElement.remove()"><i class="bi bi-trash"></i></button></div>
+        `;
+        wadah.appendChild(barisBaru);
+    }
+
+    async function uploadPanitiaKolektif(event) {
+        event.preventDefault();
+        
+        const fileInput = document.getElementById('panitia_file').files[0];
+        if (fileInput.size > 3 * 1024 * 1024) {
+            Swal.fire('Terlalu Besar!', 'Ukuran file SK maksimal 3 MB.', 'warning');
+            return;
+        }
+
+        let elemenBaris = document.querySelectorAll('.baris-anggota');
+        let arrayAnggota = [];
+        elemenBaris.forEach(baris => {
+            arrayAnggota.push({
+                nama: baris.querySelector('.i-nama').value,
+                jabatan: baris.querySelector('.i-jabatan').value,
+                jobdesk: baris.querySelector('.i-jobdesk').value
+            });
+        });
+
+        const btn = document.getElementById('btnUploadPanitia');
+        const teksAsli = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan Data...';
+        btn.disabled = true;
+
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const dataUrl = e.target.result;
+            const base64Data = dataUrl.split(',')[1]; 
+
+            const payload = {
+                action: 'upload_sk_panitia_kolektif',
+                anggota: arrayAnggota,
+                fileName: fileInput.name,
+                mimeType: fileInput.type,
+                fileData: base64Data
+            };
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if(result.status === 'success') {
+                    Swal.fire('Berhasil!', result.message, 'success');
+                    document.getElementById('formPanitia').reset(); 
+                    document.getElementById('wadah-anggota').innerHTML = ''; 
+                    tambahBaris(); 
+                    
+                    let hapusBtn = document.querySelector('.baris-anggota .btn-danger');
+                    if(hapusBtn) {
+                        hapusBtn.className = 'btn btn-outline-danger w-100 disabled';
+                        hapusBtn.style.opacity = '0.5';
+                        hapusBtn.onclick = null;
+                    }
+                } else {
+                    Swal.fire('Gagal!', result.message, 'error');
+                }
+            } catch(error) {
+                Swal.fire('Error Koneksi', 'Gagal menghubungi server.', 'error');
+            } finally {
+                btn.innerHTML = teksAsli;
+                btn.disabled = false;
+            }
+        };
+        reader.readAsDataURL(fileInput);
+    }
+</script>
+</body>
+</html>
