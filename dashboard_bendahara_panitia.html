@@ -121,7 +121,8 @@
 </div> <!-- Akhir dari Container Utama -->
 
 <!-- Library Eksternal Dimuat di Sini (Sudah Tersusun Rapi) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- Gunakan xlsx-js-style agar bisa menggunakan warna dan border -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -198,13 +199,98 @@
 
             if (result.status === 'success') {
                 if (result.data && result.data.length > 0) {
-                    const ws = XLSX.utils.json_to_sheet(result.data);
-                    const wscols = [ {wch:5}, {wch:35}, {wch:30}, {wch:15}, {wch:20}, {wch:20}, {wch:25} ];
+                    
+                    // 1. KOP SURAT
+                    const kopSurat = [
+                        ["PEMERINTAH KOTA KUPANG"],
+                        ["DINAS PENDIDIKAN DAN KEBUDAYAAN"],
+                        ["KELOMPOK KERJA KEPALA SEKOLAH SD/MI KOTA KUPANG"],
+                        ["PANITIA PELAKSANA WORKSHOP MANAJEMEN KEPALA SD/MI KOTA KUPANG 2026"],
+                        ["SEKRETARIAT: SD NCIPS, JL. Kenanga, No. 01 Naikolan, Kupang"],
+                        ["Email: k3s.sdmikotakupang@gmail.com"],
+                        [], 
+                        [`TANDA TERIMA TRANSPORT PESERTA ${jabatan.toUpperCase()}`], 
+                        [`SUBRAYON ${subrayon.toUpperCase()}`],
+                        [] 
+                    ];
+
+                    const ws = XLSX.utils.aoa_to_sheet(kopSurat);
+
+                    // 2. SISIPKAN TABEL DATA
+                    XLSX.utils.sheet_add_json(ws, result.data, { origin: "A11" });
+
+                    // 3. HITUNG DAN SISIPKAN TANDA TANGAN DI BAWAH TABEL
+                    const barisTerakhirTabel = 11 + result.data.length; // Baris setelah data terakhir
+                    const tglHariIni = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                    
+                    const ttdData = [
+                        ["Mengetahui,", "", "", "", `Kupang, ${tglHariIni}`],
+                        ["Ketua Panitia,", "", "", "", "Bendahara Panitia,"],
+                        [],
+                        [],
+                        [],
+                        ["( .................................... )", "", "", "", "( .................................... )"],
+                        ["NIP.", "", "", "", "NIP."]
+                    ];
+                    XLSX.utils.sheet_add_aoa(ws, ttdData, { origin: `A${barisTerakhirTabel + 2}` });
+
+                    // 4. ATUR LEBAR KOLOM
+                    const wscols = [ {wch: 5}, {wch: 35}, {wch: 35}, {wch: 15}, {wch: 20}, {wch: 20} ];
                     ws['!cols'] = wscols;
 
+                    // 5. GABUNG SEL (MERGE) KOP SURAT
+                    ws['!merges'] = [
+                        { s: {r:0, c:0}, e: {r:0, c:5} }, { s: {r:1, c:0}, e: {r:1, c:5} }, 
+                        { s: {r:2, c:0}, e: {r:2, c:5} }, { s: {r:3, c:0}, e: {r:3, c:5} }, 
+                        { s: {r:4, c:0}, e: {r:4, c:5} }, { s: {r:5, c:0}, e: {r:5, c:5} }, 
+                        { s: {r:7, c:0}, e: {r:7, c:5} }, { s: {r:8, c:0}, e: {r:8, c:5} }
+                    ];
+
+                    // 6. PROSES STYLING (WARNA, FONT, BORDER)
+                    const range = XLSX.utils.decode_range(ws['!ref']);
+                    for (let R = range.s.r; R <= range.e.r; R++) {
+                        for (let C = range.s.c; C <= range.e.c; C++) {
+                            const cellRef = XLSX.utils.encode_cell({r: R, c: C});
+                            if (!ws[cellRef]) continue;
+                            ws[cellRef].s = ws[cellRef].s || {};
+
+                            // Format Kop Surat (Tengah & Bold)
+                            if (R <= 8) {
+                                ws[cellRef].s = { font: { bold: true }, alignment: { horizontal: "center", vertical: "center" } };
+                            }
+
+                            // Format Header Tabel (Baris 11 / Indeks 10) -> Background Biru, Teks Putih Bold, Border
+                            if (R === 10) {
+                                ws[cellRef].s = {
+                                    fill: { fgColor: { rgb: "1F4E78" } }, // Warna Biru Keren
+                                    font: { bold: true, color: { rgb: "FFFFFF" } },
+                                    alignment: { horizontal: "center", vertical: "center" },
+                                    border: {
+                                        top: { style: "thin", color: { rgb: "000000" } }, bottom: { style: "thin", color: { rgb: "000000" } },
+                                        left: { style: "thin", color: { rgb: "000000" } }, right: { style: "thin", color: { rgb: "000000" } }
+                                    }
+                                };
+                            }
+                            
+                            // Format Data Tabel (Baris 12 sampai akhir data) -> Border lengkap
+                            if (R > 10 && R < barisTerakhirTabel) {
+                                ws[cellRef].s.border = {
+                                    top: { style: "thin", color: { rgb: "000000" } }, bottom: { style: "thin", color: { rgb: "000000" } },
+                                    left: { style: "thin", color: { rgb: "000000" } }, right: { style: "thin", color: { rgb: "000000" } }
+                                };
+                                ws[cellRef].s.alignment = { vertical: "center" };
+                            }
+
+                            // Format Tanda Tangan (Tengah)
+                            if (R >= (barisTerakhirTabel + 1)) {
+                                ws[cellRef].s = { alignment: { horizontal: "center" } };
+                            }
+                        }
+                    }
+
+                    // 7. EXPORT KE EXCEL
                     const wb = XLSX.utils.book_new();
                     XLSX.utils.book_append_sheet(wb, ws, "Tanda_Terima_Transport");
-
                     let namaFile = `Transport_${jabatan}_${subrayon}.xlsx`;
                     XLSX.writeFile(wb, namaFile);
                     
@@ -214,8 +300,9 @@
                         text: `File Excel Transport ${jabatan} wilayah ${subrayon} siap dicetak.`,
                         confirmButtonColor: '#198754'
                     });
-                } else {
-                    Swal.fire({
+               } else {
+                    // ... (lanjutan SweetAlert data kosong)
+               Swal.fire({
                         icon: 'info',
                         title: 'Data Kosong',
                         text: `Data ${jabatan} di ${subrayon} tidak ditemukan. (Cek apakah NPSN di Data_Peserta sudah sama persis dengan di DB_Sekolah).`,
