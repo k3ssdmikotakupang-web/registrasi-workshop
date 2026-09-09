@@ -54,13 +54,50 @@
         </div>
     </div>
 
+    <!-- FORM INPUT KEPANITIAAN -->
+    <h5 class="fw-bold mb-3 mt-4 text-info">Input SK & Data Kepanitiaan</h5>
+    <div class="glass-card p-4 mb-4" style="border-left: 4px solid #f093fb;">
+        <form id="formPanitia" onsubmit="uploadPanitia(event)">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label small text-white-50">Nama Anggota</label>
+                    <input type="text" id="panitia_nama" class="form-control bg-dark text-white border-secondary" required placeholder="Contoh: Drs. Johanes">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small text-white-50">Jabatan Kepanitiaan</label>
+                    <select id="panitia_jabatan" class="form-select bg-dark text-white border-secondary" required>
+                        <option value="">-- Pilih Jabatan --</option>
+                        <option value="Ketua Panitia">Ketua Panitia</option>
+                        <option value="Sekretaris">Sekretaris</option>
+                        <option value="Bendahara Panitia">Bendahara Panitia</option>
+                        <option value="Koordinator Acara">Koordinator Acara</option>
+                        <option value="Anggota">Anggota Bidang</option>
+                    </select>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label small text-white-50">Job Deskripsi</label>
+                    <textarea id="panitia_jobdesk" class="form-control bg-dark text-white border-secondary" rows="2" required placeholder="Jelaskan secara singkat tugas pokok fungsi jabatan ini..."></textarea>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label small text-white-50">Upload File SK (PDF / Word / JPG)</label>
+                    <input type="file" id="panitia_file" class="form-control bg-dark text-white border-secondary" required accept=".pdf, .doc, .docx, .jpg, .png">
+                    <div class="form-text text-warning small mt-1">*Maksimal ukuran file 3 MB.</div>
+                </div>
+                <div class="col-md-12 mt-4 text-end">
+                    <button type="submit" id="btnUploadPanitia" class="btn btn-info fw-bold px-4">
+                        <i class="bi bi-cloud-arrow-up-fill me-2"></i> Simpan Data & SK
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <h5 class="fw-bold mb-3 mt-4">Menu Kesekretariatan 2.0</h5>
     <div class="row g-3">
         <div class="col-12">
             <button onclick="window.location.href='admin_manajemen.html'" class="btn btn-outline-info w-100 py-3 text-start"><i class="bi bi-person-lines-fill me-2"></i> Manajemen Akun & Reset Data</button>
         </div>
         <div class="col-12">
-            <!-- Ini tombol ajaib yang akan kita bangun berikutnya Kapt! -->
             <button onclick="window.location.href='cetak_idcard.html'" class="btn btn-neon text-dark w-100 py-3 text-start"><i class="bi bi-printer-fill me-2"></i> Cetak ID Card & Name Tag Massal</button>
         </div>
         <div class="col-12">
@@ -72,11 +109,14 @@
     </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
+    // JANGAN LUPA MASUKKAN LINK API KAPTEN DI SINI
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     
-    // Keamanan: Hanya Admin_Pusat yang boleh masuk
     if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
 
     async function muatStatistik() {
@@ -100,9 +140,68 @@
     }
 
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
-
     muatStatistik();
+
+    // MESIN UPLOAD SK PANITIA
+    async function uploadPanitia(event) {
+        event.preventDefault();
+        
+        const nama = document.getElementById('panitia_nama').value;
+        const jabatan = document.getElementById('panitia_jabatan').value;
+        const jobdesk = document.getElementById('panitia_jobdesk').value;
+        const fileInput = document.getElementById('panitia_file').files[0];
+        
+        // Validasi Ukuran File (Max 3MB)
+        if (fileInput.size > 3 * 1024 * 1024) {
+            Swal.fire('Terlalu Besar!', 'Ukuran file SK maksimal 3 MB.', 'warning');
+            return;
+        }
+
+        const btn = document.getElementById('btnUploadPanitia');
+        const teksAsli = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Mengunggah SK...';
+        btn.disabled = true;
+
+        // Baca file sebagai Base64
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const dataUrl = e.target.result;
+            // Pisahkan metadata dataURL (data:application/pdf;base64,...)
+            const base64Data = dataUrl.split(',')[1]; 
+
+            const payload = {
+                action: 'upload_sk_panitia',
+                nama: nama,
+                jabatan: jabatan,
+                jobdesk: jobdesk,
+                fileName: fileInput.name,
+                mimeType: fileInput.type,
+                fileData: base64Data
+            };
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+
+                if(result.status === 'success') {
+                    Swal.fire('Berhasil!', 'Data dan SK Panitia berhasil disimpan.', 'success');
+                    document.getElementById('formPanitia').reset(); // Kosongkan form
+                } else {
+                    Swal.fire('Gagal!', result.message, 'error');
+                }
+            } catch(error) {
+                Swal.fire('Error Koneksi', 'Gagal menghubungi server.', 'error');
+            } finally {
+                btn.innerHTML = teksAsli;
+                btn.disabled = false;
+            }
+        };
+        reader.readAsDataURL(fileInput);
+    }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
