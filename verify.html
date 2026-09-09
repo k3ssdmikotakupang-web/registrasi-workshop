@@ -17,10 +17,14 @@
             color: #000; box-sizing: border-box; 
         }
         
-        .kwitansi-box::before {
-            content: "K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG \A K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG K3S SD/MI KOTA KUPANG";
-            white-space: pre-wrap; position: absolute; top: -50%; left: -20%; width: 200%; height: 200%;
-            font-size: 14px; font-weight: 800; color: rgba(0, 0, 0, 0.03); transform: rotate(-25deg); z-index: 0; pointer-events: none; line-height: 3; text-align: center;
+        /* WATERMARK MODERN SVG (MENYEBAR RATA) */
+        .watermark-bg {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200' opacity='0.04'%3E%3Ctext x='50%25' y='50%25' transform='rotate(-30 200 100)' text-anchor='middle' font-family='Arial, sans-serif' font-size='24' font-weight='bold' fill='%23000'%3EK3S SD/MI KOTA KUPANG%3C/text%3E%3C/svg%3E");
+            background-repeat: repeat;
+            z-index: 0;
+            pointer-events: none;
         }
         
         .k-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; position: relative; z-index: 1; }
@@ -37,7 +41,6 @@
         .k-footer { display: flex; justify-content: space-between; align-items: end; margin-top: 5px; position: relative; z-index: 1; }
         .k-qr-box { padding: 3px; border: 1px solid #000; display: inline-block; background: #fff; }
         
-        /* Penyesuaian Tanda Tangan Tunggal (Bendahara Saja di Kanan) */
         .k-ttd-container { width: 35%; text-align: center; font-size: 0.8rem; margin-left: auto; }
         .k-sign-box { margin-top: 45px; }
         .k-sign-name { font-weight: 800; border-bottom: 1px solid #000; padding-bottom: 2px; display: inline-block; width: 100%; }
@@ -56,6 +59,9 @@
 
     <div id="box-valid" class="d-none">
         <div class="kwitansi-box" id="kwitansi-capture">
+            <!-- Elemen Watermark Baru -->
+            <div class="watermark-bg"></div>
+
             <div class="k-header">
                 <div class="k-title">E-Kwitansi Pembayaran</div>
                 <div class="k-subtitle">K3S SD/MI Kota Kupang</div>
@@ -75,7 +81,6 @@
             <div class="k-footer">
                 <div class="k-qr-box"><img id="v-qr" src="" width="70" height="70"></div>
                 
-                <!-- BLOK TANDA TANGAN (Hanya Bendahara Panitia) -->
                 <div class="k-ttd-container">
                     <div>Kupang, <span id="v-tgl-pendek"></span></div>
                     <div class="fw-bold">Bendahara Panitia</div>
@@ -130,6 +135,7 @@
                 let isiQR = "No. TRX: " + res.receipt.noKwitansi + " | Pembayar: " + res.receipt.namaSekolah + " | Total: Rp " + Number(res.receipt.nominal).toLocaleString('id-ID') + " | Waktu: " + document.getElementById('v-tgl-pendek').innerText;
                 document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
                 
+                // Panggil Hantu Database untuk narik nama
                 fetchPejabat();
             } else {
                 document.getElementById('box-loading').classList.remove('d-none');
@@ -153,6 +159,8 @@
                 document.getElementById('nama-bendahara').innerText = "Belum Diatur";
                 document.getElementById('nip-bendahara').innerText = "-";
             }
+        }).catch(e => {
+            document.getElementById('nama-bendahara').innerText = "Gagal Memuat";
         });
     }
 
