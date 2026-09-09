@@ -196,29 +196,39 @@
             });
             const result = await res.json();
 
-            if(result.status === 'success' && result.data.length > 0) {
-                const ws = XLSX.utils.json_to_sheet(result.data);
-                const wscols = [ {wch:5}, {wch:35}, {wch:30}, {wch:15}, {wch:20}, {wch:20}, {wch:25} ];
-                ws['!cols'] = wscols;
+            if (result.status === 'success') {
+                if (result.data && result.data.length > 0) {
+                    const ws = XLSX.utils.json_to_sheet(result.data);
+                    const wscols = [ {wch:5}, {wch:35}, {wch:30}, {wch:15}, {wch:20}, {wch:20}, {wch:25} ];
+                    ws['!cols'] = wscols;
 
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Tanda_Terima_Transport");
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Tanda_Terima_Transport");
 
-                let namaFile = `Transport_${jabatan}_${subrayon}.xlsx`;
-                XLSX.writeFile(wb, namaFile);
-                
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: `File Excel Transport ${jabatan} wilayah ${subrayon} siap dicetak.`,
-                    confirmButtonColor: '#198754'
-                });
+                    let namaFile = `Transport_${jabatan}_${subrayon}.xlsx`;
+                    XLSX.writeFile(wb, namaFile);
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: `File Excel Transport ${jabatan} wilayah ${subrayon} siap dicetak.`,
+                        confirmButtonColor: '#198754'
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Data Kosong',
+                        text: `Data ${jabatan} di ${subrayon} tidak ditemukan. (Cek apakah NPSN di Data_Peserta sudah sama persis dengan di DB_Sekolah).`,
+                        confirmButtonColor: '#0dcaf0'
+                    });
+                }
             } else {
+                // Menangkap error dari server (misalnya typo penamaan fungsi)
                 Swal.fire({
-                    icon: 'info',
-                    title: 'Data Kosong',
-                    text: `Data ${jabatan} di ${subrayon} tidak ditemukan. (Cek apakah NPSN di Data_Peserta sudah sama persis dengan di DB_Sekolah).`,
-                    confirmButtonColor: '#0dcaf0'
+                    icon: 'error',
+                    title: 'Sistem Error',
+                    text: result.message || 'Terjadi masalah pada logika server.',
+                    confirmButtonColor: '#dc3545'
                 });
             }
         } catch (error) {
