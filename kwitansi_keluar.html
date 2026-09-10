@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Kwitansi Pengeluaran</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        body { background-color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; color: #000; }
+        
+        .kwitansi-box { 
+            background: #fff; border: 2px solid #000; 
+            width: 21cm; min-height: 10.5cm; height: auto;
+            margin: 20px auto; padding: 15px 25px; 
+            position: relative; overflow: hidden; 
+            color: #000; box-sizing: border-box; 
+        }
+        
+        /* WATERMARK SVG MENYEBAR */
+        .watermark-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='150' opacity='0.05'%3E%3Ctext x='50%25' y='50%25' transform='rotate(-25 175 75)' text-anchor='middle' font-family='Arial, sans-serif' font-size='22' font-weight='bold' fill='%23000'%3EK3S SD/MI KOTA KUPANG%3C/text%3E%3C/svg%3E");
+            background-repeat: repeat; background-position: center;
+            z-index: 0; pointer-events: none;
+        }
+        
+        .k-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; position: relative; z-index: 1; }
+        .k-title { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
+        .k-subtitle { font-size: 0.75rem; font-weight: 700; color: #333; }
+        .k-no { display: inline-block; padding: 2px 10px; border: 1px solid #000; font-family: monospace; font-size: 0.8rem; margin-top: 5px; font-weight: bold; background: #fff; }
+        
+        .k-body { position: relative; z-index: 1; font-size: 0.8rem; line-height: 1.4; }
+        .k-row { display: flex; margin-bottom: 4px; }
+        .k-label { width: 30%; font-weight: 600; color: #000; }
+        .k-value { width: 70%; font-weight: 700; border-bottom: 1px dotted #000; padding-bottom: 1px; }
+        .k-nominal-box { border: 2px solid #000; padding: 4px 15px; font-size: 1.1rem; font-weight: 800; display: inline-block; margin: 8px 0; background: #f8f9fa; }
+        
+        .k-footer { display: flex; justify-content: space-between; align-items: end; margin-top: 5px; position: relative; z-index: 1; }
+        .k-qr-box { padding: 3px; border: 1px solid #000; display: inline-block; background: #fff; }
+        
+        /* TATA LETAK TANDA TANGAN DINAMIS */
+        .k-ttd-container { display: flex; justify-content: space-between; width: 75%; text-align: center; font-size: 0.8rem; margin-left: auto; }
+        .k-sign { width: 45%; }
+        .k-sign-box { margin-top: 45px; }
+        .k-sign-name { font-weight: 800; border-bottom: 1px solid #000; padding-bottom: 2px; display: inline-block; width: 100%; }
+        .k-sign-nip { font-size: 0.75rem; margin-top: 2px; }
+        
+        .btn-print { background: #000; color: #fff; font-weight: 700; padding: 10px 25px; display: block; width: fit-content; margin: 0 auto; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+<div class="container py-4">
+    <div id="box-loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <h5 class="mt-3 text-secondary">Memuat Data Bukti Kas Keluar...</h5>
+    </div>
+
+    <div id="box-valid" class="d-none">
+        <div class="kwitansi-box" id="kwitansi-capture">
+            <div class="watermark-bg"></div>
+
+            <div class="k-header">
+                <div class="k-title">Bukti Kas Keluar (Pengeluaran)</div>
+                <div class="k-subtitle">K3S SD/MI Kota Kupang</div>
+                <div class="k-no">NO: <span id="v-no"></span></div>
+            </div>
+            
+            <div class="k-body">
+                <div class="k-row"><div class="k-label">Telah Dibayar Kepada</div><div class="k-value" id="v-penerima"></div></div>
+                <div class="k-row"><div class="k-label">Uang Sejumlah (Netto)</div><div class="k-value"><span id="v-terbilang-netto"></span></div></div>
+                <div class="k-row"><div class="k-label">Untuk Pembayaran</div><div class="k-value" id="v-keterangan"></div></div>
+                <div class="k-row"><div class="k-label">Kategori Anggaran</div><div class="k-value" id="v-kategori"></div></div>
+                
+                <div class="row mt-2">
+                    <div class="col-8">
+                        <table class="table table-sm table-bordered border-dark" style="font-size: 0.75rem; width: 80%; background: transparent;">
+                            <tr><td class="fw-bold">Nominal Bruto</td><td class="text-end" id="v-bruto">Rp 0</td></tr>
+                            <tr><td class="fw-bold">Potongan Pajak</td><td class="text-end text-danger" id="v-pajak">Rp 0</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-4 text-end">
+                        <div class="k-nominal-box" id="v-netto">Rp 0</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="k-footer">
+                <div class="k-qr-box"><img id="v-qr" src="" width="70" height="70"></div>
+                
+                <div class="k-ttd-container" id="container-ttd">
+                    <!-- Blok Ketua (Disembunyikan secara default) -->
+                    <div class="k-sign d-none" id="blok-ketua">
+                        <div>Menyetujui,</div>
+                        <div class="fw-bold">Ketua Panitia</div>
+                        <div class="k-sign-box">
+                            <div class="k-sign-name" id="nama-ketua">Memuat...</div>
+                            <div class="k-sign-nip">NIP. <span id="nip-ketua">-</span></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Blok Bendahara (Selalu Muncul) -->
+                    <div class="k-sign ms-auto" id="blok-bendahara">
+                        <div>Kupang, <span id="v-tgl-pendek"></span></div>
+                        <div class="fw-bold">Lunas Dibayar, Bendahara</div>
+                        <div class="k-sign-box">
+                            <div class="k-sign-name" id="nama-bendahara">Memuat...</div>
+                            <div class="k-sign-nip">NIP. <span id="nip-bendahara">-</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-print mb-5 shadow" onclick="downloadSebagaiGambar()">
+            UNDUH BUKTI PENGELUARAN
+        </button>
+    </div>
+</div>
+
+<script>
+    // WAJIB PASTE API URL KAPTEN DI SINI!
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const kw = urlParams.get('kw'); // Membaca URL: kwitansi_keluar.html?kw=TRX-12345
+
+    if(kw) {
+        fetch(API_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'get_receipt_pengeluaran', noKwitansi: kw }) 
+        }).then(r => r.json()).then(res => {
+            document.getElementById('box-loading').classList.add('d-none');
+            if(res.success) {
+                document.getElementById('box-valid').classList.remove('d-none');
+                
+                const data = res.receipt;
+                document.getElementById('v-no').innerText = data.id_transaksi;
+                document.getElementById('v-penerima').innerText = data.penerima;
+                document.getElementById('v-keterangan').innerText = data.keterangan;
+                document.getElementById('v-kategori').innerText = data.kategori;
+                
+                // Set Angka (Format bergantung pada isian Google Sheet, jika sudah berbentuk Rp di Sheet, langsung dicetak)
+                document.getElementById('v-bruto').innerText = data.bruto;
+                document.getElementById('v-pajak').innerText = data.pajak;
+                document.getElementById('v-netto').innerText = data.netto;
+                document.getElementById('v-terbilang-netto').innerText = "=== Sesuai Nominal Netto ==="; 
+
+                // Format Tanggal
+                document.getElementById('v-tgl-pendek').innerText = data.tanggal.split(' ')[0];
+                
+                // QR Code
+                let isiQR = "Pengeluaran: " + data.id_transaksi + " | Kepada: " + data.penerima + " | Kategori: " + data.kategori;
+                document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
+                
+                // LOGIKA ADAPTIF TANDA TANGAN
+                let kat = data.kategori.toLowerCase();
+                if(kat.includes('jasa') || kat.includes('pemateri') || kat.includes('narasumber')) {
+                    // Munculkan Ketua jika kategori berkaitan dengan Jasa Pemateri
+                    document.getElementById('blok-ketua').classList.remove('d-none');
+                }
+                
+                fetchPejabatKepanitiaan();
+            } else {
+                document.getElementById('box-loading').classList.remove('d-none');
+                document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Bukti Pengeluaran Tidak Ditemukan.</h4>';
+            }
+        }).catch(err => {
+            document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Gagal Menghubungi Server.</h4>';
+        });
+    }
+
+    function fetchPejabatKepanitiaan() {
+        fetch(API_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'get_pejabat_kepanitiaan' }) 
+        }).then(r => r.json()).then(resP => {
+            if(resP.status === 'success') {
+                document.getElementById('nama-bendahara').innerText = resP.data.bendahara.nama;
+                document.getElementById('nip-bendahara').innerText = (resP.data.bendahara.nip === '-' || !resP.data.bendahara.nip) ? '' : resP.data.bendahara.nip;
+                
+                document.getElementById('nama-ketua').innerText = resP.data.ketua.nama;
+                document.getElementById('nip-ketua').innerText = (resP.data.ketua.nip === '-' || !resP.data.ketua.nip) ? '' : resP.data.ketua.nip;
+            }
+        });
+    }
+
+    function downloadSebagaiGambar() {
+        const box = document.getElementById('kwitansi-capture');
+        html2canvas(box, { scale: 2 }).then(canvas => {
+            let link = document.createElement('a');
+            link.download = "BKK-" + document.getElementById('v-no').innerText + '.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.click();
+        });
+    }
+</script>
+</body>
+</html>
