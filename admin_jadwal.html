@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Jadwal - Super Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+        .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
+    <div class="container">
+        <span class="navbar-brand text-neon"><i class="bi bi-calendar-week"></i> Kelola Jadwal</span>
+        <button class="btn btn-sm btn-outline-light" onclick="window.location.href='dashboard_admin.html'"><i class="bi bi-arrow-left"></i> Kembali</button>
+    </div>
+</nav>
+
+<div class="container">
+    <div class="glass-card p-4 mb-4">
+        <h5 class="fw-bold mb-3"><i class="bi bi-plus-circle me-2"></i> Tambah Sesi Kegiatan Baru</h5>
+        <form id="formJadwal">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label text-white-50 small">Hari / Tanggal</label>
+                    <input type="date" id="tgl_kegiatan" class="form-control bg-dark text-white border-secondary" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-white-50 small">Waktu Mulai</label>
+                    <input type="time" id="waktu_mulai" class="form-control bg-dark text-white border-secondary" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-white-50 small">Waktu Selesai</label>
+                    <input type="time" id="waktu_selesai" class="form-control bg-dark text-white border-secondary" required>
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label text-white-50 small">Nama Sesi / Kegiatan</label>
+                    <input type="text" id="nama_kegiatan" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Pembukaan & Sambutan" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-white-50 small">Narasumber / Pemateri</label>
+                    <input type="text" id="pemateri" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Kepala Dinas Pendidikan (Kosongkan jika tidak ada)">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label text-white-50 small">Lokasi / Ruangan</label>
+                    <input type="text" id="lokasi" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Aula Utama" required>
+                </div>
+                <div class="col-12 mt-4">
+                    <button type="button" class="btn btn-info w-100 fw-bold" onclick="simpanJadwal()"><i class="bi bi-save me-2"></i> Simpan Jadwal</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    
+    // Proteksi Halaman Admin
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
+
+    function simpanJadwal() {
+        const tgl = document.getElementById('tgl_kegiatan').value;
+        const wMulai = document.getElementById('waktu_mulai').value;
+        const wSelesai = document.getElementById('waktu_selesai').value;
+        const kegiatan = document.getElementById('nama_kegiatan').value;
+        const narasumber = document.getElementById('pemateri').value;
+        const ruangan = document.getElementById('lokasi').value;
+
+        if(!tgl || !wMulai || !wSelesai || !kegiatan || !ruangan) {
+            Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Pastikan tanggal, waktu, kegiatan, dan lokasi sudah terisi.' });
+            return;
+        }
+
+        Swal.fire({
+            title: 'Menyimpan Jadwal...',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        const payload = {
+            action: 'tambah_jadwal',
+            tanggal: tgl,
+            waktu_mulai: wMulai,
+            waktu_selesai: wSelesai,
+            kegiatan: kegiatan,
+            pemateri: narasumber || '-',
+            lokasi: ruangan
+        };
+
+        fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(result => {
+            if(result.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Jadwal baru sukses ditambahkan.' });
+                document.getElementById('formJadwal').reset();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message });
+            }
+        })
+        .catch(err => Swal.fire({ icon: 'error', title: 'Error Sistem', text: err.toString() }));
+    }
+</script>
+</body>
+</html>
