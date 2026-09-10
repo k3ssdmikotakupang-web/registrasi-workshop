@@ -25,9 +25,22 @@
 
 <div class="container">
     <div class="glass-card p-4 mb-4">
-        <h5 class="fw-bold mb-3"><i class="bi bi-plus-circle me-2"></i> Tambah Sesi Kegiatan Baru</h5>
+        <h5 class="fw-bold mb-4"><i class="bi bi-plus-circle me-2"></i> Tambah Sesi Kegiatan Baru</h5>
         <form id="formJadwal">
             <div class="row g-3">
+                
+                <!-- Target Peserta -->
+                <div class="col-12">
+                    <label class="form-label text-info small fw-bold">Target Peserta (Sesi Untuk Siapa?)</label>
+                    <select id="kategori_peserta" class="form-select bg-dark text-white border-info" required>
+                        <option value="" disabled selected>-- Pilih Kategori Peserta --</option>
+                        <option value="Gabungan">Gabungan (Semua Peserta / Pleno)</option>
+                        <option value="Khusus Kepala Sekolah">Khusus Kepala Sekolah (Kelas Paralel)</option>
+                        <option value="Khusus Guru">Khusus Guru (Kelas Paralel)</option>
+                    </select>
+                </div>
+
+                <!-- Waktu -->
                 <div class="col-md-6">
                     <label class="form-label text-white-50 small">Hari / Tanggal</label>
                     <input type="date" id="tgl_kegiatan" class="form-control bg-dark text-white border-secondary" required>
@@ -40,20 +53,27 @@
                     <label class="form-label text-white-50 small">Waktu Selesai</label>
                     <input type="time" id="waktu_selesai" class="form-control bg-dark text-white border-secondary" required>
                 </div>
+
+                <!-- Detail Kegiatan -->
                 <div class="col-md-12">
                     <label class="form-label text-white-50 small">Nama Sesi / Kegiatan</label>
-                    <input type="text" id="nama_kegiatan" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Pembukaan & Sambutan" required>
+                    <input type="text" id="nama_kegiatan" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Pembukaan & Sambutan / Materi Kepemimpinan" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label text-white-50 small">Narasumber / Pemateri</label>
-                    <input type="text" id="pemateri" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Kepala Dinas Pendidikan (Kosongkan jika tidak ada)">
+                    <input type="text" id="pemateri" class="form-control bg-dark text-white border-secondary" placeholder="Kosongkan jika tidak ada">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label text-white-50 small">Lokasi / Ruangan</label>
-                    <input type="text" id="lokasi" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Aula Utama" required>
+                    <label class="form-label text-white-50 small">Moderator</label>
+                    <input type="text" id="moderator" class="form-control bg-dark text-white border-secondary" placeholder="Kosongkan jika tidak ada">
                 </div>
+                <div class="col-md-12">
+                    <label class="form-label text-white-50 small">Lokasi / Ruangan</label>
+                    <input type="text" id="lokasi" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Aula Utama / Ruang Melati" required>
+                </div>
+                
                 <div class="col-12 mt-4">
-                    <button type="button" class="btn btn-info w-100 fw-bold" onclick="simpanJadwal()"><i class="bi bi-save me-2"></i> Simpan Jadwal</button>
+                    <button type="button" class="btn btn-info w-100 fw-bold py-2" onclick="simpanJadwal()"><i class="bi bi-save me-2"></i> Simpan Jadwal</button>
                 </div>
             </div>
         </form>
@@ -62,22 +82,24 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // MAS BRO: JANGAN LUPA MASUKKAN LINK API/SCRIPT URL YANG AKTIF DI SINI!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
-    // Proteksi Halaman Admin
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
 
     function simpanJadwal() {
+        const kategori = document.getElementById('kategori_peserta').value;
         const tgl = document.getElementById('tgl_kegiatan').value;
         const wMulai = document.getElementById('waktu_mulai').value;
         const wSelesai = document.getElementById('waktu_selesai').value;
         const kegiatan = document.getElementById('nama_kegiatan').value;
         const narasumber = document.getElementById('pemateri').value;
+        const moderator = document.getElementById('moderator').value;
         const ruangan = document.getElementById('lokasi').value;
 
-        if(!tgl || !wMulai || !wSelesai || !kegiatan || !ruangan) {
-            Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Pastikan tanggal, waktu, kegiatan, dan lokasi sudah terisi.' });
+        if(!kategori || !tgl || !wMulai || !wSelesai || !kegiatan || !ruangan) {
+            Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Pastikan Kategori, Tanggal, Waktu, Kegiatan, dan Ruangan sudah terisi.' });
             return;
         }
 
@@ -89,11 +111,13 @@
 
         const payload = {
             action: 'tambah_jadwal',
+            kategori: kategori,
             tanggal: tgl,
             waktu_mulai: wMulai,
             waktu_selesai: wSelesai,
             kegiatan: kegiatan,
             pemateri: narasumber || '-',
+            moderator: moderator || '-',
             lokasi: ruangan
         };
 
@@ -104,7 +128,7 @@
         .then(res => res.json())
         .then(result => {
             if(result.status === 'success') {
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Jadwal baru sukses ditambahkan.' });
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Jadwal baru sukses ditambahkan ke database.' });
                 document.getElementById('formJadwal').reset();
             } else {
                 Swal.fire({ icon: 'error', title: 'Gagal', text: result.message });
