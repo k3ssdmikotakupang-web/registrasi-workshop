@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Input Jadwal - Super Admin</title>
+    <title>Input & Edit Jadwal - Super Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
@@ -12,26 +12,26 @@
         .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+        .badge-kategori { font-size: 0.75rem; padding: 4px 8px; border-radius: 4px; }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-dark neon-nav sticky-top mb-4">
     <div class="container">
-        <span class="navbar-brand text-neon"><i class="bi bi-calendar-week"></i> Kelola Jadwal</span>
+        <span class="navbar-brand text-neon"><i class="bi bi-calendar-week"></i> Kelola Rundown Acara</span>
         <button class="btn btn-sm btn-outline-light" onclick="window.location.href='dashboard_admin.html'"><i class="bi bi-arrow-left"></i> Kembali</button>
     </div>
 </nav>
 
 <div class="container">
-    <div class="glass-card p-4 mb-4">
-        <h5 class="fw-bold mb-4"><i class="bi bi-plus-circle me-2"></i> Tambah Sesi Kegiatan Baru</h5>
+    <!-- Form Input Jadwal -->
+    <div class="glass-card p-4 mb-5">
+        <h5 class="fw-bold mb-4 text-info"><i class="bi bi-plus-circle me-2"></i> Tambah Sesi Kegiatan Baru</h5>
         <form id="formJadwal">
             <div class="row g-3">
-                
-                <!-- Target Peserta -->
                 <div class="col-12">
-                    <label class="form-label text-info small fw-bold">Target Peserta (Sesi Untuk Siapa?)</label>
+                    <label class="form-label text-info small fw-bold">Target Peserta</label>
                     <select id="kategori_peserta" class="form-select bg-dark text-white border-info" required>
                         <option value="" disabled selected>-- Pilih Kategori Peserta --</option>
                         <option value="Gabungan">Gabungan (Semua Peserta / Pleno)</option>
@@ -39,8 +39,6 @@
                         <option value="Khusus Guru">Khusus Guru (Kelas Paralel)</option>
                     </select>
                 </div>
-
-                <!-- Waktu -->
                 <div class="col-md-6">
                     <label class="form-label text-white-50 small">Hari / Tanggal</label>
                     <input type="date" id="tgl_kegiatan" class="form-control bg-dark text-white border-secondary" required>
@@ -53,11 +51,9 @@
                     <label class="form-label text-white-50 small">Waktu Selesai</label>
                     <input type="time" id="waktu_selesai" class="form-control bg-dark text-white border-secondary" required>
                 </div>
-
-                <!-- Detail Kegiatan -->
                 <div class="col-md-12">
                     <label class="form-label text-white-50 small">Nama Sesi / Kegiatan</label>
-                    <input type="text" id="nama_kegiatan" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Pembukaan & Sambutan / Materi Kepemimpinan" required>
+                    <input type="text" id="nama_kegiatan" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Pembukaan & Sambutan" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label text-white-50 small">Narasumber / Pemateri</label>
@@ -69,72 +65,294 @@
                 </div>
                 <div class="col-md-12">
                     <label class="form-label text-white-50 small">Lokasi / Ruangan</label>
-                    <input type="text" id="lokasi" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Aula Utama / Ruang Melati" required>
+                    <input type="text" id="lokasi" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Aula Utama" required>
                 </div>
-                
                 <div class="col-12 mt-4">
-                    <button type="button" class="btn btn-info w-100 fw-bold py-2" onclick="simpanJadwal()"><i class="bi bi-save me-2"></i> Simpan Jadwal</button>
+                    <button type="button" class="btn btn-info w-100 fw-bold py-2" onclick="simpanJadwal()"><i class="bi bi-save me-2"></i> Simpan Sesi Baru</button>
                 </div>
             </div>
         </form>
     </div>
+
+    <!-- Daftar Rundown Acara -->
+    <div class="glass-card p-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold mb-0 text-white"><i class="bi bi-list-task me-2"></i> Rundown Acara Tersimpan</h5>
+            <button class="btn btn-sm btn-outline-info" onclick="muatDaftarJadwal()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+        </div>
+        
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead>
+                    <tr class="text-info border-secondary">
+                        <th>Waktu & Tanggal</th>
+                        <th>Target</th>
+                        <th>Kegiatan</th>
+                        <th>Pemateri & Moderator</th>
+                        <th>Lokasi</th>
+                        <th class="text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="bodyTabelJadwal">
+                    <tr><td colspan="6" class="text-center text-white-50">Memuat data rundown...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
+<!-- Modal Edit Jadwal -->
+<div class="modal fade" id="modalEdit" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-info">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-info"><i class="bi bi-pencil-square me-2"></i> Edit Sesi Kegiatan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditJadwal">
+                    <input type="hidden" id="edit_rowIndex">
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label text-info small fw-bold">Target Peserta</label>
+                            <select id="edit_kategori" class="form-select bg-dark text-white border-info" required>
+                                <option value="Gabungan">Gabungan (Semua Peserta / Pleno)</option>
+                                <option value="Khusus Kepala Sekolah">Khusus Kepala Sekolah (Kelas Paralel)</option>
+                                <option value="Khusus Guru">Khusus Guru (Kelas Paralel)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-white-50 small">Hari / Tanggal</label>
+                            <input type="date" id="edit_tgl" class="form-control bg-dark text-white border-secondary" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-white-50 small">Mulai</label>
+                            <input type="time" id="edit_wMulai" class="form-control bg-dark text-white border-secondary" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label text-white-50 small">Selesai</label>
+                            <input type="time" id="edit_wSelesai" class="form-control bg-dark text-white border-secondary" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-white-50 small">Nama Kegiatan</label>
+                            <input type="text" id="edit_kegiatan" class="form-control bg-dark text-white border-secondary" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-white-50 small">Narasumber</label>
+                            <input type="text" id="edit_pemateri" class="form-control bg-dark text-white border-secondary">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-white-50 small">Moderator</label>
+                            <input type="text" id="edit_moderator" class="form-control bg-dark text-white border-secondary">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label text-white-50 small">Lokasi / Ruangan</label>
+                            <input type="text" id="edit_lokasi" class="form-control bg-dark text-white border-secondary" required>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-info fw-bold" onclick="prosesUpdateJadwal()">Simpan Perubahan</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // MAS BRO: JANGAN LUPA MASUKKAN LINK API/SCRIPT URL YANG AKTIF DI SINI!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
 
-    function simpanJadwal() {
-        const kategori = document.getElementById('kategori_peserta').value;
-        const tgl = document.getElementById('tgl_kegiatan').value;
-        const wMulai = document.getElementById('waktu_mulai').value;
-        const wSelesai = document.getElementById('waktu_selesai').value;
-        const kegiatan = document.getElementById('nama_kegiatan').value;
-        const narasumber = document.getElementById('pemateri').value;
-        const moderator = document.getElementById('moderator').value;
-        const ruangan = document.getElementById('lokasi').value;
+    let globalJadwalData = [];
+    let modalEditObj;
 
-        if(!kategori || !tgl || !wMulai || !wSelesai || !kegiatan || !ruangan) {
-            Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Pastikan Kategori, Tanggal, Waktu, Kegiatan, dan Ruangan sudah terisi.' });
+    document.addEventListener('DOMContentLoaded', () => {
+        modalEditObj = new bootstrap.Modal(document.getElementById('modalEdit'));
+        muatDaftarJadwal();
+    });
+
+    // 1. TAMBAH JADWAL
+    function simpanJadwal() {
+        const payload = {
+            action: 'tambah_jadwal',
+            kategori: document.getElementById('kategori_peserta').value,
+            tanggal: document.getElementById('tgl_kegiatan').value,
+            waktu_mulai: document.getElementById('waktu_mulai').value,
+            waktu_selesai: document.getElementById('waktu_selesai').value,
+            kegiatan: document.getElementById('nama_kegiatan').value,
+            pemateri: document.getElementById('pemateri').value || '-',
+            moderator: document.getElementById('moderator').value || '-',
+            lokasi: document.getElementById('lokasi').value
+        };
+
+        if(!payload.kategori || !payload.tanggal || !payload.waktu_mulai || !payload.waktu_selesai || !payload.kegiatan || !payload.lokasi) {
+            Swal.fire({ icon: 'warning', title: 'Perhatian', text: 'Mohon lengkapi field wajib.' });
             return;
         }
 
-        Swal.fire({
-            title: 'Menyimpan Jadwal...',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
+        Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-        const payload = {
-            action: 'tambah_jadwal',
-            kategori: kategori,
-            tanggal: tgl,
-            waktu_mulai: wMulai,
-            waktu_selesai: wSelesai,
-            kegiatan: kegiatan,
-            pemateri: narasumber || '-',
-            moderator: moderator || '-',
-            lokasi: ruangan
-        };
-
-        fetch(API_URL, {
-            method: 'POST',
-            body: JSON.stringify(payload)
-        })
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
         .then(res => res.json())
         .then(result => {
             if(result.status === 'success') {
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Jadwal baru sukses ditambahkan ke database.' });
+                Swal.fire({ icon: 'success', title: 'Tersimpan!', timer: 1500, showConfirmButton: false });
                 document.getElementById('formJadwal').reset();
+                muatDaftarJadwal();
             } else {
                 Swal.fire({ icon: 'error', title: 'Gagal', text: result.message });
             }
         })
-        .catch(err => Swal.fire({ icon: 'error', title: 'Error Sistem', text: err.toString() }));
+        .catch(err => Swal.fire({ icon: 'error', title: 'Error', text: err.toString() }));
+    }
+
+    // 2. LOAD DAFTAR JADWAL
+    function muatDaftarJadwal() {
+        const tbody = document.getElementById('bodyTabelJadwal');
+        tbody.innerHTML = '<tr><td colspan="6" class="text-center text-white-50"><span class="spinner-border spinner-border-sm me-2"></span>Memuat rundown...</td></tr>';
+
+        fetch(API_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'get_jadwal' })
+        })
+        .then(res => res.json())
+        .then(result => {
+            if(result.status === 'success') {
+                globalJadwalData = result.data;
+                renderTabel(result.data);
+            } else {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">${result.message}</td></tr>`;
+            }
+        })
+        .catch(err => {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Gagal terhubung ke server.</td></tr>';
+        });
+    }
+
+    function renderTabel(data) {
+        const tbody = document.getElementById('bodyTabelJadwal');
+        if(!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center text-white-50">Belum ada rundown yang dibuat.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        data.forEach((item, index) => {
+            let badgeClass = 'bg-primary';
+            if(item.kategori.includes('Kepala Sekolah')) badgeClass = 'bg-warning text-dark';
+            if(item.kategori.includes('Guru')) badgeClass = 'bg-success';
+
+            // Format tanggal Indonesia sederhana (YYYY-MM-DD)
+            let tglFormatted = item.tanggal;
+            try { tglFormatted = new Date(item.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }); } catch(e){}
+
+            html += `
+                <tr>
+                    <td>
+                        <strong class="text-info">${item.waktu_mulai} - ${item.waktu_selesai}</strong><br>
+                        <small class="text-white-50">${tglFormatted}</small>
+                    </td>
+                    <td><span class="badge ${badgeClass} badge-kategori">${item.kategori}</span></td>
+                    <td class="fw-bold">${item.kegiatan}</td>
+                    <td>
+                        <small class="d-block"><i class="bi bi-person-badge me-1 text-info"></i> ${item.pemateri}</small>
+                        <small class="d-block text-white-50"><i class="bi bi-mic me-1"></i> ${item.moderator}</small>
+                    </td>
+                    <td><span class="badge bg-secondary"><i class="bi bi-geo-alt me-1"></i> ${item.lokasi}</span></td>
+                    <td class="text-center">
+                        <button class="btn btn-sm btn-outline-warning me-1" onclick="bukaModalEdit(${index})"><i class="bi bi-pencil-fill"></i></button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="hapusJadwal(${item.rowIndex})"><i class="bi bi-trash-fill"></i></button>
+                    </td>
+                </tr>
+            `;
+        });
+        tbody.innerHTML = html;
+    }
+
+    // 3. EDIT JADWAL (BUKA MODAL & UPDATE)
+    function bukaModalEdit(index) {
+        const item = globalJadwalData[index];
+        document.getElementById('edit_rowIndex').value = item.rowIndex;
+        document.getElementById('edit_kategori').value = item.kategori;
+        
+        // Format YYYY-MM-DD untuk input date
+        let d = new Date(item.tanggal);
+        let dateStr = !isNaN(d) ? d.toISOString().split('T')[0] : item.tanggal;
+        document.getElementById('edit_tgl').value = dateStr;
+
+        document.getElementById('edit_wMulai').value = item.waktu_mulai;
+        document.getElementById('edit_wSelesai').value = item.waktu_selesai;
+        document.getElementById('edit_kegiatan').value = item.kegiatan;
+        document.getElementById('edit_pemateri').value = item.pemateri;
+        document.getElementById('edit_moderator').value = item.moderator;
+        document.getElementById('edit_lokasi').value = item.lokasi;
+
+        modalEditObj.show();
+    }
+
+    function prosesUpdateJadwal() {
+        const payload = {
+            action: 'edit_jadwal',
+            rowIndex: document.getElementById('edit_rowIndex').value,
+            kategori: document.getElementById('edit_kategori').value,
+            tanggal: document.getElementById('edit_tgl').value,
+            waktu_mulai: document.getElementById('edit_wMulai').value,
+            waktu_selesai: document.getElementById('edit_wSelesai').value,
+            kegiatan: document.getElementById('edit_kegiatan').value,
+            pemateri: document.getElementById('edit_pemateri').value || '-',
+            moderator: document.getElementById('edit_moderator').value || '-',
+            lokasi: document.getElementById('edit_lokasi').value
+        };
+
+        Swal.fire({ title: 'Memperbarui...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) })
+        .then(res => res.json())
+        .then(result => {
+            if(result.status === 'success') {
+                modalEditObj.hide();
+                Swal.fire({ icon: 'success', title: 'Berhasil Diperbarui!', timer: 1500, showConfirmButton: false });
+                muatDaftarJadwal();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message });
+            }
+        });
+    }
+
+    // 4. HAPUS JADWAL
+    function hapusJadwal(rowIndex) {
+        Swal.fire({
+            title: 'Hapus Sesi Ini?',
+            text: "Data jadwal yang dihapus tidak bisa dikembalikan!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Ya, Hapus!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'hapus_jadwal', rowIndex: rowIndex })
+                })
+                .then(res => res.json())
+                .then(resData => {
+                    if(resData.status === 'success') {
+                        Swal.fire({ icon: 'success', title: 'Terhapus!', timer: 1500, showConfirmButton: false });
+                        muatDaftarJadwal();
+                    } else {
+                        Swal.fire({ icon: 'error', title: 'Gagal', text: resData.message });
+                    }
+                });
+            }
+        });
     }
 </script>
 </body>
