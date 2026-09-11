@@ -33,6 +33,26 @@
         <div class="col-6"><div class="glass-card stat-box p-3" style="border-left-color: #20c997;"><p class="small text-white-50 mb-1">Peserta Hadir</p><h3 class="fw-bold mb-0 text-success" id="s_hadir">0</h3></div></div>
     </div>
 
+    <!-- Widget Utama Rilis Pengumuman -->
+<div class="row g-3 mb-4">
+  <div class="col-12">
+    <div class="card glass-card p-3 text-white" onclick="bukaModalPengumuman()" style="cursor: pointer; border-left: 5px solid #f59e0b; background: rgba(15, 23, 42, 0.8);">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <div class="rounded-circle bg-warning text-dark p-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+            <i class="bi bi-megaphone-fill fs-4"></i>
+          </div>
+          <div>
+            <h6 class="fw-bold text-warning mb-1"><i class="bi bi-broadcast"></i> Rilis Pengumuman Panitia</h6>
+            <small class="text-white-50">Klik di sini untuk menerbitkan informasi/instruksi realtime ke dashboard peserta</small>
+          </div>
+        </div>
+        <span class="btn btn-sm btn-outline-warning d-none d-md-inline-block fw-bold">Buat Pengumuman <i class="bi bi-arrow-right-short"></i></span>
+      </div>
+    </div>
+  </div>
+</div>
+
     <!-- Menu Kesekretariatan -->
     <h5 class="fw-bold mb-3 mt-5">Menu Kesekretariatan 2.0</h5>
     <div class="row g-3">
@@ -86,6 +106,101 @@
 
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
     muatStatistik();
+
+    let modalPengumumanObj = null;
+
+function bukaModalPengumuman() {
+    if(!modalPengumumanObj) {
+        modalPengumumanObj = new bootstrap.Modal(document.getElementById('modalFormPengumuman'));
+    }
+    document.getElementById('formPengumuman').reset();
+    modalPengumumanObj.show();
+}
+
+async function simpanPengumuman(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('btnKirimPengumuman');
+    const teksAsli = submitBtn.innerText;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menerbitkan...';
+
+    const payload = {
+        action: 'add_pengumuman',
+        role: 'admin', 
+        jabatan: 'panitia',
+        judul: document.getElementById('pJudul').value,
+        isi: document.getElementById('pIsi').value,
+        target: document.getElementById('pTarget').value,
+        status: document.getElementById('pStatus').value
+    };
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, background: '#1e293b', color: '#fff' });
+            modalPengumumanObj.hide();
+        } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, background: '#1e293b', color: '#fff' });
+        }
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server database.', background: '#1e293b', color: '#fff' });
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = teksAsli;
+    }
+}
+    
 </script>
+
+    <!-- Modal Input Pengumuman -->
+<div class="modal fade" id="modalFormPengumuman" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-card text-white" style="background: #0f172a; border: 1px solid #f59e0b;">
+      <div class="modal-header border-bottom border-warning">
+        <h5 class="modal-title text-warning"><i class="bi bi-megaphone-fill"></i> Rilis Pengumuman Baru</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formPengumuman" onsubmit="simpanPengumuman(event)">
+          <div class="mb-3">
+            <label class="form-label small">Judul Pengumuman</label>
+            <input type="text" id="pJudul" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Perubahan Ruangan Sesi 2" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Isi Pengumuman / Informasi</label>
+            <textarea id="pIsi" class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Tuliskan pesan lengkap untuk peserta..." required></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label small">Target Penerima</label>
+              <select id="pTarget" class="form-select bg-dark text-white border-secondary">
+                <option value="Semua">Semua Peserta</option>
+                <option value="Guru">Khusus Guru</option>
+                <option value="Kepsek">Khusus Kepala Sekolah</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label small">Status Tayang</label>
+              <select id="pStatus" class="form-select bg-dark text-white border-secondary">
+                <option value="Aktif">Aktif (Langsung Tayang)</option>
+                <option value="Nonaktif">Nonaktif (Draf)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" id="btnKirimPengumuman" class="btn btn-warning w-100 fw-bold mt-2">Terbitkan Sekarang</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
 </body>
 </html>
