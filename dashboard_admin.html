@@ -47,7 +47,11 @@
             <small class="text-white-50">Klik di sini untuk menerbitkan informasi/instruksi realtime ke dashboard peserta</small>
           </div>
         </div>
-        <span class="btn btn-sm btn-outline-warning d-none d-md-inline-block fw-bold">Buat Pengumuman <i class="bi bi-arrow-right-short"></i></span>
+        <!-- Ganti bagian tombol (span) sebelumnya dengan div ini -->
+<div class="d-flex gap-2 mt-2 mt-md-0">
+  <button class="btn btn-sm btn-outline-info fw-bold" onclick="bukaModalListPengumuman()"><i class="bi bi-card-list"></i> Kelola Data</button>
+  <button class="btn btn-sm btn-warning fw-bold" onclick="bukaModalPengumuman()"><i class="bi bi-plus-lg"></i> Buat Baru</button>
+</div>
       </div>
     </div>
   </div>
@@ -156,6 +160,122 @@ async function simpanPengumuman(e) {
         submitBtn.innerText = teksAsli;
     }
 }
+
+    let modalListObj = null;
+let modalEditObj = null;
+
+// Membuka modal daftar pengumuman & mengambil data dari server
+async function bukaModalListPengumuman() {
+    if (!modalListObj) {
+        modalListObj = new bootstrap.Modal(document.getElementById('modalListPengumuman'));
+    }
+    modalListObj.show();
+    
+    const tbody = document.getElementById('bodyTabelPengumuman');
+    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-white-50 py-3">Memuat data... <span class="spinner-border spinner-border-sm"></span></td></tr>';
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'get_all_pengumuman' })
+        });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            tbody.innerHTML = '';
+            if (result.data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-3">Belum ada pengumuman.</td></tr>';
+                return;
+            }
+            
+            result.data.forEach(item => {
+                // Tentukan warna lencana status
+                let badgeStatus = item.status.toLowerCase() === 'aktif' ? 'bg-success' : 'bg-secondary';
+                
+                tbody.innerHTML += `
+                    <tr>
+                        <td style="min-width: 100px;">
+                            <small class="text-info d-block">${item.tanggal}</small>
+                            <span class="badge ${badgeStatus}">${item.status}</span>
+                        </td>
+                        <td>
+                            <strong class="text-warning">${item.judul}</strong> <span class="badge bg-dark border border-secondary text-white-50" style="font-size: 0.6rem;">${item.target}</span>
+                            <div class="text-white-50" style="font-size: 0.8rem;">${item.isi}</div>
+                        </td>
+                        <td style="min-width: 80px;">
+                            <button class="btn btn-sm btn-outline-light" onclick="bukaEditPengumuman(${item.id}, '${item.judul.replace(/'/g, "\\'")}', '${item.isi.replace(/\n/g, ' ').replace(/'/g, "\\'")}', '${item.target}', '${item.status}')">
+                                <i class="bi bi-pencil"></i> Edit
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+    } catch (e) {
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger py-3">Gagal memuat data.</td></tr>';
+    }
+}
+
+// Membuka modal edit dan mengisi form dengan data yang dipilih
+function bukaEditPengumuman(id, judul, isi, target, status) {
+    modalListObj.hide(); // Sembunyikan list
+    
+    if (!modalEditObj) {
+        modalEditObj = new bootstrap.Modal(document.getElementById('modalEditPengumuman'));
+    }
+    
+    // Isi data ke dalam form edit
+    document.getElementById('eId').value = id;
+    document.getElementById('eJudul').value = judul;
+    document.getElementById('eIsi').value = isi;
+    document.getElementById('eTarget').value = target;
+    document.getElementById('eStatus').value = status;
+    
+    modalEditObj.show();
+}
+
+// Menyimpan pembaruan pengumuman ke server
+async function simpanEditPengumuman(e) {
+    e.preventDefault();
+    
+    const submitBtn = document.getElementById('btnUpdatePengumuman');
+    const teksAsli = submitBtn.innerText;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan...';
+    
+    const payload = {
+        action: 'edit_pengumuman',
+        id: document.getElementById('eId').value, // Mengirimkan nomor baris
+        judul: document.getElementById('eJudul').value,
+        isi: document.getElementById('eIsi').value,
+        target: document.getElementById('eTarget').value,
+        status: document.getElementById('eStatus').value
+    };
+    
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+        });
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, background: '#1e293b', color: '#fff' });
+            modalEditObj.hide();
+            // Buka list lagi otomatis supaya kelihatan updatenya
+            setTimeout(bukaModalListPengumuman, 500); 
+        } else {
+            Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, background: '#1e293b', color: '#fff' });
+        }
+    } catch (err) {
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server.', background: '#1e293b', color: '#fff' });
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = teksAsli;
+    }
+}
     
 </script>
 
@@ -195,6 +315,79 @@ async function simpanPengumuman(e) {
             </div>
           </div>
           <button type="submit" id="btnKirimPengumuman" class="btn btn-warning w-100 fw-bold mt-2">Terbitkan Sekarang</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Modal Daftar Pengumuman -->
+<div class="modal fade" id="modalListPengumuman" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content glass-card text-white" style="background: #0f172a; border: 1px solid #0dcaf0;">
+      <div class="modal-header border-bottom border-info">
+        <h5 class="modal-title text-info"><i class="bi bi-list-task"></i> Kelola Pengumuman</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="table table-dark table-striped table-hover mb-0 text-white" style="font-size: 0.85rem;">
+            <thead class="table-info text-dark">
+              <tr>
+                <th>Tanggal & Status</th>
+                <th>Judul & Isi</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="bodyTabelPengumuman">
+              <!-- Data list pengumuman masuk ke sini -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Edit Pengumuman -->
+<div class="modal fade" id="modalEditPengumuman" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-card text-white" style="background: #0f172a; border: 1px solid #198754;">
+      <div class="modal-header border-bottom border-success">
+        <h5 class="modal-title text-success"><i class="bi bi-pencil-square"></i> Edit Pengumuman</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formEditPengumuman" onsubmit="simpanEditPengumuman(event)">
+          <!-- Hidden Input untuk menyimpan ID / Nomor Baris -->
+          <input type="hidden" id="eId">
+          
+          <div class="mb-3">
+            <label class="form-label small">Judul Pengumuman</label>
+            <input type="text" id="eJudul" class="form-control bg-dark text-white border-secondary" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Isi Pengumuman / Informasi</label>
+            <textarea id="eIsi" class="form-control bg-dark text-white border-secondary" rows="3" required></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label small">Target Penerima</label>
+              <select id="eTarget" class="form-select bg-dark text-white border-secondary">
+                <option value="Semua">Semua Peserta</option>
+                <option value="Guru">Khusus Guru</option>
+                <option value="Kepsek">Khusus Kepala Sekolah</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label small">Status Tayang</label>
+              <select id="eStatus" class="form-select bg-dark text-white border-secondary">
+                <option value="Aktif">Aktif (Langsung Tayang)</option>
+                <option value="Nonaktif">Nonaktif (Draf)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" id="btnUpdatePengumuman" class="btn btn-success w-100 fw-bold mt-2">Simpan Perubahan</button>
         </form>
       </div>
     </div>
