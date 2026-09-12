@@ -26,36 +26,35 @@
             page-break-inside: avoid;
         }
 
-        /* HEADER BIRU DONGKER (Lebih dalam untuk memberi ruang foto) */
+        /* HEADER BIRU DONGKER (Ruang diperbesar ke bawah) */
         .id-header {
             background: linear-gradient(135deg, #0f172a, #1e293b);
             color: #fbbf24;
             text-align: center;
-            padding: 15px 8px 40px 8px;
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            padding: 15px 8px 48px 8px; /* Padding bawah ditambah agar foto bisa turun */
+            clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
         }
         .id-header h5 { font-size: 0.8rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; }
-        .id-header p { font-size: 0.55rem; color: #cbd5e1; margin: 2px 0 0 0; font-weight: 400; line-height: 1.2; }
+        .id-header p { font-size: 0.55rem; color: #cbd5e1; margin: 3px 0 0 0; font-weight: 400; line-height: 1.3; }
 
-        /* FOTO PROFIL MELAYANG (Diturunkan dan sedikit diperbesar) */
+        /* FOTO PROFIL (Diperbesar dan Diturunkan) */
         .id-photo {
-            width: 85px; 
-            height: 85px;
+            width: 105px;  /* Diperbesar */
+            height: 105px; /* Diperbesar */
             background: #f8fafc;
             border-radius: 50%;
             border: 3px solid #fbbf24; 
-            margin: -35px auto 10px auto; /* Margin atas dikurangi agar foto turun */
+            margin: -35px auto 5px auto; /* Posisi lebih turun */
             display: flex; 
             justify-content: center; 
             align-items: center;
-            font-size: 3rem; 
+            font-size: 3.5rem; 
             color: #cbd5e1;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             z-index: 2;
             position: relative;
             overflow: hidden;
         }
-        /* Jika nanti pakai foto asli, img akan mengisi penuh lingkaran */
         .id-photo img { width: 100%; height: 100%; object-fit: cover; }
 
         /* BODY KONTEN */
@@ -90,11 +89,11 @@
             box-shadow: 0 2px 5px rgba(251, 191, 36, 0.3);
         }
 
-        /* QR CODE (Diperbesar) */
-        .id-qr-box { text-align: center; margin-bottom: 10px; margin-top: 10px; }
+        /* QR CODE (Diperbesar Signifikan) */
+        .id-qr-box { text-align: center; margin-bottom: 12px; margin-top: 5px; }
         .id-qr-box img {
-            width: 110px;  /* Ukuran diperbesar */
-            height: 110px; /* Ukuran diperbesar */
+            width: 125px;  /* Jauh lebih besar */
+            height: 125px; /* Jauh lebih besar */
             padding: 4px;
             background: #fff;
             border: 1px solid #cbd5e1;
@@ -159,9 +158,8 @@
             if(result.status === 'success' && result.data.length > 0) {
                 let html = '';
                 result.data.forEach(p => {
-                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(p.id_panitia)}`;
+                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(p.id_panitia)}`;
                     
-                    // Asumsi: Jika ada data foto (nanti setelah fitur upload dibuat), tampilkan <img>. Jika tidak, pakai ikon <i class="bi">.
                     let fotoHtml = p.foto_url 
                         ? `<img src="${p.foto_url}" alt="Foto Profil">` 
                         : `<i class="bi bi-person-fill"></i>`;
@@ -170,7 +168,8 @@
                         <div class="id-card-wrapper">
                             <div class="id-header">
                                 <h5>K3S SD/MI Kota Kupang</h5>
-                                <p>Panitia Workshop Manajemen Kepsek SD/MI Kota Kupang 2026</p>
+                                <!-- TEKS DIUBAH MENJADI 2 BARIS -->
+                                <p>Panitia Workshop Manajemen Kepsek SD/MI<br>Kota Kupang 2026</p>
                             </div>
                             
                             <div class="id-photo">
@@ -194,10 +193,10 @@
                 });
                 document.getElementById('containerCard').innerHTML = html;
             } else {
-                document.getElementById('containerCard').innerHTML = '<div class="col-12 text-center text-muted fw-bold">Belum ada data panitia yang terdaftar.</div>';
+                document.getElementById('containerCard').innerHTML = '<div class="col-12 text-center text-muted fw-bold">Belum ada data panitia.</div>';
             }
         } catch(e) {
-            document.getElementById('loading').innerHTML = '<span class="text-danger fw-bold">Gagal memuat data dari server. Pastikan API URL sudah benar.</span>';
+            document.getElementById('loading').innerHTML = '<span class="text-danger fw-bold">Gagal memuat data dari server.</span>';
         }
     }
 
