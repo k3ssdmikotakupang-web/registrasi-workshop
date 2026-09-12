@@ -147,24 +147,66 @@
         } catch(e) { console.log("Gagal menarik link broadcast"); }
     }
     
-    // Jalankan penyedot otomatis
-    muatLinkBroadcast();
-
-    // 2. Fungsi untuk mengeksekusi klik tombol
-    function bukaLink(jenis) {
-        const url = linkData[jenis];
-        if (url && url.trim() !== '') {
-            window.open(url, '_blank'); // Buka di tab baru
-        } else {
-            // Kalau admin belum ngisi linknya, munculkan pesan ini:
-            Swal.fire({
-                icon: 'info',
-                title: 'Belum Tersedia',
-                text: `Panitia belum mengunggah link untuk ${jenis.toUpperCase()} ini.`,
-                customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff'
+    // 3. Fungsi Menyedot Data Pengumuman dan Sesi Live secara Realtime
+    async function muatLiveDashboard() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_live_dashboard' })
             });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                // --- PROSES PENGUMUMAN ---
+                const boxPengumuman = document.getElementById('boxPengumuman');
+                // Filter pengumuman yang aktif dan sesuai target (Semua atau jabatan peserta)
+                const pengumumanAktif = result.pengumuman.filter(p => 
+                    p.status.toLowerCase() === 'aktif' && 
+                    (p.target.toLowerCase() === 'semua' || p.target.toLowerCase() === userData.jabatan.toLowerCase())
+                );
+
+                if (pengumumanAktif.length > 0) {
+                    boxPengumuman.innerHTML = '';
+                    pengumumanAktif.forEach(p => {
+                        boxPengumuman.innerHTML += `
+                            <div class="mb-2 pb-2 border-bottom border-secondary">
+                                <small class="text-info fw-bold">${p.judul}</small>
+                                <p class="small mb-0 text-white-50">${p.isi}</p>
+                                <div class="text-end" style="font-size: 0.65rem; color: #94a3b8;">${p.tanggal}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    boxPengumuman.innerHTML = `<p class="text-white-50 small mb-0">Belum ada pengumuman terbaru.</p>`;
+                }
+
+                // --- PROSES SESI LIVE ---
+                const boxSesi = document.getElementById('boxSesiLive');
+                const badgeLive = document.getElementById('badgeLive');
+                const sesiLive = result.sesi_live; // Mengambil data sesi yang sedang aktif dari server
+
+                if (sesiLive) {
+                    badgeLive.style.display = 'inline-block';
+                    boxSesi.innerHTML = `
+                        <strong class="text-warning">${sesiLive.kegiatan}</strong><br>
+                        <small class="text-white-50"><i class="bi bi-clock"></i> ${sesiLive.waktu_mulai} - ${sesiLive.waktu_selesai}</small><br>
+                        <small class="text-info"><i class="bi bi-geo-alt-fill"></i> Lokasi: ${sesiLive.lokasi}</small>
+                    `;
+                } else {
+                    badgeLive.style.display = 'none';
+                    boxSesi.innerHTML = `<p class="text-white-50 small mb-0">Tidak ada sesi kegiatan yang sedang berlangsung saat ini.</p>`;
+                }
+            }
+        } catch (e) {
+            console.error('ERROR DETAIL:', e);
+            document.getElementById('boxPengumuman').innerHTML = `<small class="text-danger">Gagal memuat pengumuman.</small>`;
+            document.getElementById('boxSesiLive').innerHTML = `<small class="text-danger">Gagal memuat sesi.</small>`;
         }
     }
+
+    // Jalankan fungsi penyedot saat halaman pertama kali dibuka
+    muatLiveDashboard();
 
     async function unduhSertifikat() {
         // Cek dulu apakah status di HP sudah hadir (supaya tidak buang kuota hit API kalau belum hadir)
