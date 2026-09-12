@@ -37,7 +37,7 @@
         .k-nominal-box { border: 2px solid #000; padding: 4px 15px; font-size: 1.1rem; font-weight: 800; display: inline-block; margin: 8px 0; background: #f8f9fa; }
         
         .k-footer { display: flex; justify-content: space-between; align-items: end; margin-top: 5px; position: relative; z-index: 1; }
-        .k-qr-box { padding: 3px; border: 1px solid #000; display: inline-block; background: #fff; }
+        .k-qr-box { padding: 3px; border: 1px solid #000; display: inline-block; background: #fff; text-align: center; }
         
         /* TATA LETAK TANDA TANGAN DINAMIS */
         .k-ttd-container { display: flex; justify-content: space-between; width: 75%; text-align: center; font-size: 0.8rem; margin-left: auto; }
@@ -62,7 +62,6 @@
             <div class="watermark-bg"></div>
 
             <div class="k-header">
-                <!-- REVISI KOP SESUAI ARAHAN KAPTEN -->
                 <div class="k-subtitle mb-2">K3S SD/MI Kota Kupang<br>Panitia Workshop Manajemen Kepala SD/MI Kota Kupang 2026</div>
                 <div class="k-title">Bukti Kas Keluar (Pengeluaran)</div>
                 <div class="k-no">NO: <span id="v-no"></span></div>
@@ -70,15 +69,23 @@
             
             <div class="k-body">
                 <div class="k-row"><div class="k-label">Telah Dibayar Kepada</div><div class="k-value" id="v-penerima"></div></div>
-                <div class="k-row"><div class="k-label">Uang Sejumlah</div><div class="k-value fst-italic"><span id="v-terbilang-netto"></span></div></div>
+                <!-- UANG SEJUMLAH DIISI NOMINAL BRUTO SESUAI REQUEST -->
+                <div class="k-row"><div class="k-label">Uang Sejumlah</div><div class="k-value fst-italic"><span id="v-terbilang-bruto"></span></div></div>
                 <div class="k-row"><div class="k-label">Untuk Pembayaran</div><div class="k-value" id="v-keterangan"></div></div>
                 <div class="k-row"><div class="k-label">Kategori Anggaran</div><div class="k-value" id="v-kategori"></div></div>
                 
                 <div class="row mt-2">
                     <div class="col-8">
-                        <table class="table table-sm table-bordered border-dark" style="font-size: 0.75rem; width: 80%; background: transparent;">
-                            <tr><td class="fw-bold">Nominal Bruto</td><td class="text-end" id="v-bruto">Rp 0</td></tr>
-                            <tr><td class="fw-bold">Potongan Pajak</td><td class="text-end text-danger" id="v-pajak">Rp 0</td></tr>
+                        <table class="table table-sm table-bordered border-dark" style="font-size: 0.75rem; width: 90%; background: transparent;">
+                            <tr>
+                                <td class="fw-bold" style="width: 65%;">Nominal Bruto</td>
+                                <td class="text-end" id="v-bruto" style="width: 35%;">Rp 0</td>
+                            </tr>
+                            <tr>
+                                <!-- INFO PAJAK LEBIH DETAIL -->
+                                <td class="fw-bold" id="v-nama-pajak">Potongan Pajak</td>
+                                <td class="text-end text-danger fw-bold" id="v-pajak">Rp 0</td>
+                            </tr>
                         </table>
                     </div>
                     <div class="col-4 text-end">
@@ -88,7 +95,9 @@
             </div>
             
             <div class="k-footer">
-                <div class="k-qr-box"><img id="v-qr" src="" width="70" height="70"></div>
+                <div class="k-qr-box">
+                    <img id="v-qr" src="" width="70" height="70">
+                </div>
                 
                 <div class="k-ttd-container" id="container-ttd">
                     <div class="k-sign d-none" id="blok-ketua">
@@ -122,7 +131,6 @@
     // WAJIB PASTE API URL KAPTEN DI SINI!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
-    // FUNGSI INJEKSI FORMAT RUPIAH (TITIK RIBUAN)
     const formatRp = (angka) => new Intl.NumberFormat('id-ID').format(angka);
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -144,28 +152,37 @@
                 document.getElementById('v-keterangan').innerText = data.keterangan;
                 document.getElementById('v-kategori').innerText = data.kategori;
                 
-                // Konversi data string dari database menjadi angka murni sebelum diformat
-                let brutoNum = parseInt(data.bruto.toString().replace(/[^0-9]/g, '')) || 0;
-                let pajakNum = parseInt(data.pajak.toString().replace(/[^0-9]/g, '')) || 0;
-                let nettoNum = parseInt(data.netto.toString().replace(/[^0-9]/g, '')) || 0;
+                // BERSIHKAN ANGKA, LALU BULATKAN (MATH.ROUND) UNTUK MENGHILANGKAN PECAHAN DESIMAL
+                let brutoNum = Math.round(parseFloat(data.bruto.toString().replace(/[^0-9.-]+/g, ''))) || 0;
+                let nettoNum = Math.round(parseFloat(data.netto.toString().replace(/[^0-9.-]+/g, ''))) || 0;
+                
+                // KALKULASI NOMINAL PAJAK DARI (BRUTO - NETTO)
+                let nominalPajak = brutoNum - nettoNum;
+                
+                // BACA NAMA PAJAK (JIKA KOSONG ATAU "0", BERI TEKS DEFAULT)
+                let teksPajak = "Potongan Pajak";
+                if(data.pajak && data.pajak !== "0|Tanpa Potongan Pajak" && data.pajak !== "0" && data.pajak !== "-") {
+                    teksPajak = "Pajak (" + data.pajak + ")";
+                }
 
-                // Set Angka dengan Format Pemisah Ribuan (Titik)
+                // EKSEKUSI PENEMPELAN NILAI KE LAYAR (DENGAN TITIK RIBUAN)
+                document.getElementById('v-terbilang-bruto').innerText = "Rp " + formatRp(brutoNum); 
                 document.getElementById('v-bruto').innerText = "Rp " + formatRp(brutoNum);
-                document.getElementById('v-pajak').innerText = "Rp " + formatRp(pajakNum);
+                document.getElementById('v-nama-pajak').innerText = teksPajak;
+                document.getElementById('v-pajak').innerText = "- Rp " + formatRp(nominalPajak);
                 document.getElementById('v-netto').innerText = "Rp " + formatRp(nettoNum);
-                document.getElementById('v-terbilang-netto').innerText = "Rp " + formatRp(nettoNum); 
 
                 // Format Tanggal
                 document.getElementById('v-tgl-pendek').innerText = data.tanggal.split(' ')[0];
                 
-                // REVISI ISI QR CODE DENGAN DETAIL NETTO & PAJAK
+                // QR CODE DIPERBARUI DENGAN INFO NETTO DAN PAJAK
                 let isiQR = "Trx: " + data.id_transaksi + 
-                            " | Kepada: " + data.penerima + 
-                            " | Diterima: Rp " + formatRp(nettoNum) + 
-                            " | Pajak: Rp " + formatRp(pajakNum);
+                            " | Kpd: " + data.penerima + 
+                            " | Netto: Rp " + formatRp(nettoNum) + 
+                            " | Pjk: Rp " + formatRp(nominalPajak);
                 document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
                 
-                // LOGIKA ADAPTIF TANDA TANGAN
+                // LOGIKA ADAPTIF TANDA TANGAN JASA PEMATERI
                 let kat = data.kategori.toLowerCase();
                 if(kat.includes('jasa') || kat.includes('pemateri') || kat.includes('narasumber')) {
                     document.getElementById('blok-ketua').classList.remove('d-none');
