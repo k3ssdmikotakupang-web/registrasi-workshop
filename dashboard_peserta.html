@@ -277,30 +277,124 @@
         } catch (e) { Toast.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung.' }); }
     }
 
-    // ==========================================
-    // MODUL INTERACTIVE LIVE FRAME OVERLAY
-    // ==========================================
     let photoState = { x: 0, y: 0, scale: 1, isDragging: false, startX: 0, startY: 0 };
-    let imgElement = document.getElementById('draggablePhoto');
-    let containerElement = document.getElementById('previewContainer');
+let initialPinchDistance = 0;
+let initialScale = 1;
 
-    function bukaMenuDokumentasi() {
-        Swal.fire({
-            title: '<h5 class="fw-bold text-danger mb-0">Photobooth & Galeri</h5>',
-            html: `
-                <p class="small text-muted mb-4">Abadikan momen Anda atau lihat galeri bersama!</p>
-                <div class="d-grid gap-3">
-                    <button class="btn btn-warning py-3 fw-bold shadow-sm rounded-3" onclick="document.getElementById('inputKameraDokumentasi').click(); Swal.close();">
-                        <i class="bi bi-camera-fill me-2 fs-5"></i> Jepret Momen Berbingkai
-                    </button>
-                    <button class="btn btn-outline-danger py-3 fw-bold rounded-3" onclick="lihatGaleriDrive()">
-                        <i class="bi bi-folder-symlink-fill me-2 fs-5"></i> Lihat Galeri Acara
-                    </button>
-                </div>
-            `,
-            showConfirmButton: false, showCloseButton: true, customClass: { popup: 'swal-maroon' }
-        });
+let imgElement = document.getElementById('draggablePhoto');
+let containerElement = document.getElementById('previewContainer');
+
+// ... (biarkan fungsi bukaMenuDokumentasi, lihatGaleriDrive, reset, dll tetap sama) ...
+
+function bukaEditorLive(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        imgElement.src = e.target.result;
+        
+        imgElement.onload = function() {
+            photoState.scale = 1;
+            document.getElementById('zoomRange').value = 1;
+            
+            let containerSize = 300;
+            let scaleFit = Math.max(containerSize / imgElement.naturalWidth, containerSize / imgElement.naturalHeight);
+            photoState.scale = scaleFit;
+            document.getElementById('zoomRange').value = scaleFit;
+
+            photoState.x = (containerSize - (imgElement.naturalWidth * scaleFit)) / 2;
+            photoState.y = (containerSize - (imgElement.naturalHeight * scaleFit)) / 2;
+            
+            updatePhotoTransform();
+
+            const modal = new bootstrap.Modal(document.getElementById('modalLiveEditor'));
+            modal.show();
+        }
+    };
+    reader.readAsDataURL(file);
+}
+
+function updatePhotoTransform() {
+    imgElement.style.transform = `translate(${photoState.x}px, ${photoState.y}px) scale(${photoState.scale / (imgElement.naturalWidth > 0 ? (300/imgElement.naturalWidth) : 1)})`;
+}
+
+function ubahZoom(val) {
+    photoState.scale = parseFloat(val);
+    updatePhotoTransform();
+}
+
+// Event Listener untuk Mouse & Touch (Mendukung Geser & Pinch-to-Zoom 2 Jari)
+containerElement.addEventListener('mousedown', startDrag);
+containerElement.addEventListener('touchstart', startDragTouch, {passive: false});
+
+window.addEventListener('mousemove', onDrag);
+window.addEventListener('touchmove', onDragTouch, {passive: false});
+
+window.addEventListener('mouseup', endDrag);
+window.addEventListener('touchend', endDrag);
+
+function startDrag(e) {
+    photoState.isDragging = true;
+    photoState.startX = e.clientX - photoState.x;
+    photoState.startY = e.clientY - photoState.y;
+}
+
+function startDragTouch(e) {
+    if(e.touches.length === 1) {
+        photoState.isDragging = true;
+        photoState.startX = e.touches[0].clientX - photoState.x;
+        photoState.startY = e.touches[0].clientY - photoState.y;
+    } else if(e.touches.length === 2) {
+        photoState.isDragging = false;
+        // Hitung jarak awal antar dua jari saat mulai cubit
+        initialPinchDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialScale = photoState.scale;
     }
+}
+
+function onDrag(e) {
+    if (!photoState.isDragging) return;
+    photoState.x = e.clientX - photoState.startX;
+    photoState.y = e.clientY - photoState.startY;
+    updatePhotoTransform();
+}
+
+function onDragTouch(e) {
+    // Logika Pinch-to-Zoom dengan 2 Jari
+    if (e.touches.length === 2) {
+        let currentDistance = Math.hypot(
+            e.touches[0].clientX - e.touches[1].clientX,
+            e.touches[0].clientY - e.touches[1].clientY
+        );
+        if (initialPinchDistance > 0) {
+            let factor = currentDistance / initialPinchDistance;
+            let newScale = initialScale * factor;
+            // Batasi skala agar tidak terlalu kecil atau terlalu besar
+            if (newScale >= 0.05 && newScale <= 10) {
+                photoState.scale = newScale;
+                document.getElementById('zoomRange').value = newScale;
+                updatePhotoTransform();
+            }
+        }
+        e.preventDefault();
+        return;
+    }
+
+    if (!photoState.isDragging || e.touches.length !== 1) return;
+    photoState.x = e.touches[0].clientX - photoState.startX;
+    photoState.y = e.touches[0].clientY - photoState.startY;
+    updatePhotoTransform();
+    e.preventDefault();
+}
+
+function endDrag() {
+    photoState.isDragging = false;
+    initialPinchDistance = 0;
+}
 
     function lihatGaleriDrive() { window.open('https://drive.google.com/drive/folders/14nTGiUVSqkjvhlhvIC9hEz_dRqtyMcS6', '_blank'); }
 
