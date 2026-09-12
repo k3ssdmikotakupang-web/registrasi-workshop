@@ -18,20 +18,44 @@
         <button class="btn btn-sm btn-outline-light" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> Kembali</button>
     </div>
 
+    <!-- KARTU INFO KEPALA SEKOLAH & GURU -->
     <div class="row g-3 mb-4">
-        <div class="col-md-4"><div class="glass-card p-3 text-center"><small class="text-white-50">Total Target Penerima</small><h3 class="fw-bold text-white mb-0" id="sTotal">0</h3></div></div>
-        <div class="col-md-4"><div class="glass-card p-3 text-center" style="border-left: 4px solid #198754;"><small class="text-white-50">Sudah Dicairkan</small><h3 class="fw-bold text-success mb-0" id="sCair">0</h3></div></div>
-        <div class="col-md-4"><div class="glass-card p-3 text-center" style="border-left: 4px solid #ffc107;"><small class="text-white-50">Belum Dicairkan</small><h3 class="fw-bold text-warning mb-0" id="sBelum">0</h3></div></div>
+        <div class="col-md-6">
+            <div class="glass-card p-3 border-start border-warning border-4">
+                <h6 class="text-warning fw-bold mb-2"><i class="bi bi-person-badge"></i> Kepala Sekolah</h6>
+                <div class="d-flex justify-content-between text-small">
+                    <span>Total: <strong id="ksTotal">0</strong></span>
+                    <span class="text-success">Cair: <strong id="ksCair">0</strong></span>
+                    <span class="text-danger">Belum: <strong id="ksBelum">0</strong></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="glass-card p-3 border-start border-info border-4">
+                <h6 class="text-info fw-bold mb-2"><i class="bi bi-people"></i> Guru</h6>
+                <div class="d-flex justify-content-between text-small">
+                    <span>Total: <strong id="gTotal">0</strong></span>
+                    <span class="text-success">Cair: <strong id="gCair">0</strong></span>
+                    <span class="text-danger">Belum: <strong id="gBelum">0</strong></span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="glass-card p-4">
-        <h6 class="fw-bold mb-3">Daftar Status Penerima Transport</h6>
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+            <h6 class="fw-bold mb-0">Daftar Status Penerima Transport</h6>
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-sm btn-outline-light active" onclick="filterData('Semua', this)">Semua</button>
+                <button type="button" class="btn btn-sm btn-outline-warning" onclick="filterData('Kepala Sekolah', this)">Kepala Sekolah</button>
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="filterData('Guru', this)">Guru</button>
+            </div>
+        </div>
+        
         <div class="table-responsive">
             <table class="table table-dark table-striped table-hover align-middle" style="font-size: 0.9rem;">
                 <thead>
-                    <tr>
-                        <th>No</th><th>Nama Penerima</th><th>Jabatan</th><th>Asal Sekolah</th><th>Status</th><th>Waktu Cair</th>
-                    </tr>
+                    <tr><th>No</th><th>Nama Penerima</th><th>Jabatan</th><th>Asal Sekolah</th><th>Status</th><th>Waktu Cair</th></tr>
                 </thead>
                 <tbody id="tabelData">
                     <tr><td colspan="6" class="text-center py-3">Memuat data rekapitulasi...</td></tr>
@@ -47,6 +71,7 @@
     if(!userData || userData.role !== 'Bendahara_Subrayon') window.location.href = "index.html";
 
     document.getElementById('lblSub').innerText = userData.subrayon;
+    let cacheData = [];
 
     async function muatRekap() {
         try {
@@ -56,27 +81,48 @@
             });
             const result = await res.json();
             if(result.status === 'success') {
-                document.getElementById('sTotal').innerText = result.summary.total;
-                document.getElementById('sCair').innerText = result.summary.cair;
-                document.getElementById('sBelum').innerText = result.summary.belum;
+                document.getElementById('ksTotal').innerText = result.summary.kepsek.total;
+                document.getElementById('ksCair').innerText = result.summary.kepsek.cair;
+                document.getElementById('ksBelum').innerText = result.summary.kepsek.belum;
 
-                let html = '';
-                result.data.forEach((item, idx) => {
-                    let badge = item.status === 'Sudah Cair' ? '<span class="badge bg-success">Sudah Cair</span>' : '<span class="badge bg-warning text-dark">Belum Cair</span>';
-                    html += `<tr>
-                        <td>${idx + 1}</td>
-                        <td class="fw-bold">${item.nama}</td>
-                        <td>${item.jabatan}</td>
-                        <td>${item.sekolah}</td>
-                        <td>${badge}</td>
-                        <td class="small text-white-50">${item.waktu}</td>
-                    </tr>`;
-                });
-                document.getElementById('tabelData').innerText = '';
-                document.getElementById('tabelData').innerHTML = html || '<tr><td colspan="6" class="text-center">Belum ada data peserta.</td></tr>';
+                document.getElementById('gTotal').innerText = result.summary.guru.total;
+                document.getElementById('gCair').innerText = result.summary.guru.cair;
+                document.getElementById('gBelum').innerText = result.summary.guru.belum;
+
+                cacheData = result.data;
+                renderTabel(cacheData);
             }
         } catch(e) { console.error(e); }
     }
+
+    function renderTabel(dataList) {
+        let html = '';
+        dataList.forEach((item, idx) => {
+            let badge = item.status === 'Sudah Cair' ? '<span class="badge bg-success">Sudah Cair</span>' : '<span class="badge bg-warning text-dark">Belum Cair</span>';
+            let badgeKat = item.kategori === 'Kepala Sekolah' ? '<span class="badge bg-warning text-dark">Kepsek</span>' : '<span class="badge bg-info text-dark">Guru</span>';
+            html += `<tr>
+                <td>${idx + 1}</td>
+                <td class="fw-bold">${item.nama}</td>
+                <td>${badgeKat} <small class="text-white-50">(${item.jabatan})</small></td>
+                <td>${item.sekolah}</td>
+                <td>${badge}</td>
+                <td class="small text-white-50">${item.waktu}</td>
+            </tr>`;
+        });
+        document.getElementById('tabelData').innerHTML = html || '<tr><td colspan="6" class="text-center">Tidak ada data ditemukan.</td></tr>';
+    }
+
+    function filterData(kategori, btn) {
+        document.querySelectorAll('.btn-group .btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if(kategori === 'Semua') {
+            renderTabel(cacheData);
+        } else {
+            let filtered = cacheData.filter(d => d.kategori === kategori);
+            renderTabel(filtered);
+        }
+    }
+
     muatRekap();
 </script>
 </body>
