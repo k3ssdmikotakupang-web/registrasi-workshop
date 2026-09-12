@@ -9,15 +9,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        body { 
-            background-color: #f1f5f9; 
-            font-family: 'Poppins', sans-serif; 
-        }
+        body { background-color: #f1f5f9; font-family: 'Poppins', sans-serif; }
         
-        /* WADAH UTAMA ID CARD */
+        /* WADAH UTAMA ID CARD (7.5cm x 12cm) */
         .id-card-wrapper {
-            width: 6.5cm; 
-            height: 10.5cm;
+            width: 7.5cm; 
+            height: 12cm;
             background: #ffffff;
             border-radius: 12px;
             overflow: hidden;
@@ -29,68 +26,75 @@
             page-break-inside: avoid;
         }
 
-        /* HEADER BIRU DONGKER DENGAN POTONGAN MIRING */
+        /* HEADER BIRU DONGKER (Lebih dalam untuk memberi ruang foto) */
         .id-header {
             background: linear-gradient(135deg, #0f172a, #1e293b);
             color: #fbbf24;
             text-align: center;
-            padding: 15px 10px 35px 10px;
+            padding: 15px 8px 40px 8px;
             clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
         }
-        .id-header h5 { font-size: 0.75rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; }
-        .id-header p { font-size: 0.55rem; color: #cbd5e1; margin: 0; font-weight: 400; }
+        .id-header h5 { font-size: 0.8rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; }
+        .id-header p { font-size: 0.55rem; color: #cbd5e1; margin: 2px 0 0 0; font-weight: 400; line-height: 1.2; }
 
-        /* FOTO PROFIL MELAYANG */
+        /* FOTO PROFIL MELAYANG (Diturunkan dan sedikit diperbesar) */
         .id-photo {
-            width: 75px; 
-            height: 75px;
+            width: 85px; 
+            height: 85px;
             background: #f8fafc;
             border-radius: 50%;
-            border: 3px solid #fbbf24; /* Bingkai Emas */
-            margin: -40px auto 10px auto; /* Menarik foto ke atas menimpa header */
+            border: 3px solid #fbbf24; 
+            margin: -35px auto 10px auto; /* Margin atas dikurangi agar foto turun */
             display: flex; 
             justify-content: center; 
             align-items: center;
-            font-size: 2.5rem; 
+            font-size: 3rem; 
             color: #cbd5e1;
             box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             z-index: 2;
             position: relative;
+            overflow: hidden;
         }
+        /* Jika nanti pakai foto asli, img akan mengisi penuh lingkaran */
+        .id-photo img { width: 100%; height: 100%; object-fit: cover; }
 
         /* BODY KONTEN */
         .id-body {
             text-align: center;
             padding: 0 10px;
             flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .id-name {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: #0f172a;
-            margin-bottom: 4px;
-            line-height: 1.2;
+            margin-bottom: 2px;
+            line-height: 1.1;
             text-transform: uppercase;
         }
         .id-role {
             display: inline-block;
-            background: #fbbf24; /* Label Emas */
+            background: #fbbf24;
             color: #0f172a;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 800;
             padding: 4px 12px;
             border-radius: 20px;
-            margin-bottom: 15px;
+            margin-top: 5px;
+            margin-bottom: auto;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             box-shadow: 0 2px 5px rgba(251, 191, 36, 0.3);
         }
 
-        /* QR CODE */
-        .id-qr-box { text-align: center; margin-bottom: 10px; }
+        /* QR CODE (Diperbesar) */
+        .id-qr-box { text-align: center; margin-bottom: 10px; margin-top: 10px; }
         .id-qr-box img {
-            width: 75px; 
-            height: 75px;
+            width: 110px;  /* Ukuran diperbesar */
+            height: 110px; /* Ukuran diperbesar */
             padding: 4px;
             background: #fff;
             border: 1px solid #cbd5e1;
@@ -102,20 +106,18 @@
             background: #0f172a;
             color: #fff;
             text-align: center;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             padding: 6px;
             font-weight: 600;
             letter-spacing: 1px;
         }
 
-        /* PERINTAH KHUSUS SAAT CETAK (PRINT) */
         @media print {
             body { background: none !important; }
             .no-print { display: none !important; }
             .id-card-wrapper {
                 box-shadow: none !important;
                 border: 1px dashed #cbd5e1 !important;
-                /* Memaksa browser mencetak warna background */
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -125,7 +127,6 @@
 <body>
 
 <div class="container py-4">
-    <!-- TOOLBAR ATAS -->
     <div class="d-flex justify-content-between align-items-center mb-4 no-print glass-card p-3 rounded bg-white shadow-sm">
         <h4 class="fw-bold text-dark mb-0"><i class="bi bi-person-badge me-2 text-warning"></i> Cetak ID Card Panitia</h4>
         <div>
@@ -134,13 +135,11 @@
         </div>
     </div>
 
-    <!-- LOADING ANIMATION -->
     <div id="loading" class="text-center py-5">
         <div class="spinner-border text-warning" style="width: 3rem; height: 3rem;" role="status"></div>
         <p class="text-muted mt-3 fw-bold">Merakit ID Card Premium...</p>
     </div>
 
-    <!-- WADAH KARTU (Menggunakan Flexbox Wrap agar cetakan rapi) -->
     <div class="d-flex flex-wrap justify-content-center gap-4" id="containerCard"></div>
 </div>
 
@@ -160,23 +159,27 @@
             if(result.status === 'success' && result.data.length > 0) {
                 let html = '';
                 result.data.forEach(p => {
-                    // Buat link QR Code
-                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(p.id_panitia)}`;
+                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(p.id_panitia)}`;
+                    
+                    // Asumsi: Jika ada data foto (nanti setelah fitur upload dibuat), tampilkan <img>. Jika tidak, pakai ikon <i class="bi">.
+                    let fotoHtml = p.foto_url 
+                        ? `<img src="${p.foto_url}" alt="Foto Profil">` 
+                        : `<i class="bi bi-person-fill"></i>`;
                     
                     html += `
                         <div class="id-card-wrapper">
                             <div class="id-header">
                                 <h5>K3S SD/MI Kota Kupang</h5>
-                                <p>Panitia Manajemen Kepsek 2026</p>
+                                <p>Panitia Workshop Manajemen Kepsek SD/MI Kota Kupang 2026</p>
                             </div>
                             
                             <div class="id-photo">
-                                <i class="bi bi-person-fill"></i>
+                                ${fotoHtml}
                             </div>
                             
                             <div class="id-body">
                                 <div class="id-name">${p.nama}</div>
-                                <div class="id-role">${p.jabatan}</div>
+                                <div><span class="id-role">${p.jabatan}</span></div>
                                 
                                 <div class="id-qr-box">
                                     <img src="${qrUrl}" alt="QR Validasi">
@@ -198,7 +201,6 @@
         }
     }
 
-    // Eksekusi fungsi saat halaman dimuat
     muatDataPanitia();
 </script>
 </body>
