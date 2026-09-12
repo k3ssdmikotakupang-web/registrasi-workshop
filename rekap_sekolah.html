@@ -116,6 +116,7 @@
         if(userData.role === 'Bendahara_Panitia') window.location.href = 'dashboard_bendahara_panitia.html';
         else window.location.href = 'dashboard_subrayon.html';
     }
+    
 
     async function muatRekap() {
         try {
@@ -214,6 +215,18 @@
     }
 
     muatRekap();
+
+    function kembaliKeDasbor() {
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    if (userData && userData.role === 'Bendahara_Subrayon') {
+        window.location.href = 'dashboard_bendahara_subrayon.html';
+    } else if (userData && userData.role === 'Bendahara_Panitia') {
+        window.location.href = 'dashboard_bendahara_panitia.html';
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+    
 </script>
 </body>
 </html>
