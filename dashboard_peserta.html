@@ -8,7 +8,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     
+    <!-- Pustaka Pop-up & Cropper (Editor Foto) -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     
     <style>
         body { background-color: #f8fafc; font-family: 'Poppins', sans-serif; padding-bottom: 70px; }
@@ -33,6 +36,10 @@
         .menu-text { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
         
         .swal-maroon { border-radius: 15px !important; }
+        
+        /* Cropper Custom Styles */
+        .cropper-view-box, .cropper-face { border-radius: 0; } /* Harus persegi untuk twibbon */
+        .modal-cropper-body { max-height: 60vh; overflow: hidden; background: #0f172a; }
     </style>
 </head>
 <body>
@@ -57,7 +64,6 @@
         </div>
     </div>
 
-    <!-- WIDGET LIVE SESI & PENGUMUMAN -->
     <div class="row g-3 mb-4 px-3">
         <div class="col-md-6">
             <div class="glass-widget h-100">
@@ -68,7 +74,6 @@
                 <div class="p-3" id="boxSesiLive"><p class="text-muted small mb-0">Mengecek agenda...</p></div>
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="glass-widget h-100">
                 <div class="p-2 widget-header-info">
@@ -81,7 +86,7 @@
         </div>
     </div>
 
-    <!-- MENU OPERASIONAL PESERTA -->
+    <!-- MENU OPERASIONAL -->
     <div class="menu-grid">
         <h6 class="fw-bold text-dark mb-3 px-1 border-bottom pb-2">Menu Kegiatan</h6>
         <div class="row g-3">
@@ -97,7 +102,6 @@
                     <div class="menu-text">Materi<br>Workshop</div>
                 </div>
             </div>
-            <!-- MENU DOKUMENTASI DIUBAH MENJADI PHOTOBOOTH -->
             <div class="col-6">
                 <div class="menu-btn" onclick="bukaMenuDokumentasi()">
                     <div class="menu-icon"><i class="bi bi-camera"></i></div>
@@ -120,17 +124,16 @@
     
     <!-- ELEMEN TERSEMBUNYI UNTUK MESIN GAMBAR -->
     <canvas id="canvasSertifikat" style="display: none;"></canvas>
-    <canvas id="canvasDokumentasi" style="display: none;"></canvas>
-    <input type="file" id="inputKameraDokumentasi" accept="image/*" capture="environment" class="d-none" onchange="prosesFotoDokumentasi(event)">
+    <input type="file" id="inputKameraDokumentasi" accept="image/*" capture="environment" class="d-none" onchange="bukaEditorFoto(event)">
 </div>
 
 <!-- Modal Jadwal -->
-<div class="modal fade" id="modalJadwal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="modalJadwal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
     <div class="modal-content" style="border: none; border-radius: 15px;">
       <div class="modal-header" style="background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fbbf24;">
         <h5 class="modal-title fw-bold"><i class="bi bi-calendar-event me-2"></i> Jadwal Kegiatan Anda</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body p-0">
         <div class="table-responsive">
@@ -139,6 +142,25 @@
                 <tbody id="bodyTabelJadwal"></tbody>
             </table>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Cropper (Editor Foto Photobooth) -->
+<div class="modal fade" id="modalEditor" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-white" style="background: #0f172a; border-radius: 15px; border: 1px solid #475569;">
+      <div class="modal-header border-secondary">
+        <h6 class="modal-title fw-bold text-warning"><i class="bi bi-crop me-2"></i> Sesuaikan Foto (Pinch to Zoom)</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="resetInputKamera()"></button>
+      </div>
+      <div class="modal-body p-0 text-center modal-cropper-body">
+        <img id="imageToCrop" src="" style="max-width: 100%; display: block;">
+      </div>
+      <div class="modal-footer border-secondary p-2 d-flex justify-content-between">
+        <button type="button" class="btn btn-outline-light btn-sm px-3" data-bs-dismiss="modal" onclick="resetInputKamera()">Batal</button>
+        <button type="button" class="btn btn-warning btn-sm fw-bold px-4" onclick="terapkanFrame()">Terapkan Frame</button>
       </div>
     </div>
   </div>
@@ -223,8 +245,10 @@
     }
 
     // ==========================================
-    // MODUL PHOTOBOOTH & GALERI DOKUMENTASI
+    // MODUL PHOTOBOOTH & GALERI DENGAN CROPPER.JS
     // ==========================================
+    let cropper; // Variabel global untuk mesin editor
+
     function bukaMenuDokumentasi() {
         Swal.fire({
             title: '<h5 class="fw-bold text-danger mb-0">Photobooth & Galeri</h5>',
@@ -239,99 +263,115 @@
                     </button>
                 </div>
             `,
-            showConfirmButton: false,
-            showCloseButton: true,
-            customClass: { popup: 'swal-maroon' }
+            showConfirmButton: false, showCloseButton: true, customClass: { popup: 'swal-maroon' }
         });
     }
 
-    function lihatGaleriDrive() {
-        // Mengarahkan langsung ke Folder ID Drive yang Kapten berikan
-        window.open('https://drive.google.com/drive/folders/14nTGiUVSqkjvhlhvIC9hEz_dRqtyMcS6', '_blank');
+    function lihatGaleriDrive() { window.open('https://drive.google.com/drive/folders/14nTGiUVSqkjvhlhvIC9hEz_dRqtyMcS6', '_blank'); }
+
+    function resetInputKamera() {
+        document.getElementById('inputKameraDokumentasi').value = '';
+        if (cropper) cropper.destroy();
     }
 
-    function prosesFotoDokumentasi(event) {
+    // Buka Editor saat kamera selesai memotret
+    function bukaEditorFoto(event) {
         const file = event.target.files[0];
         if (!file) return;
 
-        Swal.fire({ title: 'Memproses Foto...', text: 'Memasang bingkai (frame) acara...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
         const reader = new FileReader();
         reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.getElementById('canvasDokumentasi');
-                const ctx = canvas.getContext('2d');
-                
-                // Set Resolusi Square yang optimal untuk Instagram/Galeri (1080x1080)
-                const size = 1080;
-                canvas.width = size;
-                canvas.height = size;
-                
-                // Logika Crop Proporsional (object-fit: cover) agar wajah tidak gepeng
-                const scale = Math.max(size / img.width, size / img.height);
-                const x = (size / 2) - (img.width / 2) * scale;
-                const y = (size / 2) - (img.height / 2) * scale;
-                
-                ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-                
-                // Panggil file Frame Transparan dari GitHub
-                const frameImg = new Image();
-                frameImg.crossOrigin = "anonymous";
-                frameImg.src = 'frame_dokumentasi.png'; // NAMA FILE BINGKAI KAPTEN
-                
-                frameImg.onload = function() {
-                    // Timpa bingkai transparan di atas foto peserta
-                    ctx.drawImage(frameImg, 0, 0, size, size);
-                    
-                    const dataUrl = canvas.toDataURL('image/jpeg', 0.85); // Compress 85%
-                    
-                    // Tampilkan Preview Hasil Photobooth
-                    Swal.fire({
-                        title: 'Keren! Momen Tertangkap',
-                        imageUrl: dataUrl,
-                        imageWidth: '100%',
-                        imageAlt: 'Preview Dokumentasi',
-                        showCancelButton: true,
-                        confirmButtonText: '<i class="bi bi-cloud-arrow-up-fill"></i> Upload ke Galeri',
-                        cancelButtonText: 'Ulangi Foto',
-                        confirmButtonColor: '#7f1d1d',
-                        customClass: { popup: 'swal-maroon' }
-                    }).then((res) => {
-                        if(res.isConfirmed) { uploadKeGaleriAcara(dataUrl.split(',')[1]); }
-                    });
-                };
-                
-                frameImg.onerror = function() {
-                    Swal.fire('Error Bingkai', 'File frame_dokumentasi.png tidak ditemukan di sistem. Harap lapor ke Admin.', 'error');
-                };
-            };
+            const img = document.getElementById('imageToCrop');
             img.src = e.target.result;
+
+            // Buka Modal Bootstrap
+            const modal = new bootstrap.Modal(document.getElementById('modalEditor'));
+            modal.show();
+
+            // Hancurkan mesin lama jika ada, lalu nyalakan yang baru
+            if (cropper) cropper.destroy();
+            
+            // Beri waktu sedikit agar modal terbuka sempurna sebelum Cropper merender kotak
+            setTimeout(() => {
+                cropper = new Cropper(img, {
+                    aspectRatio: 1, // Kunci rasio 1:1 (Persegi)
+                    viewMode: 1,
+                    dragMode: 'move', // Supaya foto bisa digeser dengan jari (Pan)
+                    autoCropArea: 1,
+                    guides: true,
+                    center: true,
+                    highlight: false,
+                    cropBoxMovable: false, // Kotak potong terkunci di tengah
+                    cropBoxResizable: false, // Ukuran kotak potong terkunci
+                    toggleDragModeOnDblclick: false,
+                });
+            }, 400);
         };
         reader.readAsDataURL(file);
+    }
+
+    // Eksekusi potong dan tempel bingkai
+    function terapkanFrame() {
+        if (!cropper) return;
+        
+        // Tutup Modal Editor
+        bootstrap.Modal.getInstance(document.getElementById('modalEditor')).hide();
+        Swal.fire({ title: 'Memasang Bingkai...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+        // Ambil hasil crop kotak dengan resolusi Instagram (1080x1080)
+        const croppedCanvas = cropper.getCroppedCanvas({
+            width: 1080,
+            height: 1080,
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+        });
+        
+        const ctx = croppedCanvas.getContext('2d');
+        
+        // Tarik file bingkai transparan dari GitHub
+        const frameImg = new Image();
+        frameImg.crossOrigin = "anonymous";
+        frameImg.src = 'frame_dokumentasi.png'; 
+        
+        frameImg.onload = function() {
+            // Tumpuk bingkai di atas foto hasil crop
+            ctx.drawImage(frameImg, 0, 0, 1080, 1080);
+            const dataUrl = croppedCanvas.toDataURL('image/jpeg', 0.85); // Kualitas 85%
+            
+            // Tampilkan Preview Akhir
+            Swal.fire({
+                title: 'Momen Tertangkap!',
+                imageUrl: dataUrl,
+                imageWidth: '100%',
+                showCancelButton: true,
+                confirmButtonText: '<i class="bi bi-cloud-arrow-up-fill"></i> Upload ke Galeri',
+                cancelButtonText: 'Batal',
+                confirmButtonColor: '#7f1d1d',
+                customClass: { popup: 'swal-maroon' }
+            }).then((res) => {
+                if(res.isConfirmed) { uploadKeGaleriAcara(dataUrl.split(',')[1]); }
+                resetInputKamera();
+            });
+        };
+        
+        frameImg.onerror = function() {
+            Swal.fire('Error Bingkai', 'File frame_dokumentasi.png tidak ditemukan di sistem. Pastikan file sudah terupload di GitHub.', 'error');
+            resetInputKamera();
+        };
     }
 
     async function uploadKeGaleriAcara(base64Data) {
         Swal.fire({ title: 'Mengunggah ke Galeri...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         try {
-            const namaUnik = 'Dokumentasi_' + userData.nama.replace(/\s+/g, '_') + '_' + new Date().getTime() + '.jpg';
+            const namaUnik = 'EMS_' + userData.nama.replace(/\s+/g, '_') + '_' + new Date().getTime() + '.jpg';
             const res = await fetch(API_URL, {
                 method: 'POST',
-                body: JSON.stringify({
-                    action: 'upload_foto_dokumentasi',
-                    fileBase64: base64Data,
-                    filename: namaUnik
-                })
+                body: JSON.stringify({ action: 'upload_foto_dokumentasi', fileBase64: base64Data, filename: namaUnik })
             });
             const result = await res.json();
             
             if(result.status === 'success') {
-                Swal.fire({ 
-                    icon: 'success', 
-                    title: 'Berhasil!', 
-                    text: 'Foto Anda telah diabadikan di Galeri Bersama.', 
-                    confirmButtonColor: '#7f1d1d' 
-                });
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Foto Anda telah diabadikan di Galeri Bersama.', confirmButtonColor: '#7f1d1d', customClass: { popup: 'swal-maroon' } });
             } else { Swal.fire('Gagal Upload', result.message, 'error'); }
         } catch(e) { Swal.fire('Error', 'Koneksi ke server terputus.', 'error'); }
     }
