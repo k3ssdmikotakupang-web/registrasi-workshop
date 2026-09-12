@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekap Transport Subrayon</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #0f172a; color: #fff; font-family: 'Segoe UI', sans-serif; padding-bottom: 40px; }
+        .glass-card { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; }
+    </style>
+</head>
+<body>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-info"><i class="bi bi-bar-chart-fill me-2"></i> Rekap Transport Subrayon <span id="lblSub"></span></h4>
+        <button class="btn btn-sm btn-outline-light" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> Kembali</button>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="glass-card p-3 text-center"><small class="text-white-50">Total Target Penerima</small><h3 class="fw-bold text-white mb-0" id="sTotal">0</h3></div></div>
+        <div class="col-md-4"><div class="glass-card p-3 text-center" style="border-left: 4px solid #198754;"><small class="text-white-50">Sudah Dicairkan</small><h3 class="fw-bold text-success mb-0" id="sCair">0</h3></div></div>
+        <div class="col-md-4"><div class="glass-card p-3 text-center" style="border-left: 4px solid #ffc107;"><small class="text-white-50">Belum Dicairkan</small><h3 class="fw-bold text-warning mb-0" id="sBelum">0</h3></div></div>
+    </div>
+
+    <div class="glass-card p-4">
+        <h6 class="fw-bold mb-3">Daftar Status Penerima Transport</h6>
+        <div class="table-responsive">
+            <table class="table table-dark table-striped table-hover align-middle" style="font-size: 0.9rem;">
+                <thead>
+                    <tr>
+                        <th>No</th><th>Nama Penerima</th><th>Jabatan</th><th>Asal Sekolah</th><th>Status</th><th>Waktu Cair</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelData">
+                    <tr><td colspan="6" class="text-center py-3">Memuat data rekapitulasi...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    if(!userData || userData.role !== 'Bendahara_Subrayon') window.location.href = "index.html";
+
+    document.getElementById('lblSub').innerText = userData.subrayon;
+
+    async function muatRekap() {
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'get_rekap_subrayon', subrayon: userData.subrayon })
+            });
+            const result = await res.json();
+            if(result.status === 'success') {
+                document.getElementById('sTotal').innerText = result.summary.total;
+                document.getElementById('sCair').innerText = result.summary.cair;
+                document.getElementById('sBelum').innerText = result.summary.belum;
+
+                let html = '';
+                result.data.forEach((item, idx) => {
+                    let badge = item.status === 'Sudah Cair' ? '<span class="badge bg-success">Sudah Cair</span>' : '<span class="badge bg-warning text-dark">Belum Cair</span>';
+                    html += `<tr>
+                        <td>${idx + 1}</td>
+                        <td class="fw-bold">${item.nama}</td>
+                        <td>${item.jabatan}</td>
+                        <td>${item.sekolah}</td>
+                        <td>${badge}</td>
+                        <td class="small text-white-50">${item.waktu}</td>
+                    </tr>`;
+                });
+                document.getElementById('tabelData').innerText = '';
+                document.getElementById('tabelData').innerHTML = html || '<tr><td colspan="6" class="text-center">Belum ada data peserta.</td></tr>';
+            }
+        } catch(e) { console.error(e); }
+    }
+    muatRekap();
+</script>
+</body>
+</html>
