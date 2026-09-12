@@ -476,22 +476,23 @@
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, 1080, 1080);
 
-        let renderScale = 1080 / 300;
+        let renderScale = 1080 / 300; // Skala konversi dari preview 300px ke kanvas 1080px
 
         const userImg = new Image();
         userImg.crossOrigin = "anonymous";
         userImg.src = imgElement.src;
 
         userImg.onload = function() {
-            ctx.save();
-            ctx.translate(photoState.x * renderScale, photoState.y * renderScale);
-            let baseFit = Math.max(300 / userImg.naturalWidth, 300 / userImg.naturalHeight);
-            let currentScaleFactor = (photoState.scale / baseFit) * renderScale;
-            ctx.scale(currentScaleFactor, currentScaleFactor);
-            
-            ctx.drawImage(userImg, 0, 0);
-            ctx.restore();
+            // Hitung posisi dan ukuran langsung secara presisi di kanvas 1080x1080
+            let drawX = photoState.x * renderScale;
+            let drawY = photoState.y * renderScale;
+            let drawWidth = userImg.naturalWidth * photoState.scale * renderScale;
+            let drawHeight = userImg.naturalHeight * photoState.scale * renderScale;
 
+            // Gambar foto user sesuai posisi geser & zoom terakhir
+            ctx.drawImage(userImg, drawX, drawY, drawWidth, drawHeight);
+
+            // Timpa Frame transparan tepat di atasnya
             const frameImg = new Image();
             frameImg.crossOrigin = "anonymous";
             frameImg.src = 'frame_dokumentasi.png';
