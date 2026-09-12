@@ -3,52 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak ID Card Panitia - EMS</title>
+    <title>Cetak ID Card Panitia - VIP Edition</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
     <style>
-        body { background-color: #f1f5f9; font-family: 'Segoe UI', sans-serif; }
-        .idcard {
-            width: 8.5cm; height: 12cm; background: #fff; border: 2px solid #0f172a;
-            border-radius: 12px; padding: 15px; margin: 15px auto; text-align: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; page-break-inside: avoid;
-            display: flex; flex-direction: column; justify-content: space-between;
+        body { 
+            background-color: #f1f5f9; 
+            font-family: 'Poppins', sans-serif; 
         }
-        .id-header { border-bottom: 2px solid #0f172a; padding-bottom: 8px; }
-        .id-title { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #1e293b; margin: 0; }
-        .id-sub { font-size: 0.65rem; font-weight: 600; color: #64748b; }
-        .id-photo-box { width: 90px; height: 90px; border: 2px dashed #cbd5e1; border-radius: 50%; margin: 10px auto; display: flex; align-items: center; justify-content: center; background: #f8fafc; font-size: 2rem; color: #94a3b8; }
-        .id-name { font-size: 1rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.2; }
-        .id-badge { background: #0f172a; color: #fff; font-size: 0.75rem; padding: 4px 10px; border-radius: 20px; font-weight: 600; display: inline-block; margin-bottom: 10px; }
-        .id-qr { width: 90px; height: 90px; margin: 0 auto; }
-        .id-footer { font-size: 0.6rem; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 5px; }
+        
+        /* WADAH UTAMA ID CARD */
+        .id-card-wrapper {
+            width: 6.5cm; 
+            height: 10.5cm;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            page-break-inside: avoid;
+        }
+
+        /* HEADER BIRU DONGKER DENGAN POTONGAN MIRING */
+        .id-header {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #fbbf24;
+            text-align: center;
+            padding: 15px 10px 35px 10px;
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+        .id-header h5 { font-size: 0.75rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; }
+        .id-header p { font-size: 0.55rem; color: #cbd5e1; margin: 0; font-weight: 400; }
+
+        /* FOTO PROFIL MELAYANG */
+        .id-photo {
+            width: 75px; 
+            height: 75px;
+            background: #f8fafc;
+            border-radius: 50%;
+            border: 3px solid #fbbf24; /* Bingkai Emas */
+            margin: -40px auto 10px auto; /* Menarik foto ke atas menimpa header */
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            font-size: 2.5rem; 
+            color: #cbd5e1;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 2;
+            position: relative;
+        }
+
+        /* BODY KONTEN */
+        .id-body {
+            text-align: center;
+            padding: 0 10px;
+            flex-grow: 1;
+        }
+        .id-name {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 4px;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+        .id-role {
+            display: inline-block;
+            background: #fbbf24; /* Label Emas */
+            color: #0f172a;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(251, 191, 36, 0.3);
+        }
+
+        /* QR CODE */
+        .id-qr-box { text-align: center; margin-bottom: 10px; }
+        .id-qr-box img {
+            width: 75px; 
+            height: 75px;
+            padding: 4px;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+        }
+
+        /* FOOTER */
+        .id-footer {
+            background: #0f172a;
+            color: #fff;
+            text-align: center;
+            font-size: 0.6rem;
+            padding: 6px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* PERINTAH KHUSUS SAAT CETAK (PRINT) */
         @media print {
-            body { background: none; }
+            body { background: none !important; }
             .no-print { display: none !important; }
-            .idcard { border: 1px solid #000; box-shadow: none; }
+            .id-card-wrapper {
+                box-shadow: none !important;
+                border: 1px dashed #cbd5e1 !important;
+                /* Memaksa browser mencetak warna background */
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print">
-        <h4 class="fw-bold text-dark mb-0"><i class="bi bi-person-badge me-2"></i> Cetak ID Card Panitia</h4>
+    <!-- TOOLBAR ATAS -->
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print glass-card p-3 rounded bg-white shadow-sm">
+        <h4 class="fw-bold text-dark mb-0"><i class="bi bi-person-badge me-2 text-warning"></i> Cetak ID Card Panitia</h4>
         <div>
-            <button class="btn btn-primary fw-bold" onclick="window.print()"><i class="bi bi-printer me-2"></i> Cetak Semua</button>
-            <button class="btn btn-outline-dark ms-2" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> Kembali</button>
+            <button class="btn btn-dark fw-bold" onclick="window.print()"><i class="bi bi-printer-fill me-2"></i> Cetak Semua</button>
+            <button class="btn btn-outline-secondary ms-2" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> Kembali</button>
         </div>
     </div>
 
+    <!-- LOADING ANIMATION -->
     <div id="loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status"></div>
-        <p class="text-muted mt-2">Memuat data panitia...</p>
+        <div class="spinner-border text-warning" style="width: 3rem; height: 3rem;" role="status"></div>
+        <p class="text-muted mt-3 fw-bold">Merakit ID Card Premium...</p>
     </div>
 
-    <div class="row" id="containerCard"></div>
+    <!-- WADAH KARTU (Menggunakan Flexbox Wrap agar cetakan rapi) -->
+    <div class="d-flex flex-wrap justify-content-center gap-4" id="containerCard"></div>
 </div>
 
 <script>
+    // WAJIB PASTE API URL KAPTEN DI SINI!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
 
     async function muatDataPanitia() {
@@ -63,36 +160,45 @@
             if(result.status === 'success' && result.data.length > 0) {
                 let html = '';
                 result.data.forEach(p => {
-                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(p.id_panitia)}`;
+                    // Buat link QR Code
+                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(p.id_panitia)}`;
+                    
                     html += `
-                        <div class="col-md-4 col-sm-6">
-                            <div class="idcard">
-                                <div class="id-header">
-                                    <p class="id-title">K3S SD/MI Kota Kupang</p>
-                                    <span class="id-sub">Workshop Manajemen Kepala Sekolah 2026</span>
+                        <div class="id-card-wrapper">
+                            <div class="id-header">
+                                <h5>K3S SD/MI Kota Kupang</h5>
+                                <p>Panitia Manajemen Kepsek 2026</p>
+                            </div>
+                            
+                            <div class="id-photo">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            
+                            <div class="id-body">
+                                <div class="id-name">${p.nama}</div>
+                                <div class="id-role">${p.jabatan}</div>
+                                
+                                <div class="id-qr-box">
+                                    <img src="${qrUrl}" alt="QR Validasi">
                                 </div>
-                                <div>
-                                    <div class="id-photo-box"><i class="bi bi-person-fill"></i></div>
-                                    <div class="id-name">${p.nama}</div>
-                                    <div class="id-badge">${p.jabatan}</div>
-                                </div>
-                                <div>
-                                    <img src="${qrUrl}" class="id-qr img-thumbnail mb-2" alt="QR Panitia">
-                                    <div class="id-footer">ID: <strong>${p.id_panitia}</strong> | HP: ${p.hp}</div>
-                                </div>
+                            </div>
+                            
+                            <div class="id-footer">
+                                ID: ${p.id_panitia}
                             </div>
                         </div>
                     `;
                 });
                 document.getElementById('containerCard').innerHTML = html;
             } else {
-                document.getElementById('containerCard').innerHTML = '<div class="col-12 text-center text-muted">Belum ada data panitia yang terdaftar.</div>';
+                document.getElementById('containerCard').innerHTML = '<div class="col-12 text-center text-muted fw-bold">Belum ada data panitia yang terdaftar.</div>';
             }
         } catch(e) {
-            document.getElementById('loading').innerHTML = '<span class="text-danger">Gagal memuat data dari server.</span>';
+            document.getElementById('loading').innerHTML = '<span class="text-danger fw-bold">Gagal memuat data dari server. Pastikan API URL sudah benar.</span>';
         }
     }
 
+    // Eksekusi fungsi saat halaman dimuat
     muatDataPanitia();
 </script>
 </body>
