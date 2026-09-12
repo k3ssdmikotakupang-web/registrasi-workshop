@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-ID Card Peserta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body { background-color: #0f172a; font-family: 'Poppins', sans-serif; display: flex; flex-direction: column; min-height: 100vh; padding: 20px 10px; align-items: center; justify-content: center; }
+        
+        /* ID CARD ADAPTIF UNTUK LAYAR HP */
+        .id-card-wrapper { width: 100%; max-width: 340px; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.3); position: relative; display: flex; flex-direction: column; border: 1px solid #334155; margin-bottom: 25px; }
+        .id-header { background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fbbf24; text-align: center; padding: 20px 10px 50px 10px; clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%); }
+        .id-header h5 { font-size: 0.9rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.2; }
+        .id-header p { font-size: 0.65rem; color: #fca5a5; margin: 5px 0 0 0; font-weight: 600; line-height: 1.2; text-transform: uppercase;}
+        .id-photo { width: 110px; height: 110px; background: #fff; border-radius: 50%; border: 4px solid #fbbf24; margin: -45px auto 10px auto; display: flex; justify-content: center; align-items: center; font-size: 3.5rem; color: #94a3b8; box-shadow: 0 4px 10px rgba(0,0,0,0.15); z-index: 2; position: relative; overflow: hidden; }
+        .id-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .id-body { text-align: center; padding: 10px 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .id-name { font-size: 1.1rem; font-weight: 800; color: #7f1d1d; margin-bottom: 4px; line-height: 1.2; text-transform: uppercase; }
+        .id-school { font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 8px; line-height: 1.2; }
+        .id-role { display: inline-block; background: #fbbf24; color: #7f1d1d; font-size: 0.75rem; font-weight: 800; padding: 5px 15px; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 auto 15px auto; }
+        .id-qr-box { text-align: center; margin-bottom: 15px; }
+        .id-qr-box img { width: 150px; height: 150px; padding: 5px; background: #fff; border: 2px dashed #cbd5e1; border-radius: 12px; }
+        .id-footer { background: #7f1d1d; color: #fff; text-align: center; font-size: 0.7rem; padding: 8px; font-weight: 600; letter-spacing: 1px; }
+
+        /* WADAH KONTROL (KAMERA & KEMBALI) */
+        .controls-wrapper { width: 100%; max-width: 340px; }
+        .btn-kamera { background-color: #fbbf24; color: #7f1d1d; font-weight: 800; border-radius: 10px; box-shadow: 0 4px 10px rgba(251, 191, 36, 0.2); border: none; }
+        .btn-back { background-color: transparent; border: 1px solid #64748b; color: #cbd5e1; font-weight: 600; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<!-- KARTU ID DIGITAL -->
+<div class="id-card-wrapper" id="idCard">
+    <div class="id-header">
+        <h5>K3S SD/MI Kota Kupang</h5>
+        <p>Peserta Workshop Manajemen Kepsek SD/MI<br>Kota Kupang 2026</p>
+    </div>
+    <div class="id-photo" id="photoArea">
+        <i class="bi bi-person-fill"></i>
+    </div>
+    <div class="id-body">
+        <div class="id-name" id="cNama">...</div>
+        <div class="id-school" id="cSekolah">...</div>
+        <div><span class="id-role" id="cJabatan">...</span></div>
+        <div class="id-qr-box">
+            <img id="cQr" src="" alt="QR Validasi">
+        </div>
+    </div>
+    <div class="id-footer">
+        ID: <span id="cIdQr">...</span>
+    </div>
+</div>
+
+<!-- TOMBOL KONTROL & KAMERA -->
+<div class="controls-wrapper">
+    <input type="file" id="inputKamera" accept="image/*" capture="user" class="d-none" onchange="prosesFoto(event)">
+    
+    <button class="btn btn-kamera w-100 py-3 mb-3" id="btnBukaKamera" onclick="document.getElementById('inputKamera').click()">
+        <i class="bi bi-camera-fill me-2"></i> PERBARUI FOTO PROFIL
+    </button>
+    
+    <button class="btn btn-success w-100 py-3 fw-bold mb-3 d-none" id="btnSimpan" onclick="kirimKeServer()">
+        <i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO KE ID CARD
+    </button>
+    
+    <button class="btn btn-back w-100 py-3" onclick="window.location.href='dashboard_peserta.html'">
+        <i class="bi bi-house-door-fill me-2"></i> Kembali ke Dasbor
+    </button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // WAJIB PASTE API URL KAPTEN DI SINI!
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    
+    if(!userData || userData.role !== 'Peserta') window.location.href = "index.html";
+
+    // MENGISI DATA KE ID CARD
+    document.getElementById('cNama').innerText = userData.nama;
+    document.getElementById('cSekolah').innerText = userData.sekolah || 'Data Sekolah';
+    document.getElementById('cJabatan').innerText = userData.jabatan;
+    document.getElementById('cIdQr').innerText = userData.id_qr;
+    
+    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(userData.id_qr)}`;
+    document.getElementById('cQr').src = qrUrl;
+
+    if(userData.foto_url) {
+        document.getElementById('photoArea').innerHTML = `<img src="${userData.foto_url}" alt="Foto Profil">`;
+    }
+
+    let base64FotoTerkirim = "";
+    let namaFileFoto = "";
+
+    // MESIN KOMPRESI KAMERA
+    function prosesFoto(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        Swal.fire({ title: 'Menyiapkan Foto...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const MAX_WIDTH = 400; // Kompresi ringan 400px
+                const scaleSize = MAX_WIDTH / img.width;
+                canvas.width = MAX_WIDTH;
+                canvas.height = img.height * scaleSize;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.85); // Kualitas 85%
+                
+                // Tempel ke Kartu
+                document.getElementById('photoArea').innerHTML = `<img src="${dataUrl}">`;
+                
+                base64FotoTerkirim = dataUrl.split(',')[1];
+                namaFileFoto = "Peserta_" + userData.id_qr + ".jpg";
+                
+                document.getElementById('btnSimpan').classList.remove('d-none');
+                document.getElementById('btnBukaKamera').classList.add('d-none');
+                Swal.close();
+            }
+            img.src = e.target.result;
+        }
+        reader.readAsDataURL(file);
+    }
+
+    // PENGIRIMAN KE SERVER & DRIVE
+    async function kirimKeServer() {
+        let btn = document.getElementById('btnSimpan');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan ke Server...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({
+                    action: 'upload_foto_peserta',
+                    id_qr: userData.id_qr,
+                    fileBase64: base64FotoTerkirim,
+                    mimeType: 'image/jpeg',
+                    filename: namaFileFoto
+                })
+            });
+            const result = await res.json();
+
+            if(result.status === 'success') {
+                // Perbarui LocalStorage agar di dasbor juga ikut terupdate
+                userData.foto_url = result.url;
+                localStorage.setItem('userLogin', JSON.stringify(userData));
+
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Foto resmi terpasang di ID Card Anda.', timer: 2000, showConfirmButton: false }).then(() => {
+                    btn.classList.add('d-none');
+                    document.getElementById('btnBukaKamera').classList.remove('d-none');
+                });
+            } else {
+                Swal.fire('Gagal', result.message, 'error');
+                btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO KE ID CARD'; btn.disabled = false;
+            }
+        } catch(e) {
+            Swal.fire('Error', 'Koneksi ke server terputus.', 'error');
+            btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO KE ID CARD'; btn.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>
