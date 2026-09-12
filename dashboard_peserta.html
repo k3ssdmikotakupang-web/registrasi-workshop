@@ -9,59 +9,65 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        body { background-color: #f8fafc; font-family: 'Poppins', sans-serif; padding-bottom: 40px; }
-        .header-maroon { background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fbbf24; padding: 25px 15px; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; box-shadow: 0 4px 15px rgba(127, 29, 29, 0.3); text-align: center; margin-bottom: -40px; }
-        .card-main { background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 20px; margin: 0 15px; position: relative; z-index: 10; border-top: 4px solid #fbbf24; }
+        body { background-color: #f8fafc; font-family: 'Poppins', sans-serif; padding-bottom: 50px; }
+        .header-maroon { background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fbbf24; padding: 25px 15px 60px 15px; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 4px 15px rgba(127, 29, 29, 0.3); text-align: center; margin-bottom: -50px; }
         
-        /* Gaya Kotak Foto Profil */
-        .foto-box { width: 120px; height: 120px; background: #f1f5f9; border-radius: 50%; border: 4px solid #fbbf24; margin: 0 auto 15px auto; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: #94a3b8; overflow: hidden; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .card-main { background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 20px 15px; margin: 0 15px 25px 15px; position: relative; z-index: 10; border-top: 4px solid #fbbf24; }
+        
+        /* Avatar Profil (Klikable) */
+        .avatar-container { text-align: center; cursor: pointer; transition: transform 0.2s; margin-top: -50px; }
+        .avatar-container:hover { transform: scale(1.05); }
+        .foto-box { width: 110px; height: 110px; background: #fff; border-radius: 50%; border: 4px solid #fbbf24; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: #94a3b8; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.2); position: relative; z-index: 11; }
         .foto-box img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .qr-box { background: #fff; padding: 10px; border-radius: 10px; border: 2px dashed #cbd5e1; width: fit-content; margin: 15px auto; }
-        .btn-maroon { background-color: #7f1d1d; color: #fff; font-weight: 600; border-radius: 8px; }
-        .btn-maroon:hover { background-color: #991b1b; color: #fff; }
-        .btn-kamera { background-color: #fbbf24; color: #7f1d1d; font-weight: 800; border-radius: 8px; box-shadow: 0 4px 10px rgba(251, 191, 36, 0.3); border: none; }
+        .badge-klik { font-size: 0.65rem; background: #7f1d1d; color: #fff; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px; box-shadow: 0 2px 5px rgba(127, 29, 29, 0.3); }
+
+        /* Menu Grid */
+        .menu-grid { padding: 0 15px; }
+        .menu-btn { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px 10px; text-align: center; color: #0f172a; text-decoration: none; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s; }
+        .menu-btn:hover { background: #f8fafc; border-color: #cbd5e1; }
+        .menu-icon { font-size: 2.2rem; color: #7f1d1d; margin-bottom: 8px; }
+        .menu-text { font-size: 0.85rem; font-weight: 700; line-height: 1.2; }
     </style>
 </head>
 <body>
 
 <div class="header-maroon">
-    <h5 class="fw-bold mb-0 text-uppercase" style="letter-spacing: 1px;">K3S SD/MI KOTA KUPANG</h5>
-    <p class="small text-white-50 mt-1">Workshop Manajemen Kepala Sekolah 2026</p>
-    <div style="height: 30px;"></div>
+    <h5 class="fw-bold mb-0 text-uppercase">K3S SD/MI KOTA KUPANG</h5>
+    <p class="small text-white-50 mt-1">Dasbor Peserta Workshop 2026</p>
 </div>
 
 <div class="container-fluid">
     <div class="card-main text-center">
-        <!-- WADAH FOTO PROFIL -->
-        <div class="foto-box" id="previewArea">
-            <i class="bi bi-person-fill"></i>
+        <!-- AVATAR MENJADI TOMBOL MENUJU ID CARD -->
+        <div class="avatar-container" onclick="window.location.href='id_card_peserta.html'">
+            <div class="foto-box" id="previewArea"><i class="bi bi-person-fill"></i></div>
+            <span class="badge-klik mb-2 d-inline-block"><i class="bi bi-upc-scan me-1"></i> LIHAT ID CARD & QR</span>
         </div>
-
-        <h5 class="fw-bold text-dark mb-1" id="txtNama">Memuat...</h5>
-        <span class="badge bg-warning text-dark mb-3 px-3 py-2 fw-bold" id="txtJabatan">...</span>
-
-        <!-- TOMBOL KAMERA TERSEMBUNYI -->
-        <input type="file" id="inputKamera" accept="image/*" capture="user" class="d-none" onchange="prosesFoto(event)">
         
-        <div class="d-grid gap-2 mb-4">
-            <button class="btn btn-kamera py-2" id="btnBukaKamera" onclick="document.getElementById('inputKamera').click()">
-                <i class="bi bi-camera-fill me-2"></i> JEPRET FOTO PROFIL
-            </button>
-            <button class="btn btn-success py-2 fw-bold d-none" id="btnSimpan" onclick="kirimKeServer()">
-                <i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO
-            </button>
-        </div>
+        <h5 class="fw-bold text-dark mb-1 mt-2" id="txtNama">Memuat...</h5>
+        <span class="badge bg-warning text-dark px-3 py-1 fw-bold" id="txtJabatan">...</span>
+    </div>
 
-        <hr class="text-muted">
-
-        <p class="small text-muted fw-bold mb-2">Tunjukkan QR Code ini kepada panitia saat Registrasi dan Pencairan Dana.</p>
-        <div class="qr-box">
-            <img id="qrPeserta" src="" alt="QR Code Peserta" width="150" height="150">
+    <!-- MENU OPERASIONAL PESERTA -->
+    <div class="menu-grid">
+        <h6 class="fw-bold text-dark mb-3 px-2">Menu Layanan</h6>
+        <div class="row g-3">
+            <div class="col-6">
+                <a href="#" class="menu-btn" onclick="bukaJadwalMateri()">
+                    <div class="menu-icon"><i class="bi bi-calendar-event"></i></div>
+                    <div class="menu-text">Jadwal &<br>Materi</div>
+                </a>
+            </div>
+            <div class="col-6">
+                <a href="#" class="menu-btn" onclick="cekStatusSertifikat()">
+                    <div class="menu-icon"><i class="bi bi-patch-check"></i></div>
+                    <div class="menu-text">Status &<br>Sertifikat</div>
+                </a>
+            </div>
+            <div class="col-12 mt-4">
+                <button class="btn btn-outline-danger w-100 py-3 fw-bold" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>Keluar Dasbor</button>
+            </div>
         </div>
-        <p class="fw-bold text-danger mb-0" id="txtIdQr">-</p>
-        
-        <button class="btn btn-outline-danger w-100 mt-4 fw-bold" onclick="logout()"><i class="bi bi-box-arrow-right me-2"></i>Keluar</button>
     </div>
 </div>
 
@@ -69,117 +75,61 @@
 <script>
     // WAJIB PASTE API URL KAPTEN DI SINI!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
-
     const userData = JSON.parse(localStorage.getItem('userLogin'));
+    
     if(!userData || userData.role !== 'Peserta') window.location.href = "index.html";
 
-    // Set Data Awal
+    // Set Data Info
     document.getElementById('txtNama').innerText = userData.nama;
     document.getElementById('txtJabatan').innerText = userData.jabatan;
-    document.getElementById('txtIdQr').innerText = userData.id_qr;
-    
-    // Render QR Code (Resolusi tinggi agar mudah di-scan)
-    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(userData.id_qr)}`;
-    document.getElementById('qrPeserta').src = qrUrl;
 
-    // Jika sudah pernah simpan URL Foto di localStorage, tampilkan (Opsional)
+    // Set Foto dari LocalStorage (jika ada)
     if(userData.foto_url) {
-        document.getElementById('previewArea').innerHTML = `<img src="${userData.foto_url}">`;
-        document.getElementById('btnBukaKamera').innerHTML = `<i class="bi bi-camera-fill me-2"></i> GANTI FOTO`;
+        document.getElementById('previewArea').innerHTML = `<img src="${userData.foto_url}" alt="Foto Profil">`;
     }
 
-    // Variabel Penampung Foto
-    let base64FotoTerkirim = "";
-    let namaFileFoto = "";
-
-    // MESIN KOMPRESI FOTO OTOMATIS
-    function prosesFoto(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        Swal.fire({ title: 'Memproses Foto...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
-
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                // Kompresi rasio ke maksimal lebar 400px agar super ringan
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 400;
-                const scaleSize = MAX_WIDTH / img.width;
-                canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                // Ubah ke format Base64 ringan (kualitas 80%)
-                const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-                
-                // Tampilkan preview di layar peserta
-                document.getElementById('previewArea').innerHTML = `<img src="${dataUrl}">`;
-                
-                // Siapkan variabel kirim
-                base64FotoTerkirim = dataUrl.split(',')[1];
-                namaFileFoto = "Peserta_" + userData.id_qr + ".jpg";
-                
-                // Munculkan tombol Simpan
-                document.getElementById('btnSimpan').classList.remove('d-none');
-                document.getElementById('btnBukaKamera').classList.add('d-none'); // Sembunyikan kamera sementara
-                Swal.close();
-            }
-            img.src = e.target.result;
-        }
-        reader.readAsDataURL(file);
-    }
-
-    // KIRIM FOTO KE SERVER
-    async function kirimKeServer() {
-        let btn = document.getElementById('btnSimpan');
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
-        btn.disabled = true;
-
+    // MODUL LIHAT JADWAL & PENGUMUMAN LIVE
+    async function bukaJadwalMateri() {
+        Swal.fire({ title: 'Memuat Jadwal...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
         try {
             const res = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'upload_foto_peserta',
-                    id_qr: userData.id_qr,
-                    fileBase64: base64FotoTerkirim,
-                    mimeType: 'image/jpeg',
-                    filename: namaFileFoto
-                })
+                method: 'POST', body: JSON.stringify({ action: 'get_dashboard_live', role: 'Peserta', jabatan: userData.jabatan })
             });
             const result = await res.json();
-
             if(result.status === 'success') {
-                // Simpan URL ke LocalStorage agar saat refresh fotonya tidak hilang
-                userData.foto_url = result.url;
-                localStorage.setItem('userLogin', JSON.stringify(userData));
-
-                Swal.fire({
-                    icon: 'success', title: 'Keren!', text: 'Foto Profil berhasil diperbarui.', timer: 2000, showConfirmButton: false
-                }).then(() => {
-                    btn.classList.add('d-none');
-                    document.getElementById('btnBukaKamera').classList.remove('d-none');
-                    document.getElementById('btnBukaKamera').innerHTML = `<i class="bi bi-camera-fill me-2"></i> GANTI FOTO`;
-                });
-            } else {
-                Swal.fire('Gagal', result.message, 'error');
-                btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO';
-                btn.disabled = false;
-            }
-        } catch(e) {
-            Swal.fire('Error', 'Koneksi ke server terputus.', 'error');
-            btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO';
-            btn.disabled = false;
-        }
+                let kontenHtml = '<div class="text-start" style="max-height: 400px; overflow-y: auto; font-size: 0.85rem;">';
+                if(result.ongoing) {
+                    kontenHtml += `<div class="alert alert-success p-2 mb-3"><strong><i class="bi bi-broadcast"></i> Sedang Berlangsung:</strong><br>${result.ongoing.kegiatan} (${result.ongoing.waktu})<br><small>Lokasi: ${result.ongoing.lokasi} | Pemateri: ${result.ongoing.pemateri}</small></div>`;
+                }
+                if(result.announcements && result.announcements.length > 0) {
+                    kontenHtml += '<h6 class="fw-bold text-dark border-bottom pb-1">Pengumuman Terbaru:</h6>';
+                    result.announcements.forEach(a => { kontenHtml += `<div class="p-2 mb-2 bg-light rounded border"><span class="fw-bold text-danger">${a.judul}</span><br><span>${a.isi}</span><br><small class="text-muted">Tanggal: ${a.tanggal}</small></div>`; });
+                } else {
+                    kontenHtml += '<p class="text-muted text-center italic">Belum ada pengumuman aktif saat ini.</p>';
+                }
+                kontenHtml += '</div>';
+                Swal.fire({ title: 'Pusat Informasi & Jadwal', html: kontenHtml, confirmButtonText: 'Tutup', confirmButtonColor: '#7f1d1d' });
+            } else { Swal.fire('Gagal', 'Tidak dapat memuat data jadwal.', 'error'); }
+        } catch(e) { Swal.fire('Koneksi Error', 'Gagal terhubung ke server.', 'error'); }
     }
 
-    function logout() {
-        localStorage.removeItem('userLogin');
-        window.location.href = "index.html";
+    // MODUL CEK STATUS KEHADIRAN & SERTIFIKAT
+    async function cekStatusSertifikat() {
+        Swal.fire({ title: 'Memeriksa Status...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST', body: JSON.stringify({ action: 'cek_sertifikat', id_qr: userData.id_qr })
+            });
+            const result = await res.json();
+            if(result.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Check-In Terkonfirmasi!', html: `Halo <b>${result.data.nama}</b>.<br><br>Kehadiran Anda valid. Sertifikat digital Anda siap diunduh!`, confirmButtonText: 'Unduh Sertifikat', confirmButtonColor: '#198754' });
+            } else if(result.status === 'warning') {
+                Swal.fire({ icon: 'warning', title: 'Belum Check-In', text: result.message, confirmButtonColor: '#ffc107' });
+            } else { Swal.fire('Informasi', result.message, 'error'); }
+        } catch(e) { Swal.fire('Error', 'Gagal memvalidasi status kehadiran.', 'error'); }
     }
+
+    function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
 </script>
 </body>
 </html>
