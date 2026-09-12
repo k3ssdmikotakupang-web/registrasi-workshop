@@ -14,25 +14,62 @@
 <body>
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-neon text-info"><i class="bi bi-shield-check me-2"></i> Rekapitulasi Master Transport & Honor Panitia</h4>
+        <h4 class="fw-bold text-info"><i class="bi bi-shield-check me-2"></i> Rekap Master Transport & Honor Panitia</h4>
         <button class="btn btn-sm btn-outline-light" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> Kembali</button>
     </div>
 
+    <!-- KARTU INFO UTAMA (DIPISAH KEPSEK, GURU, PANITIA) -->
     <div class="row g-3 mb-4">
-        <div class="col-md-6"><div class="glass-card p-3"><h6 class="text-info fw-bold">Total Transport Peserta</h6><h3 class="fw-bold mb-0" id="pTotal">0 <span class="fs-6 text-white-50" id="pDetail"></span></h3></div></div>
-        <div class="col-md-6"><div class="glass-card p-3"><h6 class="text-warning fw-bold">Total Honor/Lembur Panitia</h6><h3 class="fw-bold mb-0" id="panTotal">0 <span class="fs-6 text-white-50" id="panDetail"></span></h3></div></div>
+        <div class="col-md-4">
+            <div class="glass-card p-3 border-start border-warning border-4">
+                <h6 class="text-warning fw-bold">Transport Kepala Sekolah</h6>
+                <h3 class="fw-bold mb-0" id="ksTotal">0</h3>
+                <small class="text-white-50">Cair: <span id="ksCair" class="text-success fw-bold">0</span> | Belum: <span id="ksBelum" class="text-danger fw-bold">0</span></small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-3 border-start border-info border-4">
+                <h6 class="text-info fw-bold">Transport Guru</h6>
+                <h3 class="fw-bold mb-0" id="gTotal">0</h3>
+                <small class="text-white-50">Cair: <span id="gCair" class="text-success fw-bold">0</span> | Belum: <span id="gBelum" class="text-danger fw-bold">0</span></small>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card p-3 border-start border-success border-4">
+                <h6 class="text-success fw-bold">Honor/Lembur Panitia</h6>
+                <h3 class="fw-bold mb-0" id="panTotal">0</h3>
+                <small class="text-white-50">Cair: <span id="panCair" class="text-success fw-bold">0</span> | Belum: <span id="panBelum" class="text-danger fw-bold">0</span></small>
+            </div>
+        </div>
     </div>
 
+    <!-- TABEL PROGRES PER SUBRAYON -->
     <div class="glass-card p-4 mb-4">
-        <h6 class="fw-bold mb-3">Rekap Progress Per Subrayon</h6>
+        <h6 class="fw-bold mb-3">Rekap Progress Pencairan Per Subrayon</h6>
         <div class="table-responsive">
-            <table class="table table-dark table-bordered align-middle">
-                <thead><tr><th>Subrayon</th><th>Total Target</th><th>Sudah Cair</th><th>Belum Cair</th><th>Progres</th></tr></thead>
-                <tbody id="tabelSubrayon"><tr><td colspan="5" class="text-center">Memuat rekap subrayon...</td></tr></tbody>
+            <table class="table table-dark table-bordered align-middle" style="font-size: 0.9rem;">
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="align-middle">Subrayon</th>
+                        <th colspan="2" class="text-center bg-dark">Kepala Sekolah</th>
+                        <th colspan="2" class="text-center bg-dark">Guru</th>
+                        <th rowspan="2" class="align-middle text-center">Total Selesai</th>
+                    </tr>
+                    <tr>
+                        <th class="text-center">Cair / Total</th>
+                        <th class="text-center">%</th>
+                        <th class="text-center">Cair / Total</th>
+                        <th class="text-center">%</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelSubrayon">
+                    <tr><td colspan="6" class="text-center">Memuat rekap subrayon...</td></tr>
+                </tbody>
             </table>
         </div>
     </div>
 
+    <!-- TABEL PANITIA -->
     <div class="glass-card p-4">
         <h6 class="fw-bold mb-3">Daftar Honor & Pencairan Panitia Pusat</h6>
         <div class="table-responsive">
@@ -57,30 +94,42 @@
             });
             const result = await res.json();
             if(result.status === 'success') {
-                document.getElementById('pTotal').innerText = result.peserta.total;
-                document.getElementById('pDetail').innerText = `(Cair: ${result.peserta.cair} | Belum: ${result.peserta.belum})`;
-                
-                document.getElementById('panTotal').innerText = result.panitia.total;
-                document.getElementById('panDetail').innerText = `(Cair: ${result.panitia.cair} | Belum: ${result.panitia.belum})`;
+                // Info Kepsek
+                document.getElementById('ksTotal').innerText = result.peserta_kepsek.total;
+                document.getElementById('ksCair').innerText = result.peserta_kepsek.cair;
+                document.getElementById('ksBelum').innerText = result.peserta_kepsek.belum;
 
+                // Info Guru
+                document.getElementById('gTotal').innerText = result.peserta_guru.total;
+                document.getElementById('gCair').innerText = result.peserta_guru.cair;
+                document.getElementById('gBelum').innerText = result.peserta_guru.belum;
+
+                // Info Panitia
+                document.getElementById('panTotal').innerText = result.panitia.total;
+                document.getElementById('panCair').innerText = result.panitia.cair;
+                document.getElementById('panBelum').innerText = result.panitia.belum;
+
+                // Tabel Subrayon
                 let htmlSub = '';
                 for (let sub in result.subrayons) {
                     let d = result.subrayons[sub];
-                    let persentase = d.total > 0 ? Math.round((d.cair / d.total) * 100) : 0;
+                    let ksPersen = d.kepsek_total > 0 ? Math.round((d.kepsek_cair / d.kepsek_total) * 100) : 0;
+                    let gPersen = d.guru_total > 0 ? Math.round((d.guru_cair / d.guru_total) * 100) : 0;
+                    let totalCairSub = d.kepsek_cair + d.guru_cair;
+                    let totalSemuaSub = d.kepsek_total + d.guru_total;
+
                     htmlSub += `<tr>
                         <td class="fw-bold">${sub}</td>
-                        <td>${d.total}</td>
-                        <td class="text-success">${d.cair}</td>
-                        <td class="text-warning">${d.total - d.cair}</td>
-                        <td>
-                            <div class="progress" style="height: 15px; background: #333;">
-                                <div class="progress-bar bg-success" style="width: ${persentase}%">${persentase}%</div>
-                            </div>
-                        </td>
+                        <td class="text-center">${d.kepsek_cair} / ${d.kepsek_total}</td>
+                        <td class="text-center">${ksPersen}%</td>
+                        <td class="text-center">${d.guru_cair} / ${d.guru_total}</td>
+                        <td class="text-center">${gPersen}%</td>
+                        <td class="text-center fw-bold text-success">${totalCairSub} / ${totalSemuaSub}</td>
                     </tr>`;
                 }
                 document.getElementById('tabelSubrayon').innerHTML = htmlSub;
 
+                // Tabel Panitia
                 let htmlPan = '';
                 result.panitia_list.forEach((p, idx) => {
                     let badge = p.status === 'Sudah Cair' ? '<span class="badge bg-success">Sudah Cair</span>' : '<span class="badge bg-secondary">Belum Cair</span>';
