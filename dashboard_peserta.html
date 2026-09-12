@@ -34,7 +34,7 @@
         
         .swal-maroon { border-radius: 15px !important; }
 
-        /* INTERACTIVE LIVE FRAME PREVIEW CONTAINER */
+        /* INTERACTIVE LIVE FRAME OVERLAY */
         .preview-container {
             width: 100%;
             max-width: 300px;
@@ -45,7 +45,7 @@
             overflow: hidden;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            touch-action: none; /* Mencegah geser layar HP saat menggeser foto */
+            touch-action: none;
         }
         #draggablePhoto {
             position: absolute;
@@ -57,7 +57,7 @@
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            pointer-events: none; /* Membuat frame tidak menghalangi sentuhan jari ke foto di bawahnya */
+            pointer-events: none;
             z-index: 10;
         }
     </style>
@@ -70,6 +70,7 @@
 </div>
 
 <div class="container-fluid">
+    <!-- PROFIL & STATUS -->
     <div class="card-main text-center">
         <div class="avatar-container" onclick="window.location.href='id_card_peserta.html'">
             <div class="foto-box" id="previewArea"><i class="bi bi-person-fill"></i></div>
@@ -84,6 +85,7 @@
         </div>
     </div>
 
+    <!-- WIDGET LIVE SESI & PENGUMUMAN -->
     <div class="row g-3 mb-4 px-3">
         <div class="col-md-6">
             <div class="glass-widget h-100">
@@ -94,6 +96,7 @@
                 <div class="p-3" id="boxSesiLive"><p class="text-muted small mb-0">Mengecek agenda...</p></div>
             </div>
         </div>
+
         <div class="col-md-6">
             <div class="glass-widget h-100">
                 <div class="p-2 widget-header-info">
@@ -106,7 +109,7 @@
         </div>
     </div>
 
-    <!-- MENU OPERASIONAL -->
+    <!-- MENU OPERASIONAL PESERTA -->
     <div class="menu-grid">
         <h6 class="fw-bold text-dark mb-3 px-1 border-bottom pb-2">Menu Kegiatan</h6>
         <div class="row g-3">
@@ -142,19 +145,19 @@
         </div>
     </div>
     
-    <!-- ELEMEN TERSEMBUNYI UNTUK MESIN GAMBAR -->
+    <!-- ELEMEN TERSEMBUNYI MESIN KANVAS -->
     <canvas id="canvasSertifikat" style="display: none;"></canvas>
     <canvas id="canvasRenderFinal" width="1080" height="1080" style="display: none;"></canvas>
     <input type="file" id="inputKameraDokumentasi" accept="image/*" capture="environment" class="d-none" onchange="bukaEditorLive(event)">
 </div>
 
 <!-- Modal Jadwal -->
-<div class="modal fade" id="modalJadwal" tabindex="-1">
+<div class="modal fade" id="modalJadwal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
     <div class="modal-content" style="border: none; border-radius: 15px;">
       <div class="modal-header" style="background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fbbf24;">
         <h5 class="modal-title fw-bold"><i class="bi bi-calendar-event me-2"></i> Jadwal Kegiatan Anda</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body p-0">
         <div class="table-responsive">
@@ -168,7 +171,7 @@
   </div>
 </div>
 
-<!-- Modal Live Frame Adjuster -->
+<!-- Modal Live Frame Adjuster & Pinch to Zoom -->
 <div class="modal fade" id="modalLiveEditor" tabindex="-1" data-bs-backdrop="static">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content text-white" style="background: #0f172a; border-radius: 15px; border: 1px solid #475569;">
@@ -177,18 +180,16 @@
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="resetInputKamera()"></button>
       </div>
       <div class="modal-body text-center p-3">
-        <p class="small text-white-50 mb-2">Geser foto dengan jari dan atur ukuran dengan slider di bawah agar pas dengan bingkai.</p>
+        <p class="small text-white-50 mb-2">Geser foto atau cubit layar (2 jari) untuk zoom agar pas di bingkai.</p>
         
-        <!-- KOTAK PREVIEW LIVE (FOTO DI BAWAH, FRAME DI ATAS) -->
         <div class="preview-container" id="previewContainer">
             <img id="draggablePhoto" src="" alt="Foto User">
             <img id="overlayFrame" src="frame_dokumentasi.png" alt="Frame Template">
         </div>
 
-        <!-- SLIDER ZOOM -->
         <div class="mt-3 px-2">
             <label class="form-label small text-info fw-bold mb-1">Perbesar / Perkecil Foto</label>
-            <input type="range" class="form-range" id="zoomRange" min="0.2" max="3" step="0.05" value="1" oninput="ubahZoom(this.value)">
+            <input type="range" class="form-range" id="zoomRange" min="0.05" max="5" step="0.05" value="1" oninput="ubahZoom(this.value)">
         </div>
       </div>
       <div class="modal-footer border-secondary p-2 d-flex justify-content-between">
@@ -202,7 +203,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // WAJIB PASTE API URL KAPTEN DI SINI!
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec"; 
+    const API_URL = "URL_WEB_APP_GAS_KAPTEN_PASTE_DISINI"; 
 
     const Toast = Swal.mixin({ customClass: { popup: 'swal-maroon' }, confirmButtonColor: '#7f1d1d' });
     const userData = JSON.parse(localStorage.getItem('userLogin'));
@@ -210,7 +211,10 @@
 
     document.getElementById('txtNama').innerText = userData.nama;
     document.getElementById('txtJabatan').innerText = userData.jabatan;
-    if(userData.foto_url) document.getElementById('previewArea').innerHTML = `<img src="${userData.foto_url}">`;
+
+    if(userData.foto_url) {
+        document.getElementById('previewArea').innerHTML = `<img src="${userData.foto_url}" alt="Foto Profil">`;
+    }
 
     const boxStatus = document.getElementById('p_status');
     if(userData.status_hadir === 'Hadir') {
@@ -218,7 +222,7 @@
         boxStatus.innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> Status: <strong>HADIR (Terkonfirmasi)</strong>`;
     } else {
         boxStatus.className = "alert alert-warning py-2 small mb-0 text-start border-0 shadow-sm text-dark";
-        boxStatus.innerHTML = `<i class="bi bi-geo-alt-fill text-danger"></i> Status: <strong>Belum Check-In</strong>`;
+        boxStatus.innerHTML = `<i class="bi bi-geo-alt-fill text-danger"></i> Status: <strong>Belum Check-In</strong><br><small>Buka ID Card & tunjukkan QR ke Panitia.</small>`;
     }
 
     let linkData = { jadwal: '', materi: '', dokumentasi: '' };
@@ -228,25 +232,52 @@
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_pengaturan' }) });
             const result = await res.json();
             if(result.status === 'success') linkData = result.data;
-        } catch(e) { console.log(e); }
+        } catch(e) { console.log("Gagal menarik link broadcast"); }
     }
     
     async function muatLiveDashboard() {
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_live_dashboard' }) });
-            const result = await res.json();
+            const response = await fetch(API_URL, {
+                method: 'POST', body: JSON.stringify({ action: 'get_live_dashboard' })
+            });
+            const result = await response.json();
+
             if (result.status === 'success') {
-                const boxPeng = document.getElementById('boxPengumuman');
-                const pengAktif = result.pengumuman.filter(p => p.status.toLowerCase() === 'aktif' && (p.target.toLowerCase() === 'semua' || p.target.toLowerCase() === userData.jabatan.toLowerCase()));
-                if (pengAktif.length > 0) {
-                    boxPeng.innerHTML = '';
-                    pengAktif.forEach(p => { boxPeng.innerHTML += `<div class="mb-3 pb-2 border-bottom"><small class="text-danger fw-bold">${p.judul}</small><p class="small mb-1 text-dark">${p.isi}</p><div class="text-end" style="font-size: 0.65rem;">${p.tanggal}</div></div>`; });
-                } else { boxPeng.innerHTML = `<p class="text-muted small mb-0 italic">Belum ada pengumuman.</p>`; }
+                const boxPengumuman = document.getElementById('boxPengumuman');
+                const pengumumanAktif = result.pengumuman.filter(p => 
+                    p.status.toLowerCase() === 'aktif' && 
+                    (p.target.toLowerCase() === 'semua' || p.target.toLowerCase() === userData.jabatan.toLowerCase())
+                );
+
+                if (pengumumanAktif.length > 0) {
+                    boxPengumuman.innerHTML = '';
+                    pengumumanAktif.forEach(p => {
+                        boxPengumuman.innerHTML += `
+                            <div class="mb-3 pb-2 border-bottom">
+                                <small class="text-danger fw-bold">${p.judul}</small>
+                                <p class="small mb-1 text-dark" style="line-height: 1.3;">${p.isi}</p>
+                                <div class="text-end" style="font-size: 0.65rem; color: #94a3b8;">${p.tanggal}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    boxPengumuman.innerHTML = `<p class="text-muted small mb-0 italic">Belum ada pengumuman terbaru.</p>`;
+                }
 
                 const boxSesi = document.getElementById('boxSesiLive');
-                if (result.sesi_live) {
-                    document.getElementById('badgeLive').style.display = 'inline-block';
-                    boxSesi.innerHTML = `<strong class="text-dark">${result.sesi_live.kegiatan}</strong><br><small class="text-danger fw-bold"><i class="bi bi-clock"></i> ${result.sesi_live.waktu_mulai} - ${result.sesi_live.waktu_selesai}</small><br><small class="text-muted"><i class="bi bi-geo-alt-fill"></i> ${result.sesi_live.lokasi}</small>`;
+                const badgeLive = document.getElementById('badgeLive');
+                const sesiLive = result.sesi_live; 
+
+                if (sesiLive) {
+                    badgeLive.style.display = 'inline-block';
+                    boxSesi.innerHTML = `
+                        <strong class="text-dark">${sesiLive.kegiatan}</strong><br>
+                        <small class="text-danger fw-bold"><i class="bi bi-clock"></i> ${sesiLive.waktu_mulai} - ${sesiLive.waktu_selesai}</small><br>
+                        <small class="text-muted"><i class="bi bi-geo-alt-fill"></i> Lokasi: ${sesiLive.lokasi}</small>
+                    `;
+                } else {
+                    badgeLive.style.display = 'none';
+                    boxSesi.innerHTML = `<p class="text-muted small mb-0 italic">Tidak ada sesi kegiatan yang sedang berlangsung saat ini.</p>`;
                 }
             }
         } catch (e) { console.error(e); }
@@ -254,149 +285,78 @@
 
     function bukaLink(jenis) {
         let url = linkData[jenis];
-        if(url && url.trim() !== '') window.open(url, '_blank'); 
-        else Swal.fire('Info', `Link ${jenis} belum dibagikan.`, 'info');
+        if(url && url.trim() !== '') { window.open(url, '_blank'); } 
+        else { Swal.fire('Info', `Link ${jenis} belum dibagikan oleh panitia.`, 'info'); }
     }
 
     async function tampilkanJadwal() {
-        Toast.fire({ title: 'Memuat Jadwal...', didOpen: () => { Swal.showLoading() } });
+        Toast.fire({ title: 'Memuat Jadwal...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_jadwal_filtered', role: userData.role, jabatan: userData.jabatan }) });
-            const result = await res.json();
+            const response = await fetch(API_URL, {
+                method: 'POST', body: JSON.stringify({ action: 'get_jadwal_filtered', role: userData.role, jabatan: userData.jabatan })
+            });
+            const result = await response.json();
             Swal.close(); 
+
             if (result.status === 'success') {
-                const tbody = document.getElementById('bodyTabelJadwal'); tbody.innerHTML = ''; 
-                if(result.data.length === 0) tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">Tidak ada jadwal.</td></tr>';
-                else {
+                const tbody = document.getElementById('bodyTabelJadwal');
+                tbody.innerHTML = ''; 
+                if(result.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted py-4">Tidak ada jadwal khusus untuk Anda saat ini.</td></tr>';
+                } else {
                     result.data.forEach(item => {
-                        tbody.innerHTML += `<tr><td style="min-width: 100px;"><strong class="text-danger">${item.tanggal}</strong><br><small class="fw-bold">${item.waktu_mulai} - ${item.waktu_selesai}</small></td><td><strong>${item.kegiatan}</strong> <span class="badge bg-warning text-dark">${item.kategori}</span><br><small class="text-muted">Pemateri: ${item.pemateri}</small></td><td style="min-width: 100px;"><i class="bi bi-geo-alt-fill text-danger"></i> ${item.lokasi}</td></tr>`;
+                        tbody.innerHTML += `
+                            <tr>
+                                <td style="min-width: 100px;">
+                                    <strong class="text-danger">${item.tanggal}</strong><br>
+                                    <small class="fw-bold">${item.waktu_mulai} - ${item.waktu_selesai}</small>
+                                </td>
+                                <td>
+                                    <strong>${item.kegiatan}</strong> <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">${item.kategori}</span><br>
+                                    <small class="text-muted"><i class="bi bi-person-badge"></i> Pemateri: ${item.pemateri || '-'}</small><br>
+                                    <small class="text-muted"><i class="bi bi-person-check"></i> Moderator: ${item.moderator || '-'}</small>
+                                </td>
+                                <td style="min-width: 100px;"><i class="bi bi-geo-alt-fill text-danger"></i> ${item.lokasi}</td>
+                            </tr>
+                        `;
                     });
                 }
                 new bootstrap.Modal(document.getElementById('modalJadwal')).show();
-            }
-        } catch (e) { Toast.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung.' }); }
+            } else { Swal.fire('Gagal', result.message, 'error'); }
+        } catch (e) { Toast.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungkan ke server.' }); }
     }
 
+    // ==========================================
+    // MODUL PHOTOBOOTH & LIVE FRAME OVERLAY
+    // ==========================================
     let photoState = { x: 0, y: 0, scale: 1, isDragging: false, startX: 0, startY: 0 };
-let initialPinchDistance = 0;
-let initialScale = 1;
+    let initialPinchDistance = 0;
+    let initialScale = 1;
 
-let imgElement = document.getElementById('draggablePhoto');
-let containerElement = document.getElementById('previewContainer');
+    let imgElement = document.getElementById('draggablePhoto');
+    let containerElement = document.getElementById('previewContainer');
 
-// ... (biarkan fungsi bukaMenuDokumentasi, lihatGaleriDrive, reset, dll tetap sama) ...
-
-function bukaEditorLive(event) {
-    const file = event.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        imgElement.src = e.target.result;
-        
-        imgElement.onload = function() {
-            photoState.scale = 1;
-            document.getElementById('zoomRange').value = 1;
-            
-            let containerSize = 300;
-            let scaleFit = Math.max(containerSize / imgElement.naturalWidth, containerSize / imgElement.naturalHeight);
-            photoState.scale = scaleFit;
-            document.getElementById('zoomRange').value = scaleFit;
-
-            photoState.x = (containerSize - (imgElement.naturalWidth * scaleFit)) / 2;
-            photoState.y = (containerSize - (imgElement.naturalHeight * scaleFit)) / 2;
-            
-            updatePhotoTransform();
-
-            const modal = new bootstrap.Modal(document.getElementById('modalLiveEditor'));
-            modal.show();
-        }
-    };
-    reader.readAsDataURL(file);
-}
-
-function updatePhotoTransform() {
-    imgElement.style.transform = `translate(${photoState.x}px, ${photoState.y}px) scale(${photoState.scale / (imgElement.naturalWidth > 0 ? (300/imgElement.naturalWidth) : 1)})`;
-}
-
-function ubahZoom(val) {
-    photoState.scale = parseFloat(val);
-    updatePhotoTransform();
-}
-
-// Event Listener untuk Mouse & Touch (Mendukung Geser & Pinch-to-Zoom 2 Jari)
-containerElement.addEventListener('mousedown', startDrag);
-containerElement.addEventListener('touchstart', startDragTouch, {passive: false});
-
-window.addEventListener('mousemove', onDrag);
-window.addEventListener('touchmove', onDragTouch, {passive: false});
-
-window.addEventListener('mouseup', endDrag);
-window.addEventListener('touchend', endDrag);
-
-function startDrag(e) {
-    photoState.isDragging = true;
-    photoState.startX = e.clientX - photoState.x;
-    photoState.startY = e.clientY - photoState.y;
-}
-
-function startDragTouch(e) {
-    if(e.touches.length === 1) {
-        photoState.isDragging = true;
-        photoState.startX = e.touches[0].clientX - photoState.x;
-        photoState.startY = e.touches[0].clientY - photoState.y;
-    } else if(e.touches.length === 2) {
-        photoState.isDragging = false;
-        // Hitung jarak awal antar dua jari saat mulai cubit
-        initialPinchDistance = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-        );
-        initialScale = photoState.scale;
-    }
-}
-
-function onDrag(e) {
-    if (!photoState.isDragging) return;
-    photoState.x = e.clientX - photoState.startX;
-    photoState.y = e.clientY - photoState.startY;
-    updatePhotoTransform();
-}
-
-function onDragTouch(e) {
-    // Logika Pinch-to-Zoom dengan 2 Jari
-    if (e.touches.length === 2) {
-        let currentDistance = Math.hypot(
-            e.touches[0].clientX - e.touches[1].clientX,
-            e.touches[0].clientY - e.touches[1].clientY
-        );
-        if (initialPinchDistance > 0) {
-            let factor = currentDistance / initialPinchDistance;
-            let newScale = initialScale * factor;
-            // Batasi skala agar tidak terlalu kecil atau terlalu besar
-            if (newScale >= 0.05 && newScale <= 10) {
-                photoState.scale = newScale;
-                document.getElementById('zoomRange').value = newScale;
-                updatePhotoTransform();
-            }
-        }
-        e.preventDefault();
-        return;
+    function bukaMenuDokumentasi() {
+        Swal.fire({
+            title: '<h5 class="fw-bold text-danger mb-0">Photobooth & Galeri</h5>',
+            html: `
+                <p class="small text-muted mb-4">Abadikan momen Anda atau lihat galeri bersama!</p>
+                <div class="d-grid gap-3">
+                    <button class="btn btn-warning py-3 fw-bold shadow-sm rounded-3" onclick="document.getElementById('inputKameraDokumentasi').click(); Swal.close();">
+                        <i class="bi bi-camera-fill me-2 fs-5"></i> Jepret Momen Berbingkai
+                    </button>
+                    <button class="btn btn-outline-danger py-3 fw-bold rounded-3" onclick="lihatGaleriDrive()">
+                        <i class="bi bi-folder-symlink-fill me-2 fs-5"></i> Lihat Galeri Acara
+                    </button>
+                </div>
+            `,
+            showConfirmButton: false, showCloseButton: true, customClass: { popup: 'swal-maroon' }
+        });
     }
 
-    if (!photoState.isDragging || e.touches.length !== 1) return;
-    photoState.x = e.touches[0].clientX - photoState.startX;
-    photoState.y = e.touches[0].clientY - photoState.startY;
-    updatePhotoTransform();
-    e.preventDefault();
-}
-
-function endDrag() {
-    photoState.isDragging = false;
-    initialPinchDistance = 0;
-}
-
-    function lihatGaleriDrive() { window.open('https://drive.google.com/drive/folders/14nTGiUVSqkjvhlhvIC9hEz_dRqtyMcS6', '_blank'); }
+    function lihatGaleriDrive() {
+        window.open('https://drive.google.com/drive/folders/14nTGiUVSqkjvhlhvIC9hEz_dRqtyMcS6', '_blank');
+    }
 
     function resetInputKamera() {
         document.getElementById('inputKameraDokumentasi').value = '';
@@ -411,7 +371,6 @@ function endDrag() {
             imgElement.src = e.target.result;
             
             imgElement.onload = function() {
-                // Reset posisi ke tengah & skala awal pas di kontainer 300x300
                 photoState.scale = 1;
                 document.getElementById('zoomRange').value = 1;
                 
@@ -425,7 +384,6 @@ function endDrag() {
                 
                 updatePhotoTransform();
 
-                // Buka Modal
                 const modal = new bootstrap.Modal(document.getElementById('modalLiveEditor'));
                 modal.show();
             }
@@ -439,11 +397,9 @@ function endDrag() {
 
     function ubahZoom(val) {
         photoState.scale = parseFloat(val);
-        // Pertahankan pusat saat zoom
         updatePhotoTransform();
     }
 
-    // Event Listener untuk geser foto (Mouse & Touch)
     containerElement.addEventListener('mousedown', startDrag);
     containerElement.addEventListener('touchstart', startDragTouch, {passive: false});
 
@@ -464,6 +420,13 @@ function endDrag() {
             photoState.isDragging = true;
             photoState.startX = e.touches[0].clientX - photoState.x;
             photoState.startY = e.touches[0].clientY - photoState.y;
+        } else if(e.touches.length === 2) {
+            photoState.isDragging = false;
+            initialPinchDistance = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            initialScale = photoState.scale;
         }
     }
 
@@ -475,6 +438,24 @@ function endDrag() {
     }
 
     function onDragTouch(e) {
+        if (e.touches.length === 2) {
+            let currentDistance = Math.hypot(
+                e.touches[0].clientX - e.touches[1].clientX,
+                e.touches[0].clientY - e.touches[1].clientY
+            );
+            if (initialPinchDistance > 0) {
+                let factor = currentDistance / initialPinchDistance;
+                let newScale = initialScale * factor;
+                if (newScale >= 0.05 && newScale <= 10) {
+                    photoState.scale = newScale;
+                    document.getElementById('zoomRange').value = newScale;
+                    updatePhotoTransform();
+                }
+            }
+            e.preventDefault();
+            return;
+        }
+
         if (!photoState.isDragging || e.touches.length !== 1) return;
         photoState.x = e.touches[0].clientX - photoState.startX;
         photoState.y = e.touches[0].clientY - photoState.startY;
@@ -484,9 +465,9 @@ function endDrag() {
 
     function endDrag() {
         photoState.isDragging = false;
+        initialPinchDistance = 0;
     }
 
-    // RENDER HASIL AKHIR KE CANVAS 1080x1080
     function renderHasilFinal() {
         bootstrap.Modal.getInstance(document.getElementById('modalLiveEditor')).hide();
         Swal.fire({ title: 'Merakit Foto & Frame...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
@@ -495,7 +476,7 @@ function endDrag() {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, 1080, 1080);
 
-        let renderScale = 1080 / 300; // Skala dari preview 300px ke resolusi tinggi 1080px
+        let renderScale = 1080 / 300;
 
         const userImg = new Image();
         userImg.crossOrigin = "anonymous";
@@ -503,7 +484,6 @@ function endDrag() {
 
         userImg.onload = function() {
             ctx.save();
-            // Terapkan posisi pan dan zoom yang sudah diatur user di preview
             ctx.translate(photoState.x * renderScale, photoState.y * renderScale);
             let baseFit = Math.max(300 / userImg.naturalWidth, 300 / userImg.naturalHeight);
             let currentScaleFactor = (photoState.scale / baseFit) * renderScale;
@@ -512,7 +492,6 @@ function endDrag() {
             ctx.drawImage(userImg, 0, 0);
             ctx.restore();
 
-            // Timpa Frame di atasnya
             const frameImg = new Image();
             frameImg.crossOrigin = "anonymous";
             frameImg.src = 'frame_dokumentasi.png';
@@ -561,30 +540,67 @@ function endDrag() {
     // ==========================================
 
     async function unduhSertifikat() {
-        if(userData.status_hadir !== 'Hadir') { Swal.fire({ icon: 'warning', title: 'Belum Check-In', text: 'Sertifikat hanya untuk peserta yang sudah hadir di lokasi.', confirmButtonColor: '#7f1d1d' }); return; }
-        Toast.fire({ title: 'Menyiapkan Sertifikat...', didOpen: () => { Swal.showLoading() } });
+        if(userData.status_hadir !== 'Hadir') {
+            Swal.fire({ icon: 'warning', title: 'Belum Check-In', text: 'Sertifikat hanya untuk peserta yang sudah hadir di lokasi.', confirmButtonColor: '#7f1d1d' });
+            return;
+        }
+
+        Toast.fire({ title: 'Menyiapkan Sertifikat...', text: 'Mohon tunggu...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+        
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'cek_sertifikat', id_qr: userData.id_qr }) });
-            const result = await res.json();
+            const response = await fetch(API_URL, {
+                method: 'POST', body: JSON.stringify({ action: 'cek_sertifikat', id_qr: userData.id_qr })
+            });
+            const result = await response.json();
+
             if (result.status === 'success') {
-                const canvas = document.getElementById('canvasSertifikat'); const ctx = canvas.getContext('2d'); const img = new Image();
-                img.crossOrigin = "anonymous"; img.src = 'template_sertifikat.jpg'; 
+                const canvas = document.getElementById('canvasSertifikat');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.crossOrigin = "anonymous"; 
+                img.src = 'template_sertifikat.jpg'; 
+                
                 img.onload = function() {
-                    canvas.width = img.width; canvas.height = img.height; ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    ctx.textAlign = 'center'; ctx.fillStyle = '#000000'; 
-                    ctx.font = 'bold 80px Arial'; ctx.fillText(result.data.nama, canvas.width / 2, (canvas.height / 2) + 50); 
-                    ctx.font = 'italic 50px Arial'; ctx.fillText('sebagai ' + result.data.jabatan, canvas.width / 2, (canvas.height / 2) + 150);
-                    const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
-                    Swal.fire({ title: 'Sertifikat Siap!', imageUrl: dataUrl, imageWidth: '100%', showCancelButton: true, confirmButtonText: '<i class="bi bi-download"></i> Unduh', confirmButtonColor: '#7f1d1d' })
-                    .then((r) => { if(r.isConfirmed) { const a = document.createElement('a'); a.href = dataUrl; a.download = `Sertifikat_${result.data.nama}.jpg`; document.body.appendChild(a); a.click(); document.body.removeChild(a); } });
+                    try {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        
+                        ctx.textAlign = 'center';
+                        ctx.fillStyle = '#000000'; 
+                        
+                        ctx.font = 'bold 80px Arial'; 
+                        ctx.fillText(result.data.nama, canvas.width / 2, (canvas.height / 2) + 50); 
+                        
+                        ctx.font = 'italic 50px Arial'; 
+                        ctx.fillText('sebagai ' + result.data.jabatan, canvas.width / 2, (canvas.height / 2) + 150);
+                        
+                        const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+                        
+                        Swal.fire({
+                            title: 'Sertifikat Siap!',
+                            imageUrl: dataUrl, imageWidth: '100%', imageAlt: 'Preview Sertifikat',
+                            showCancelButton: true, confirmButtonText: '<i class="bi bi-download"></i> Unduh Gambar', cancelButtonText: 'Tutup', confirmButtonColor: '#7f1d1d'
+                        }).then((res) => {
+                            if (res.isConfirmed) {
+                                const a = document.createElement('a');
+                                a.href = dataUrl;
+                                a.download = `Sertifikat_${result.data.nama.replace(/\s+/g, '_')}.jpg`;
+                                document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                            }
+                        });
+                    } catch (err) { Swal.fire('Error', 'Gagal memproses gambar.', 'error'); }
                 };
+                img.onerror = function() { Swal.fire('Gagal', 'File template_sertifikat.jpg tidak ditemukan di server.', 'error'); };
             } else { Swal.fire('Akses Ditolak', result.message, 'error'); }
-        } catch (e) { Toast.fire({ icon: 'error', title: 'Error Koneksi' }); }
+        } catch (e) { Toast.fire({ icon: 'error', title: 'Error Koneksi', text: 'Gagal terhubung ke server.' }); }
     }
 
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
 
-    muatLinkBroadcast(); muatLiveDashboard();
+    muatLinkBroadcast();
+    muatLiveDashboard();
 </script>
 </body>
 </html>
