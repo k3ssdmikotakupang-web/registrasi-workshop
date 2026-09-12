@@ -14,7 +14,6 @@
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
         .btn-neon { background: linear-gradient(45deg, #00f2fe, #4facfe); border: none; color: white; border-radius: 8px; font-weight: 600; }
         
-        /* Kartu Saldo */
         .card-saldo { background: linear-gradient(135deg, rgba(0,242,254,0.1) 0%, rgba(79,172,254,0.1) 100%); border-left: 5px solid #00f2fe; }
         .card-masuk { border-left: 5px solid #198754; background: rgba(25,135,84,0.05); }
         .card-keluar { border-left: 5px solid #dc3545; background: rgba(220,53,69,0.05); }
@@ -73,109 +72,21 @@
             </button>
         </div>
         
-        <!-- DIBUNGKUS COL-12 AGAR RAPI -->
+        <!-- MENU MENUJU RUANG PENGELUARAN KHUSUS -->
         <div class="col-12">
-            <div class="card bg-dark text-light border-info mb-4 shadow">
-                <div class="card-header border-info">
-                    <h5 class="mb-0"><i class="bi bi-cart me-2"></i> Manajemen Pengeluaran</h5>
-                </div>
-                <div class="card-body">
-                    
-                    <!-- Navigasi Tabs -->
-                    <ul class="nav nav-pills mb-4" id="pengeluaranTab" role="tablist">
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="input-tab" data-bs-toggle="pill" data-bs-target="#input-pane" type="button" role="tab">1. Catat Pengeluaran</button>
-                      </li>
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="upload-tab" data-bs-toggle="pill" data-bs-target="#upload-pane" type="button" role="tab">2. Upload Bukti</button>
-                      </li>
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="transport-tab" data-bs-toggle="pill" data-bs-target="#transport-pane" type="button" role="tab">3. Transport Massal</button>
-                      </li>
-                    </ul>
-
-                    <!-- Isi Tabs -->
-                    <div class="tab-content" id="pengeluaranTabContent">
-                      
-                      <!-- TAB 1: FORM PENGELUARAN LAMA -->
-                      <div class="tab-pane fade show active" id="input-pane" role="tabpanel">
-                          <!-- !!! MAS BRO PASTE KODE FORM "Catat Pengeluaran Panitia (Jasa/ATK)" DI SINI !!! -->
-                          
-                      </div>
-
-                      <!-- TAB 2: UPLOAD BUKTI BARU -->
-                      <div class="tab-pane fade" id="upload-pane" role="tabpanel">
-                          <form id="formUploadPengeluaran">
-                              <div class="row">
-                                  <div class="col-md-6 mb-3">
-                                      <label class="form-label">ID Transaksi / Pengeluaran</label>
-                                      <input type="text" id="id_trx_pengeluaran" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: OUT-123456" required>
-                                      <small class="text-info">*Lihat ID Transaksi di menu Laporan BKU</small>
-                                  </div>
-                                  <div class="col-md-6 mb-3">
-                                      <label class="form-label">File Bukti (Foto/PDF)</label>
-                                      <input type="file" id="file_bukti_pengeluaran" class="form-control bg-dark text-white border-secondary" accept="image/*,application/pdf" required>
-                                  </div>
-                              </div>
-                              <button type="button" class="btn btn-primary w-100" onclick="prosesUploadPengeluaran()">
-                                  <i class="bi bi-upload me-2"></i> Unggah Bukti Pengeluaran
-                              </button>
-                          </form>
-                      </div>
-
-                      <!-- TAB 3: CETAK TRANSPORT -->
-                      <div class="tab-pane fade" id="transport-pane" role="tabpanel">
-                          <div class="row g-3">
-                              <div class="col-md-3">
-                                  <label class="small text-white-50">Sub Rayon</label>
-                                  <select id="trans-subrayon" class="form-select bg-dark text-white border-secondary">
-                                      <option value="Oebobo">Oebobo</option>
-                                      <option value="Kelapa Lima">Kelapa Lima</option>
-                                      <option value="Maulafa">Maulafa</option>
-                                      <option value="Alak">Alak</option>
-                                      <option value="Kota Raja">Kota Raja</option>
-                                      <option value="Kota Lama">Kota Lama</option>
-                                  </select>
-                              </div>
-                              <div class="col-md-3">
-                                  <label class="small text-white-50">Kategori Peserta</label>
-                                  <select id="trans-jabatan" class="form-select bg-dark text-white border-secondary">
-                                      <option value="Guru">Guru</option>
-                                      <option value="Kepala Sekolah">Kepala Sekolah</option>
-                                  </select>
-                              </div>
-                              <div class="col-md-3">
-                                  <label class="small text-white-50">Nominal Transport (Rp)</label>
-                                  <input type="text" id="trans-nominal" class="form-control bg-dark text-white border-secondary fw-bold" placeholder="Contoh: 150.000" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')">
-                              </div>
-                              <div class="col-md-3 d-flex align-items-end">
-                                  <button class="btn btn-success w-100 fw-bold" onclick="downloadExcelTransport()">
-                                      <i class="bi bi-file-earmark-excel me-2"></i> Unduh Excel
-                                  </button>
-                              </div>
-                          </div>
-                      </div>
-
-                    </div>
-                </div>
-            </div>
-        </div> <!-- Akhir wrapper col-12 -->
+            <button onclick="window.location.href='dashboard_pengeluaran.html'" class="btn btn-neon w-100 py-3 text-start text-dark fw-bold">
+                <i class="bi bi-cart-dash me-2"></i> Manajemen Pengeluaran & Transport
+            </button>
+        </div>
 
         <div class="col-12">
             <button onclick="window.location.href='laporan_bku.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-journal-check me-2"></i> Laporan BKU / RKAS</button>
         </div>
     </div>
+</div>
 
-</div> <!-- Akhir dari Container Utama -->
-
-<!-- Library Eksternal -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- Mesin Logika Javascript -->
 <script>
-    // JANGAN LUPA PASTE API KAPTEN DI SINI!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
     const userData = JSON.parse(localStorage.getItem('userLogin'));
@@ -205,216 +116,7 @@
     }
 
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
-
     muatDataKeuangan();
-
-    // Fungsi Cetak Transport 
-    async function downloadExcelTransport() {
-        const subrayon = document.getElementById('trans-subrayon').value;
-        const jabatan = document.getElementById('trans-jabatan').value;
-        
-        const nominalRaw = document.getElementById('trans-nominal').value;
-        const nominal = nominalRaw.replace(/\./g, ''); 
-
-        if(!nominal) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Tunggu Dulu Kapten!',
-                text: 'Mohon isi besaran nominal transport terlebih dahulu.',
-                confirmButtonColor: '#ffc107'
-            });
-            return;
-        }
-
-        let btn = document.querySelector('button[onclick="downloadExcelTransport()"]');
-        let teksAsli = btn.innerHTML;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyusun Data...';
-        btn.disabled = true;
-
-        try {
-            const res = await fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify({ 
-                    action: 'get_data_transport', 
-                    subrayon: subrayon, 
-                    jabatan: jabatan,
-                    nominal: parseInt(nominal)
-                })
-            });
-            const result = await res.json();
-
-            if (result.status === 'success') {
-                if (result.data && result.data.length > 0) {
-                    
-                    const kopSurat = [
-                        ["PEMERINTAH KOTA KUPANG"],
-                        ["DINAS PENDIDIKAN DAN KEBUDAYAAN"],
-                        ["KELOMPOK KERJA KEPALA SEKOLAH SD/MI KOTA KUPANG"],
-                        ["PANITIA PELAKSANA WORKSHOP MANAJEMEN KEPALA SD/MI KOTA KUPANG 2026"],
-                        ["SEKRETARIAT: SD NCIPS, JL. Kenanga, No. 01 Naikolan, Kupang"],
-                        ["Email: k3s.sdmikotakupang@gmail.com"],
-                        [], 
-                        [`TANDA TERIMA TRANSPORT PESERTA ${jabatan.toUpperCase()}`], 
-                        [`SUBRAYON ${subrayon.toUpperCase()}`],
-                        [] 
-                    ];
-
-                    const ws = XLSX.utils.aoa_to_sheet(kopSurat);
-                    XLSX.utils.sheet_add_json(ws, result.data, { origin: "A11" });
-
-                    const barisTerakhirTabel = 11 + result.data.length; 
-                    const tglHariIni = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-                    
-                    const ttdData = [
-                        ["Mengetahui,", "", "", "", `Kupang, ${tglHariIni}`],
-                        ["Ketua Panitia,", "", "", "", "Bendahara Panitia,"],
-                        [],
-                        [],
-                        [],
-                        ["( .................................... )", "", "", "", "( .................................... )"],
-                        ["NIP.", "", "", "", "NIP."]
-                    ];
-                    XLSX.utils.sheet_add_aoa(ws, ttdData, { origin: `A${barisTerakhirTabel + 2}` });
-
-                    const wscols = [ {wch: 5}, {wch: 35}, {wch: 35}, {wch: 15}, {wch: 20}, {wch: 20} ];
-                    ws['!cols'] = wscols;
-
-                    ws['!merges'] = [
-                        { s: {r:0, c:0}, e: {r:0, c:5} }, { s: {r:1, c:0}, e: {r:1, c:5} }, 
-                        { s: {r:2, c:0}, e: {r:2, c:5} }, { s: {r:3, c:0}, e: {r:3, c:5} }, 
-                        { s: {r:4, c:0}, e: {r:4, c:5} }, { s: {r:5, c:0}, e: {r:5, c:5} }, 
-                        { s: {r:7, c:0}, e: {r:7, c:5} }, { s: {r:8, c:0}, e: {r:8, c:5} }
-                    ];
-
-                    const range = XLSX.utils.decode_range(ws['!ref']);
-                    for (let R = range.s.r; R <= range.e.r; R++) {
-                        for (let C = range.s.c; C <= range.e.c; C++) {
-                            const cellRef = XLSX.utils.encode_cell({r: R, c: C});
-                            if (!ws[cellRef]) continue;
-                            ws[cellRef].s = ws[cellRef].s || {};
-
-                            if (R <= 8) {
-                                ws[cellRef].s = { font: { bold: true }, alignment: { horizontal: "center", vertical: "center" } };
-                            }
-
-                            if (R === 10) {
-                                ws[cellRef].s = {
-                                    fill: { fgColor: { rgb: "1F4E78" } }, 
-                                    font: { bold: true, color: { rgb: "FFFFFF" } },
-                                    alignment: { horizontal: "center", vertical: "center" },
-                                    border: {
-                                        top: { style: "thin", color: { rgb: "000000" } }, bottom: { style: "thin", color: { rgb: "000000" } },
-                                        left: { style: "thin", color: { rgb: "000000" } }, right: { style: "thin", color: { rgb: "000000" } }
-                                    }
-                                };
-                            }
-                            
-                            if (R > 10 && R < barisTerakhirTabel) {
-                                ws[cellRef].s.border = {
-                                    top: { style: "thin", color: { rgb: "000000" } }, bottom: { style: "thin", color: { rgb: "000000" } },
-                                    left: { style: "thin", color: { rgb: "000000" } }, right: { style: "thin", color: { rgb: "000000" } }
-                                };
-                                ws[cellRef].s.alignment = { vertical: "center" };
-                            }
-
-                            if (R >= (barisTerakhirTabel + 1)) {
-                                ws[cellRef].s = { alignment: { horizontal: "center" } };
-                            }
-                        }
-                    }
-
-                    const wb = XLSX.utils.book_new();
-                    XLSX.utils.book_append_sheet(wb, ws, "Tanda_Terima_Transport");
-                    let namaFile = `Transport_${jabatan}_${subrayon}.xlsx`;
-                    XLSX.writeFile(wb, namaFile);
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Berhasil!',
-                        text: `File Excel Transport ${jabatan} wilayah ${subrayon} siap dicetak.`,
-                        confirmButtonColor: '#198754'
-                    });
-               } else {
-               Swal.fire({
-                        icon: 'info',
-                        title: 'Data Kosong',
-                        text: `Data ${jabatan} di ${subrayon} tidak ditemukan.`,
-                        confirmButtonColor: '#0dcaf0'
-                    });
-                }
-            } else {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Sistem Error',
-                    text: result.message || 'Terjadi masalah pada logika server.',
-                    confirmButtonColor: '#dc3545'
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Koneksi Gagal',
-                text: 'Terjadi masalah saat menghubungi server.',
-                confirmButtonColor: '#dc3545'
-            });
-        } finally {
-            btn.innerHTML = teksAsli;
-            btn.disabled = false;
-        }
-    }
-
-    // Fungsi Upload Bukti Pengeluaran
-    function prosesUploadPengeluaran() {
-        const idTrx = document.getElementById('id_trx_pengeluaran').value.trim();
-        const fileInput = document.getElementById('file_bukti_pengeluaran');
-
-        if (!idTrx || fileInput.files.length === 0) {
-            Swal.fire({ icon: 'warning', title: 'Data Tidak Lengkap', text: 'Mohon isi ID Transaksi dan pilih file bukti nota.' });
-            return;
-        }
-
-        const file = fileInput.files[0];
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-            const base64Data = e.target.result.split(',')[1];
-            
-            Swal.fire({
-                title: 'Mengunggah...',
-                text: 'Mohon tunggu, bukti sedang disimpan ke database.',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
-            });
-
-            const payload = {
-                action: 'upload_bukti_pengeluaran', 
-                id_trx: idTrx,
-                fileBase64: base64Data,
-                mimeType: file.type,
-                filename: file.name
-            };
-
-            // PERBAIKAN: Menggunakan API_URL, bukan SCRIPT_URL
-            fetch(API_URL, {
-                method: 'POST',
-                body: JSON.stringify(payload)
-            })
-            .then(res => res.json())
-            .then(result => {
-                if (result.status === 'success') {
-                    Swal.fire({ icon: 'success', title: 'Berhasil', text: result.message });
-                    document.getElementById('formUploadPengeluaran').reset(); 
-                } else {
-                    Swal.fire({ icon: 'error', title: 'Gagal', text: result.message });
-                }
-            })
-            .catch(err => {
-                Swal.fire({ icon: 'error', title: 'Terjadi Kesalahan', text: err.toString() });
-            });
-        };
-        
-        reader.readAsDataURL(file);
-    }
 </script>
 </body>
 </html>
