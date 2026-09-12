@@ -6,37 +6,107 @@
     <title>Bendahara Subrayon - EMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
-        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; }
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+        .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
     </style>
 </head>
 <body>
-<div class="container mt-4">
+
+<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
+    <div class="container">
+        <span class="navbar-brand text-neon">Bendahara Subrayon</span>
+        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
+    </div>
+</nav>
+
+<div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-0 text-info" id="namaPic">Memuat...</h4>
-            <p class="text-white-50 small mb-0">Bendahara Wilayah: <strong class="text-white" id="namaRayon"></strong></p>
+            <h4 class="fw-bold mb-0" id="namaPic">Memuat...</h4>
+            <p class="text-white-50 small mb-0">Subrayon: <span id="txtSubrayon" class="text-info fw-bold">...</span></p>
         </div>
-        <button class="btn btn-sm btn-outline-danger" onclick="logout()">Logout</button>
     </div>
 
-    <div class="glass-card p-4 mb-4 border-start border-4 border-info">
-        <h5 class="fw-bold mb-3">Tugas Utama Subrayon</h5>
-        <button onclick="window.location.href='validasi_v2.html'" class="btn btn-info w-100 py-3 fw-bold text-dark mb-3">
-            <i class="bi bi-wallet2 me-2"></i> Validasi Pembayaran & Terima Tunai
-        </button>
-        <button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-light w-100 py-3 text-start">
-            <i class="bi bi-building me-2"></i> Pantau Rekap Pendaftaran Wilayah
-        </button>
+    <!-- Tombol Navigasi Utama -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <button onclick="window.location.href='validasi_v2.html'" class="btn btn-outline-warning w-100 py-3 text-start fw-bold">
+                <i class="bi bi-check-circle-fill me-2"></i> Validasi Setoran Sekolah (Tunai/TF)
+            </button>
+        </div>
+        
+        <!-- TOMBOL SCANNER PENCAIRAN (Dikendalikan oleh Pusat) -->
+        <div class="col-12">
+            <button id="btnCair" class="btn btn-secondary w-100 py-3 text-start fw-bold disabled" onclick="cekAkses()">
+                <i class="bi bi-qr-code-scan me-2"></i> <span id="teksBtnCair">Scanner Transport (Terkunci oleh Pusat)</span>
+            </button>
+        </div>
+
+        <div class="col-12">
+            <button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-light w-100 py-3 text-start">
+                <i class="bi bi-journal-check me-2"></i> Lihat Rekap Sekolah Subrayon
+            </button>
+        </div>
     </div>
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // WAJIB PASTE API URL KAPTEN DI SINI!
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData || userData.role !== 'Bendahara_Subrayon') window.location.href = "index.html";
+    
     document.getElementById('namaPic').innerText = userData.nama_pic;
-    document.getElementById('namaRayon').innerText = userData.subrayon;
+    document.getElementById('txtSubrayon').innerText = userData.subrayon;
+
+    let isPencairanBuka = false;
+
+    // Tarik status pengaturan dari server
+    async function muatStatusPencairan() {
+        try {
+            const response = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_pengaturan' }) });
+            const result = await response.json();
+
+            if(result.status === 'success') {
+                let btn = document.getElementById('btnCair');
+                let teks = document.getElementById('teksBtnCair');
+                
+                if(result.data.pencairan === 'Buka') {
+                    isPencairanBuka = true;
+                    btn.classList.remove('btn-secondary', 'disabled');
+                    btn.classList.add('btn-success'); // Warna Hijau Menyala
+                    teks.innerText = "Buka Scanner Pencairan Transport";
+                } else {
+                    isPencairanBuka = false;
+                    btn.classList.remove('btn-success');
+                    btn.classList.add('btn-secondary', 'disabled'); // Abu-abu gelap
+                    teks.innerText = "Scanner Transport (Terkunci oleh Pusat)";
+                }
+            }
+        } catch (error) {
+            console.error("Gagal menarik pengaturan");
+        }
+    }
+
+    function cekAkses() {
+        if(isPencairanBuka) {
+            window.location.href = 'scanner_pencairan.html';
+        } else {
+            Swal.fire('Terkunci', 'Bendahara Pusat belum membuka akses pencairan transport. Silakan tunggu aba-aba panitia.', 'info');
+        }
+    }
+
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
+
+    // Jalankan pengecekan saat halaman dimuat
+    muatStatusPencairan();
 </script>
 </body>
 </html>
