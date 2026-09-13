@@ -42,15 +42,16 @@
             border-top: 5px solid #fbbf24; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
 
-        /* FOTO PROFIL BINGKAI EMAS (Posisi aman dari teks) */
-        .foto-box { 
-            width: 120px; height: 120px; background: #fff; border-radius: 50%; 
-            border: 4px solid #fbbf24; 
-            margin: -60px auto 15px auto; /* Ditarik setengah keluar dari card-main */
-            display: flex; justify-content: center; align-items: center; 
-            font-size: 3.5rem; color: #94a3b8; box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
-            z-index: 11; position: relative; overflow: hidden; 
+        // TAMPILKAN FOTO PROFIL (Jalur Anti-Blokir Drive)
+    if(userData.foto_url && userData.foto_url.trim() !== '') {
+        let urlFoto = userData.foto_url;
+        let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
+        if (fileIdMatch) {
+            urlFoto = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[0];
         }
+        document.getElementById('photoArea').innerHTML = `<img src="${urlFoto}" style="width:100%; height:100%; object-fit:cover;" alt="Foto Profil">`;
+    }
+            
         .foto-box img { width: 100%; height: 100%; object-fit: cover; }
 
         /* TEKS IDENTITAS */
