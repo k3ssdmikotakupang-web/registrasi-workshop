@@ -3,74 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ID Card Peserta - EMS</title>
+    <title>ID Card Digital Peserta</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        body { 
-            background-color: #f8fafc; font-family: 'Poppins', sans-serif; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            min-height: 100vh; margin: 0; padding: 15px; 
-        }
-
-        /* WADAH UTAMA KARTU */
+        body { background-color: #f8fafc; font-family: 'Poppins', sans-serif; padding-bottom: 40px; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        
+        /* PROPORSI KARTU 10.5 x 15 */
         .id-card-wrapper { 
-            width: 100%; max-width: 340px; background: #ffffff; border-radius: 20px; 
-            overflow: hidden; box-shadow: 0 15px 35px rgba(0,0,0,0.12); 
-            position: relative; display: flex; flex-direction: column; 
-            margin-bottom: 20px; 
+            width: 100%; max-width: 360px; background: #ffffff; border-radius: 20px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.12); position: relative; 
+            display: flex; flex-direction: column; margin-top: 20px; margin-bottom: 25px; 
         }
 
-        /* HEADER LENGKUNG (Ruang bawah diperbesar jadi 110px agar foto tidak menabrak teks) */
         .header-maroon { 
             background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fbbf24; 
-            text-align: center; padding: 25px 15px 110px 15px; 
-            border-bottom-left-radius: 30px; border-bottom-right-radius: 30px;
+            padding: 30px 15px 90px 15px; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; 
+            text-align: center; 
         }
-        .header-maroon h5 { font-size: 1.1rem; font-weight: 800; margin: 0 0 5px 0; text-transform: uppercase; letter-spacing: 0.5px; }
-        .header-maroon p { font-size: 0.7rem; color: #fca5a5; margin: 0; font-weight: 600; line-height: 1.4; text-transform: uppercase; }
+        .header-maroon h5 { font-size: 1.15rem; font-weight: 800; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .header-maroon p { font-size: 0.75rem; color: #fca5a5; margin: 0; line-height: 1.4; font-weight: 600; text-transform: uppercase; }
 
-        /* KARTU KONTEN TIMBUL */
         .card-main { 
-            background: #fff; border-radius: 20px; 
-            padding: 0 15px 30px 15px; 
-            margin: -80px 20px 25px 20px; /* Ditarik ke atas menimpa header */
-            position: relative; z-index: 10; text-align: center;
-            border-top: 5px solid #fbbf24; box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            padding: 0 15px 25px 15px; margin: -70px 20px 20px 20px; 
+            position: relative; z-index: 10; text-align: center; border-top: 5px solid #fbbf24;
         }
-
-        // TAMPILKAN FOTO PROFIL (Jalur Anti-Blokir Drive)
-    if(userData.foto_url && userData.foto_url.trim() !== '') {
-        let urlFoto = userData.foto_url;
-        let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
-        if (fileIdMatch) {
-            urlFoto = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[0];
+        
+        .foto-box { 
+            width: 125px; height: 125px; background: #fff; border-radius: 50%; border: 4px solid #fbbf24; 
+            margin: -65px auto 15px auto; display: flex; align-items: center; justify-content: center; 
+            font-size: 4rem; color: #94a3b8; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.2); 
+            position: relative; z-index: 11; 
         }
-        document.getElementById('photoArea').innerHTML = `<img src="${urlFoto}" style="width:100%; height:100%; object-fit:cover;" alt="Foto Profil">`;
-    }
-            
         .foto-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* TEKS IDENTITAS */
-        .id-name { font-size: 1.1rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.2; text-transform: uppercase; }
-        .id-school { font-size: 0.75rem; font-weight: 600; color: #64748b; margin-bottom: 12px; line-height: 1.2; }
+        .id-name { font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.2; text-transform: uppercase; }
+        .id-school { font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 2px; line-height: 1.2; }
+        .id-subrayon { font-size: 0.8rem; font-weight: 700; color: #dc3545; margin-bottom: 12px; }
+        
         .id-role { 
-            display: inline-block; background: #7f1d1d; color: #fbbf24; font-size: 0.75rem; 
-            font-weight: 800; padding: 5px 16px; border-radius: 20px; text-transform: uppercase; 
-            letter-spacing: 0.5px; margin-bottom: 15px; box-shadow: 0 3px 8px rgba(127, 29, 29, 0.3); 
+            display: inline-block; background: #7f1d1d; color: #fbbf24; font-size: 0.8rem; 
+            font-weight: 800; padding: 6px 20px; border-radius: 25px; text-transform: uppercase; 
+            letter-spacing: 0.5px; margin-bottom: 15px; 
         }
 
-        /* AREA QR CODE */
-        .qr-box { background: #f8fafc; padding: 12px; border-radius: 12px; border: 2px dashed #cbd5e1; margin-bottom: 8px; display: inline-block; }
-        .qr-box img { width: 140px; height: 140px; display: block; }
-        .id-qr-text { font-size: 0.8rem; font-weight: 800; color: #7f1d1d; letter-spacing: 1px; }
+        .qr-box { background: #f8fafc; padding: 12px; border-radius: 15px; display: inline-block; border: 2px dashed #cbd5e1; margin-bottom: 5px; }
+        .qr-box img { width: 140px; height: 140px; }
+        .id-qr-text { font-size: 0.85rem; font-weight: 800; color: #7f1d1d; letter-spacing: 1px; }
 
-        /* WADAH TOMBOL */
-        .controls-wrapper { width: 100%; max-width: 340px; }
-        .btn-kamera { background-color: #fbbf24; color: #7f1d1d; font-weight: 800; border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); }
+        .controls-wrapper { width: 100%; max-width: 360px; padding: 0 20px; }
+        .btn-kamera { background-color: #fbbf24; color: #7f1d1d; font-weight: 800; border-radius: 12px; border: none; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); transition: 0.2s; }
         .btn-back { background-color: #ffffff; border: 1px solid #cbd5e1; color: #334155; font-weight: 600; border-radius: 12px; }
         .swal-maroon { border-radius: 15px !important; }
     </style>
@@ -80,25 +66,26 @@
 <div class="id-card-wrapper">
     <div class="header-maroon">
         <h5>K3S SD/MI KOTA KUPANG</h5>
-        <p>Panitia Pelaksana Workshop Manajemen Kepala SD/MI Kota Kupang 2026</p>
+        <p>Panitia Pelaksana Workshop Manajemen Kepala SD/MI<br>Kota Kupang 2026</p>
     </div>
     <div class="card-main">
         <div class="foto-box" id="photoArea"><i class="bi bi-person-fill"></i></div>
         <div class="id-name" id="cNama">Memuat...</div>
         <div class="id-school" id="cSekolah">Data Sekolah</div>
+        <div class="id-subrayon" id="cSubrayon"><i class="bi bi-geo-alt-fill"></i> Subrayon</div>
         <div><span class="id-role" id="cJabatan">Jabatan</span></div>
-        <div class="qr-box"><img id="cQr" src="" alt="QR Validasi"></div>
+        <div class="qr-box"><img id="cQr" src="" alt="QR Code Peserta"></div>
         <div class="id-qr-text" id="cIdQr">QR-XXXX</div>
     </div>
 </div>
 
 <div class="controls-wrapper">
     <input type="file" id="inputKamera" accept="image/*" capture="user" class="d-none" onchange="prosesFoto(event)">
-    <button class="btn btn-kamera w-100 py-3 mb-2" id="btnBukaKamera" onclick="document.getElementById('inputKamera').click()">
+    <button class="btn btn-kamera w-100 py-3 mb-3" id="btnBukaKamera" onclick="document.getElementById('inputKamera').click()">
         <i class="bi bi-camera-fill me-2"></i> PERBARUI FOTO PROFIL
     </button>
-    <button class="btn btn-success w-100 py-3 fw-bold mb-2 d-none" id="btnSimpan" onclick="kirimKeServer()">
-        <i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO KE ID CARD
+    <button class="btn btn-success w-100 py-3 fw-bold mb-3 d-none" id="btnSimpan" onclick="kirimKeServer()">
+        <i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO BARU
     </button>
     <button class="btn btn-back w-100 py-3" onclick="window.location.href='dashboard_peserta.html'">
         <i class="bi bi-arrow-left-circle me-2"></i> Kembali ke Dasbor
@@ -107,12 +94,12 @@
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
-    
     const userData = JSON.parse(localStorage.getItem('userLogin'));
-    if(!userData || userData.role !== 'Peserta') window.location.href = "index.html";
+    if(!userData) window.location.href = "index.html";
 
     document.getElementById('cNama').innerText = userData.nama;
-    document.getElementById('cSekolah').innerText = userData.sekolah || 'Nusa Cendana International Plus School';
+    document.getElementById('cSekolah').innerText = userData.sekolah || 'Asal Sekolah Tidak Ditemukan';
+    document.getElementById('cSubrayon').innerHTML = `<i class="bi bi-geo-alt-fill"></i> Subrayon: ${userData.subrayon || '-'}`;
     document.getElementById('cJabatan').innerText = userData.jabatan;
     document.getElementById('cIdQr').innerText = userData.id_qr;
     
@@ -122,19 +109,14 @@
     if(userData.foto_url && userData.foto_url.trim() !== '') {
         let urlFoto = userData.foto_url;
         let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
-        if (fileIdMatch) {
-            urlFoto = 'https://drive.google.com/uc?export=view&id=' + fileIdMatch[0];
-        }
+        if (fileIdMatch) { urlFoto = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[0]; }
         document.getElementById('photoArea').innerHTML = `<img src="${urlFoto}" style="width:100%; height:100%; object-fit:cover;" alt="Foto Profil">`;
     }
 
-    let base64FotoTerkirim = "";
-    let namaFileFoto = "";
+    let base64FotoTerkirim = ""; let namaFileFoto = "";
 
     function prosesFoto(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
+        const file = event.target.files[0]; if (!file) return;
         Swal.fire({ title: 'Menyiapkan Foto...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
         const reader = new FileReader();
@@ -142,17 +124,11 @@
             const img = new Image();
             img.onload = function() {
                 const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 400;
-                const scaleSize = MAX_WIDTH / img.width;
-                canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
-
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
+                const scaleSize = 400 / img.width; canvas.width = 400; canvas.height = img.height * scaleSize;
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                document.getElementById('photoArea').innerHTML = `<img src="${dataUrl}">`;
                 
+                document.getElementById('photoArea').innerHTML = `<img src="${dataUrl}">`;
                 base64FotoTerkirim = dataUrl.split(',')[1];
                 namaFileFoto = "Peserta_" + userData.id_qr + ".jpg";
                 
@@ -167,30 +143,20 @@
 
     async function kirimKeServer() {
         let btn = document.getElementById('btnSimpan');
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan ke Server...';
-        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...'; btn.disabled = true;
 
         try {
             const res = await fetch(API_URL, {
                 method: 'POST', body: JSON.stringify({ action: 'upload_foto_peserta', id_qr: userData.id_qr, fileBase64: base64FotoTerkirim, mimeType: 'image/jpeg', filename: namaFileFoto })
             });
             const result = await res.json();
-
             if(result.status === 'success') {
-                userData.foto_url = result.url;
-                localStorage.setItem('userLogin', JSON.stringify(userData));
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Foto resmi terpasang.', timer: 2000, showConfirmButton: false, customClass: { popup: 'swal-maroon' } }).then(() => {
-                    btn.classList.add('d-none');
-                    document.getElementById('btnBukaKamera').classList.remove('d-none');
+                userData.foto_url = result.url; localStorage.setItem('userLogin', JSON.stringify(userData));
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Foto tersimpan.', timer: 2000, showConfirmButton: false, customClass: { popup: 'swal-maroon' } }).then(() => {
+                    btn.classList.add('d-none'); document.getElementById('btnBukaKamera').classList.remove('d-none');
                 });
-            } else {
-                Swal.fire('Gagal', result.message, 'error');
-                btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO KE ID CARD'; btn.disabled = false;
-            }
-        } catch(e) {
-            Swal.fire('Error', 'Koneksi ke server terputus.', 'error');
-            btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> SIMPAN FOTO KE ID CARD'; btn.disabled = false;
-        }
+            } else { Swal.fire('Gagal', result.message, 'error'); btn.innerHTML = 'SIMPAN FOTO BARU'; btn.disabled = false; }
+        } catch(e) { Swal.fire('Error', 'Koneksi terputus.', 'error'); btn.innerHTML = 'SIMPAN FOTO BARU'; btn.disabled = false; }
     }
 </script>
 </body>
