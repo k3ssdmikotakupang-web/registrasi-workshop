@@ -256,9 +256,9 @@
             const response = await fetch(API_URL, {
                 method: 'POST', 
                 body: JSON.stringify({ 
-                    action: 'get_dashboard_live', // <-- Panggil fungsi yang benar
-                    role: userData.role, 
-                    jabatan: userData.jabatan 
+                    action: 'get_dashboard_live', 
+                    role: userData.role || 'Peserta', 
+                    jabatan: userData.jabatan || 'Guru' 
                 })
             });
             const result = await response.json();
@@ -266,7 +266,7 @@
             if (result.status === 'success') {
                 // 1. RENDER PENGUMUMAN
                 const boxPengumuman = document.getElementById('boxPengumuman');
-                const pengumumanAktif = result.announcements; // <-- Sesuai data backend
+                const pengumumanAktif = result.announcements;
 
                 if (pengumumanAktif && pengumumanAktif.length > 0) {
                     boxPengumuman.innerHTML = '';
@@ -286,7 +286,7 @@
                 // 2. RENDER SESI LIVE REALTIME
                 const boxSesi = document.getElementById('boxSesiLive');
                 const badgeLive = document.getElementById('badgeLive');
-                const sesiLive = result.ongoing; // <-- Sesuai data backend
+                const sesiLive = result.ongoing;
 
                 if (sesiLive) {
                     badgeLive.style.display = 'inline-block';
@@ -299,10 +299,17 @@
                     badgeLive.style.display = 'none';
                     boxSesi.innerHTML = `<p class="text-muted small mb-0 italic">Tidak ada sesi kegiatan yang sedang berlangsung saat ini.</p>`;
                 }
+            } else {
+                // TANGKAP JIKA BACKEND MENGIRIM STATUS ERROR
+                document.getElementById('boxPengumuman').innerHTML = `<p class="text-danger small mb-0 fw-bold"><i class="bi bi-exclamation-triangle"></i> Error Server: ${result.message}</p>`;
+                document.getElementById('boxSesiLive').innerHTML = `<p class="text-danger small mb-0 fw-bold"><i class="bi bi-exclamation-triangle"></i> Error Server: ${result.message}</p>`;
             }
-        } catch (e) { console.error("Gagal memuat live dashboard:", e); }
+        } catch (e) { 
+            // TANGKAP JIKA KONEKSI ATAU API_URL SALAH
+            document.getElementById('boxPengumuman').innerHTML = `<p class="text-danger small mb-0"><strong>Koneksi API terputus.</strong><br>Pastikan API_URL benar dan Anda sudah Deploy (New Version) di Apps Script.</p>`;
+            document.getElementById('boxSesiLive').innerHTML = `<p class="text-danger small mb-0">Detail Error:<br>${e.message}</p>`;
+        }
     }
-
     function bukaLink(jenis) {
         let url = linkData[jenis];
         if(url && url.trim() !== '') { window.open(url, '_blank'); } 
