@@ -254,18 +254,21 @@
     async function muatLiveDashboard() {
         try {
             const response = await fetch(API_URL, {
-                method: 'POST', body: JSON.stringify({ action: 'get_live_dashboard' })
+                method: 'POST', 
+                body: JSON.stringify({ 
+                    action: 'get_dashboard_live', // <-- Panggil fungsi yang benar
+                    role: userData.role, 
+                    jabatan: userData.jabatan 
+                })
             });
             const result = await response.json();
 
             if (result.status === 'success') {
+                // 1. RENDER PENGUMUMAN
                 const boxPengumuman = document.getElementById('boxPengumuman');
-                const pengumumanAktif = result.pengumuman.filter(p => 
-                    p.status.toLowerCase() === 'aktif' && 
-                    (p.target.toLowerCase() === 'semua' || p.target.toLowerCase() === userData.jabatan.toLowerCase())
-                );
+                const pengumumanAktif = result.announcements; // <-- Sesuai data backend
 
-                if (pengumumanAktif.length > 0) {
+                if (pengumumanAktif && pengumumanAktif.length > 0) {
                     boxPengumuman.innerHTML = '';
                     pengumumanAktif.forEach(p => {
                         boxPengumuman.innerHTML += `
@@ -280,15 +283,16 @@
                     boxPengumuman.innerHTML = `<p class="text-muted small mb-0 italic">Belum ada pengumuman terbaru.</p>`;
                 }
 
+                // 2. RENDER SESI LIVE REALTIME
                 const boxSesi = document.getElementById('boxSesiLive');
                 const badgeLive = document.getElementById('badgeLive');
-                const sesiLive = result.sesi_live; 
+                const sesiLive = result.ongoing; // <-- Sesuai data backend
 
                 if (sesiLive) {
                     badgeLive.style.display = 'inline-block';
                     boxSesi.innerHTML = `
                         <strong class="text-dark">${sesiLive.kegiatan}</strong><br>
-                        <small class="text-danger fw-bold"><i class="bi bi-clock"></i> ${sesiLive.waktu_mulai} - ${sesiLive.waktu_selesai}</small><br>
+                        <small class="text-danger fw-bold"><i class="bi bi-clock"></i> ${sesiLive.waktu}</small><br>
                         <small class="text-muted"><i class="bi bi-geo-alt-fill"></i> Lokasi: ${sesiLive.lokasi}</small>
                     `;
                 } else {
@@ -296,7 +300,7 @@
                     boxSesi.innerHTML = `<p class="text-muted small mb-0 italic">Tidak ada sesi kegiatan yang sedang berlangsung saat ini.</p>`;
                 }
             }
-        } catch (e) { console.error(e); }
+        } catch (e) { console.error("Gagal memuat live dashboard:", e); }
     }
 
     function bukaLink(jenis) {
