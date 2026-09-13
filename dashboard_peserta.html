@@ -1,15 +1,220 @@
-// 1. API URL SUDAH TERISI
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dasbor Peserta - EMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <style>
+        body { background-color: #f8fafc; font-family: 'Poppins', sans-serif; padding-bottom: 70px; }
+        .header-maroon { background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fbbf24; padding: 25px 15px 60px 15px; border-bottom-left-radius: 25px; border-bottom-right-radius: 25px; box-shadow: 0 4px 15px rgba(127, 29, 29, 0.3); text-align: center; margin-bottom: -50px; }
+        
+        .card-main { background: #fff; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 20px 15px; margin: 0 15px 25px 15px; position: relative; z-index: 10; border-top: 4px solid #fbbf24; }
+        
+        .avatar-container { text-align: center; cursor: pointer; transition: transform 0.2s; margin-top: -50px; }
+        .avatar-container:hover { transform: scale(1.05); }
+        .foto-box { width: 110px; height: 110px; background: #fff; border-radius: 50%; border: 4px solid #fbbf24; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; color: #94a3b8; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.2); position: relative; z-index: 11; }
+        .foto-box img { width: 100%; height: 100%; object-fit: cover; }
+        .badge-klik { font-size: 0.65rem; background: #7f1d1d; color: #fff; padding: 4px 12px; border-radius: 20px; letter-spacing: 0.5px; box-shadow: 0 2px 5px rgba(127, 29, 29, 0.3); }
+
+        .glass-widget { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .widget-header-live { background: rgba(220, 53, 69, 0.1); border-left: 4px solid #dc3545; border-radius: 12px 12px 0 0; }
+        .widget-header-info { background: rgba(251, 191, 36, 0.1); border-left: 4px solid #fbbf24; border-radius: 12px 12px 0 0; }
+
+        .menu-grid { padding: 0 15px; }
+        .menu-btn { background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px 10px; text-align: center; color: #0f172a; text-decoration: none; display: block; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s; cursor: pointer; }
+        .menu-btn:hover { background: #f8fafc; border-color: #fbbf24; transform: translateY(-3px); }
+        .menu-icon { font-size: 2rem; color: #7f1d1d; margin-bottom: 5px; }
+        .menu-text { font-size: 0.8rem; font-weight: 700; line-height: 1.2; }
+        
+        .swal-maroon { border-radius: 15px !important; }
+
+        /* INTERACTIVE LIVE FRAME OVERLAY */
+        .preview-container {
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            margin: 0 auto;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            touch-action: none;
+        }
+        #draggablePhoto {
+            position: absolute;
+            top: 0; left: 0;
+            transform-origin: top left;
+            cursor: grab;
+            user-select: none;
+        }
+        #overlayFrame {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-maroon">
+    <h5 class="fw-bold mb-0 text-uppercase">K3S SD/MI KOTA KUPANG</h5>
+    <p class="small text-white-50 mt-1">Dasbor Peserta Workshop 2026</p>
+</div>
+
+<div class="container-fluid">
+    <!-- PROFIL & STATUS -->
+    <div class="card-main text-center">
+        <div class="avatar-container" onclick="window.location.href='id_card_peserta.html'">
+            <div class="foto-box" id="previewArea"><i class="bi bi-person-fill"></i></div>
+            <span class="badge-klik mb-2 d-inline-block"><i class="bi bi-upc-scan me-1"></i> BUKA ID CARD</span>
+        </div>
+        
+        <h5 class="fw-bold text-dark mb-0 mt-2" id="txtNama">Memuat...</h5>
+        <p class="small text-muted mb-2 fw-bold" id="txtJabatan">...</p>
+        
+        <div class="alert alert-secondary py-2 small mb-0 text-start border-0 shadow-sm" id="p_status">
+            <i class="bi bi-info-circle"></i> Status: <strong>Memuat...</strong>
+        </div>
+    </div>
+
+    <!-- WIDGET LIVE SESI & PENGUMUMAN -->
+    <div class="row g-3 mb-4 px-3">
+        <div class="col-md-6">
+            <div class="glass-widget h-100">
+                <div class="d-flex align-items-center justify-content-between p-2 widget-header-live">
+                    <h6 class="m-0 text-danger fw-bold fs-6"><i class="bi bi-broadcast"></i> Sesi Berlangsung</h6>
+                    <span id="badgeLive" class="badge bg-danger text-uppercase px-2 py-1" style="display:none; font-size:0.6rem;">LIVE</span>
+                </div>
+                <div class="p-3" id="boxSesiLive"><p class="text-muted small mb-0">Mengecek agenda...</p></div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="glass-widget h-100">
+                <div class="p-2 widget-header-info">
+                    <h6 class="m-0 text-warning text-dark fw-bold fs-6"><i class="bi bi-megaphone-fill"></i> Pengumuman Panitia</h6>
+                </div>
+                <div class="p-3" id="boxPengumuman" style="max-height: 150px; overflow-y: auto;">
+                    <p class="text-muted small mb-0">Memuat pengumuman...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU OPERASIONAL PESERTA -->
+    <div class="menu-grid">
+        <h6 class="fw-bold text-dark mb-3 px-1 border-bottom pb-2">Menu Kegiatan</h6>
+        <div class="row g-3">
+            <div class="col-6">
+                <div class="menu-btn" onclick="tampilkanJadwal()">
+                    <div class="menu-icon"><i class="bi bi-calendar-event"></i></div>
+                    <div class="menu-text">Jadwal<br>Kegiatan</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="menu-btn" onclick="bukaLink('materi')">
+                    <div class="menu-icon"><i class="bi bi-journal-text"></i></div>
+                    <div class="menu-text">Materi<br>Workshop</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="menu-btn" onclick="bukaMenuDokumentasi()">
+                    <div class="menu-icon"><i class="bi bi-camera"></i></div>
+                    <div class="menu-text">Photobooth<br>& Galeri</div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="menu-btn" onclick="unduhSertifikat()">
+                    <div class="menu-icon"><i class="bi bi-award"></i></div>
+                    <div class="menu-text">E-Sertifikat<br>Digital</div>
+                </div>
+            </div>
+            <div class="col-12 mt-4">
+                <button class="btn btn-outline-danger w-100 py-3 fw-bold rounded-3" onclick="logout()">
+                    <i class="bi bi-box-arrow-right me-2"></i> Keluar Aplikasi
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ELEMEN TERSEMBUNYI MESIN KANVAS -->
+    <canvas id="canvasSertifikat" style="display: none;"></canvas>
+    <canvas id="canvasRenderFinal" width="1080" height="1080" style="display: none;"></canvas>
+    <input type="file" id="inputKameraDokumentasi" accept="image/*" capture="environment" class="d-none" onchange="bukaEditorLive(event)">
+</div>
+
+<!-- Modal Jadwal -->
+<div class="modal fade" id="modalJadwal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content" style="border: none; border-radius: 15px;">
+      <div class="modal-header" style="background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fbbf24;">
+        <h5 class="modal-title fw-bold"><i class="bi bi-calendar-event me-2"></i> Jadwal Kegiatan Anda</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0" style="font-size: 0.85rem;">
+                <thead class="table-light"><tr><th>Waktu</th><th>Kegiatan & Pemateri</th><th>Lokasi</th></tr></thead>
+                <tbody id="bodyTabelJadwal"></tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Live Frame Adjuster & Pinch to Zoom -->
+<div class="modal fade" id="modalLiveEditor" tabindex="-1" data-bs-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content text-white" style="background: #0f172a; border-radius: 15px; border: 1px solid #475569;">
+      <div class="modal-header border-secondary py-2">
+        <h6 class="modal-title fw-bold text-warning"><i class="bi bi-sliders me-2"></i> Atur Posisi & Zoom Foto</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" onclick="resetInputKamera()"></button>
+      </div>
+      <div class="modal-body text-center p-3">
+        <p class="small text-white-50 mb-2">Geser foto atau cubit layar (2 jari) untuk zoom agar pas di bingkai.</p>
+        
+        <div class="preview-container" id="previewContainer">
+            <img id="draggablePhoto" src="" alt="Foto User">
+            <img id="overlayFrame" src="frame_dokumentasi.png" alt="Frame Template">
+        </div>
+
+        <div class="mt-3 px-2">
+            <label class="form-label small text-info fw-bold mb-1">Perbesar / Perkecil Foto</label>
+            <input type="range" class="form-range" id="zoomRange" min="0.05" max="5" step="0.05" value="1" oninput="ubahZoom(this.value)">
+        </div>
+      </div>
+      <div class="modal-footer border-secondary p-2 d-flex justify-content-between">
+        <button type="button" class="btn btn-outline-light btn-sm px-3" data-bs-dismiss="modal" onclick="resetInputKamera()">Batal</button>
+        <button type="button" class="btn btn-warning btn-sm fw-bold px-4" onclick="renderHasilFinal()">Simpan & Upload</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // URL API KAPTEN YANG SUDAH TERPASANG
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec"; 
+    
     const Toast = Swal.mixin({ customClass: { popup: 'swal-maroon' }, confirmButtonColor: '#7f1d1d' });
     
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData || userData.role !== 'Peserta') window.location.href = "index.html";
 
-    // 2. MENGISI NAMA & JABATAN (Cukup 1 kali)
+    // MENGISI NAMA & JABATAN
     document.getElementById('txtNama').innerText = userData.nama;
     document.getElementById('txtJabatan').innerText = userData.jabatan;
 
-    // 3. KODE FOTO PROFIL (Trik Thumbnail - Cukup 1 kali)
+    // KODE FOTO PROFIL
     if(userData.foto_url && userData.foto_url.trim() !== '') {
         let urlFoto = userData.foto_url;
         let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
@@ -51,7 +256,7 @@
             const result = await response.json();
 
             if (result.status === 'success') {
-                // 1. RENDER PENGUMUMAN
+                // RENDER PENGUMUMAN
                 const boxPengumuman = document.getElementById('boxPengumuman');
                 const pengumumanAktif = result.announcements;
 
@@ -70,7 +275,7 @@
                     boxPengumuman.innerHTML = `<p class="text-muted small mb-0 italic">Belum ada pengumuman terbaru.</p>`;
                 }
 
-                // 2. RENDER SESI LIVE REALTIME
+                // RENDER SESI LIVE REALTIME
                 const boxSesi = document.getElementById('boxSesiLive');
                 const badgeLive = document.getElementById('badgeLive');
                 const sesiLive = result.ongoing;
@@ -87,13 +292,11 @@
                     boxSesi.innerHTML = `<p class="text-muted small mb-0 italic">Tidak ada sesi kegiatan yang sedang berlangsung saat ini.</p>`;
                 }
             } else {
-                // TANGKAP JIKA BACKEND MENGIRIM STATUS ERROR
                 document.getElementById('boxPengumuman').innerHTML = `<p class="text-danger small mb-0 fw-bold"><i class="bi bi-exclamation-triangle"></i> Error Server: ${result.message}</p>`;
                 document.getElementById('boxSesiLive').innerHTML = `<p class="text-danger small mb-0 fw-bold"><i class="bi bi-exclamation-triangle"></i> Error Server: ${result.message}</p>`;
             }
         } catch (e) { 
-            // TANGKAP JIKA KONEKSI ATAU API_URL SALAH
-            document.getElementById('boxPengumuman').innerHTML = `<p class="text-danger small mb-0"><strong>Koneksi API terputus.</strong><br>Pastikan API_URL benar dan Anda sudah Deploy (New Version) di Apps Script.</p>`;
+            document.getElementById('boxPengumuman').innerHTML = `<p class="text-danger small mb-0"><strong>Koneksi API terputus.</strong><br>Pastikan API_URL benar.</p>`;
             document.getElementById('boxSesiLive').innerHTML = `<p class="text-danger small mb-0">Detail Error:<br>${e.message}</p>`;
         }
     }
@@ -146,7 +349,7 @@
     let photoState = { x: 0, y: 0, scale: 1, isDragging: false, startX: 0, startY: 0 };
     let initialPinchDistance = 0;
     let initialScale = 1;
-    let baseScale = 1; // Skala dasar agar pas di kotak 300x300
+    let baseScale = 1;
 
     let imgElement = document.getElementById('draggablePhoto');
     let containerElement = document.getElementById('previewContainer');
@@ -186,12 +389,10 @@
             imgElement.src = e.target.result;
             
             imgElement.onload = function() {
-                // Kalkulasi skala awal agar gambar penuh di kotak 300x300
                 baseScale = Math.max(300 / imgElement.naturalWidth, 300 / imgElement.naturalHeight);
                 photoState.scale = 1;
                 document.getElementById('zoomRange').value = 1;
 
-                // Pusatkan gambar
                 let displayedWidth = imgElement.naturalWidth * baseScale;
                 let displayedHeight = imgElement.naturalHeight * baseScale;
                 
@@ -208,7 +409,6 @@
     }
 
     function updatePhotoTransform() {
-        // Kombinasi skala dasar dan zoom user dengan transform-origin top left (0,0)
         let finalScale = baseScale * photoState.scale;
         imgElement.style.transform = `translate(${photoState.x}px, ${photoState.y}px) scale(${finalScale})`;
     }
@@ -218,7 +418,6 @@
         let newScale = parseFloat(val);
         let ratio = newScale / oldScale;
 
-        // Efek zoom yang fokus ke tengah kotak (150, 150)
         photoState.x = 150 - (150 - photoState.x) * ratio;
         photoState.y = 150 - (150 - photoState.y) * ratio;
         photoState.scale = newScale;
@@ -226,7 +425,6 @@
         updatePhotoTransform();
     }
 
-    // --- EVENT LISTENER SENTUHAN ---
     containerElement.addEventListener('mousedown', startDrag);
     containerElement.addEventListener('touchstart', startDragTouch, {passive: false});
 
@@ -265,7 +463,6 @@
     }
 
     function onDragTouch(e) {
-        // Cubit layar / Pinch to Zoom (2 Jari)
         if (e.touches.length === 2) {
             let currentDistance = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
@@ -274,7 +471,6 @@
             if (initialPinchDistance > 0) {
                 let factor = currentDistance / initialPinchDistance;
                 let newScale = initialScale * factor;
-                // Batas wajar zoom (0.1x hingga 5x)
                 if (newScale >= 0.1 && newScale <= 5) {
                     let ratio = newScale / photoState.scale;
                     photoState.x = 150 - (150 - photoState.x) * ratio;
@@ -284,7 +480,6 @@
                     document.getElementById('zoomRange').value = newScale;
                     updatePhotoTransform();
                 }
-                // Refresh referensi agar mulus
                 initialPinchDistance = currentDistance;
                 initialScale = photoState.scale;
             }
@@ -292,7 +487,6 @@
             return;
         }
 
-        // Geser foto (1 Jari)
         if (!photoState.isDragging || e.touches.length !== 1) return;
         photoState.x = e.touches[0].clientX - photoState.startX;
         photoState.y = e.touches[0].clientY - photoState.startY;
@@ -305,7 +499,6 @@
         initialPinchDistance = 0;
     }
 
-    // --- RENDER FINAL MENGGUNAKAN MATEMATIKA ABSOLUT ---
     function renderHasilFinal() {
         bootstrap.Modal.getInstance(document.getElementById('modalLiveEditor')).hide();
         Swal.fire({ title: 'Merakit Foto & Frame...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
@@ -314,19 +507,16 @@
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, 1080, 1080);
 
-        let renderScale = 1080 / 300; // Pembesaran dari layar 300px ke Kanvas 1080px
+        let renderScale = 1080 / 300; 
 
-        // Langsung jiplak elemen foto di layar (Tanpa perlu new Image() yang berisiko error)
         let finalScale = baseScale * photoState.scale;
         let drawX = photoState.x * renderScale;
         let drawY = photoState.y * renderScale;
         let drawWidth = imgElement.naturalWidth * finalScale * renderScale;
         let drawHeight = imgElement.naturalHeight * finalScale * renderScale;
 
-        // Gambar Foto
         ctx.drawImage(imgElement, drawX, drawY, drawWidth, drawHeight);
 
-        // Timpa Frame transparan
         const frameImg = new Image();
         frameImg.crossOrigin = "anonymous";
         frameImg.src = 'frame_dokumentasi.png';
@@ -371,7 +561,6 @@
             } else { Swal.fire('Gagal Upload', result.message, 'error'); }
         } catch(e) { Swal.fire('Error', 'Koneksi ke server terputus.', 'error'); }
     }
-    // ==========================================
 
     async function unduhSertifikat() {
         if(userData.status_hadir !== 'Hadir') {
@@ -435,3 +624,6 @@
 
     muatLinkBroadcast();
     muatLiveDashboard();
+</script>
+</body>
+</html>
