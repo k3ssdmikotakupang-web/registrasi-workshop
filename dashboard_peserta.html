@@ -209,7 +209,16 @@
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData || userData.role !== 'Peserta') window.location.href = "index.html";
 
-    document.getElementById('txtNama').innerText = userData.nama;
+    if(userData.foto_url && userData.foto_url.trim() !== '') {
+        let urlFoto = userData.foto_url;
+        // Ambil ID dari link Google Drive
+        let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
+        if (fileIdMatch) {
+            // Ubah menjadi link Thumbnail Google Drive agar bisa dibaca langsung oleh HTML
+            urlFoto = 'https://drive.google.com/thumbnail?id=' + fileIdMatch[0] + '&sz=w500';
+        }
+        document.getElementById('previewArea').innerHTML = `<img src="${urlFoto}" style="width:100%; height:100%; object-fit:cover;" alt="Foto Profil">`;
+    }
     document.getElementById('txtJabatan').innerText = userData.jabatan;
 
    if(userData.foto_url) {
