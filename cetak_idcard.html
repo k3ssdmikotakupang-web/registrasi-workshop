@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak ID Card Peserta (10.5 x 21 cm)</title>
+    <title>Cetak ID Card Peserta (7.5 x 12 cm)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
@@ -11,10 +11,10 @@
     <style>
         body { background-color: #e2e8f0; font-family: 'Poppins', sans-serif; }
         
-        /* DIMENSI PASTI 10.5cm x 21cm */
+        /* DIMENSI PASTI 7.5cm x 12cm */
         .id-card-wrapper {
-            width: 10.5cm; 
-            height: 21cm;
+            width: 7.5cm; 
+            height: 12cm;
             background: #ffffff;
             overflow: hidden;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
@@ -23,66 +23,67 @@
             flex-direction: column;
             border: 1px solid #cbd5e1;
             page-break-inside: avoid;
+            border-radius: 12px;
         }
 
-        /* HEADER LENGKUNG DI SKALA BESAR */
+        /* HEADER LENGKUNG IDENTIK DASHBOARD */
         .header-maroon {
             background: linear-gradient(135deg, #7f1d1d, #991b1b);
             color: #fbbf24;
             text-align: center;
-            padding: 40px 15px 150px 15px; /* Ruang lebih lebar agar lengkungan bagus */
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
+            padding: 20px 8px 65px 8px; /* Ruang agar kartu putih bisa menumpuk */
+            border-bottom-left-radius: 25px;
+            border-bottom-right-radius: 25px;
         }
-        .header-maroon h5 { font-size: 1.5rem; font-weight: 800; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; }
-        .header-maroon p { font-size: 0.95rem; color: #fca5a5; margin: 0; font-weight: 600; line-height: 1.4; text-transform: uppercase; }
+        .header-maroon h5 { font-size: 0.95rem; font-weight: 800; margin: 0 0 4px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .header-maroon p { font-size: 0.6rem; color: #fca5a5; margin: 0; font-weight: 600; line-height: 1.3; text-transform: uppercase; }
 
-        /* KARTU KONTEN TIMBUL */
+        /* KARTU KONTEN TIMBUL (MENUMPUK KE ATAS) */
         .card-main {
             background: #fff;
-            border-radius: 25px;
-            padding: 0 20px 40px 20px;
-            margin: -110px 25px 25px 25px; /* Margin dinaikkan menimpa header */
+            border-radius: 15px;
+            padding: 0 10px 15px 10px;
+            margin: -55px 15px 15px 15px; /* Margin ditarik ke atas */
             position: relative;
             z-index: 10;
             text-align: center;
-            border-top: 6px solid #fbbf24;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-            flex-grow: 1; /* Memenuhi sisa ruang 21cm */
+            border-top: 5px solid #fbbf24;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            flex-grow: 1; 
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: flex-start;
         }
 
-        /* FOTO PROFIL DIPERBESAR */
+        /* FOTO PROFIL MELAYANG */
         .foto-box {
-            width: 160px;
-            height: 160px;
+            width: 95px;
+            height: 95px;
             background: #fff;
             border-radius: 50%;
-            border: 6px solid #fbbf24;
-            margin: -80px auto 25px auto;
+            border: 4px solid #fbbf24;
+            margin: -50px auto 10px auto; /* Ditarik keluar dari kartu putih */
             display: flex; justify-content: center; align-items: center;
-            font-size: 5rem; color: #94a3b8;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            font-size: 3rem; color: #94a3b8;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
             z-index: 11; position: relative; overflow: hidden;
         }
         .foto-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* TEKS IDENTITAS DIPERBESAR */
-        .id-name { font-size: 1.4rem; font-weight: 800; color: #0f172a; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; }
-        .id-school { font-size: 1rem; font-weight: 600; color: #64748b; margin-bottom: 20px; line-height: 1.3; }
+        /* TEKS IDENTITAS */
+        .id-name { font-size: 0.95rem; font-weight: 800; color: #0f172a; margin-bottom: 3px; line-height: 1.2; text-transform: uppercase; }
+        .id-school { font-size: 0.7rem; font-weight: 600; color: #64748b; margin-bottom: 12px; line-height: 1.2; }
         .id-role {
             display: inline-block; background: #7f1d1d; color: #fbbf24;
-            font-size: 1rem; font-weight: 800; padding: 8px 22px; border-radius: 30px;
-            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 30px;
+            font-size: 0.7rem; font-weight: 800; padding: 4px 15px; border-radius: 20px;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: auto;
         }
 
-        /* AREA QR CODE DIPERBESAR */
-        .qr-box { background: #f8fafc; padding: 15px; border-radius: 15px; border: 3px dashed #cbd5e1; margin-bottom: 10px; margin-top: auto; }
-        .qr-box img { width: 200px; height: 200px; display: block; }
-        .id-qr-text { font-size: 1.1rem; font-weight: 800; color: #7f1d1d; letter-spacing: 1.5px; }
+        /* AREA QR CODE */
+        .qr-box { background: #f8fafc; padding: 8px; border-radius: 12px; border: 2px dashed #cbd5e1; margin-bottom: 5px; margin-top: 15px; }
+        .qr-box img { width: 110px; height: 110px; display: block; }
+        .id-qr-text { font-size: 0.75rem; font-weight: 800; color: #7f1d1d; letter-spacing: 1px; }
 
         @media print {
             body { background: none !important; }
@@ -100,7 +101,7 @@
 
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-4 no-print bg-white p-3 rounded shadow-sm" style="border-top: 4px solid #7f1d1d;">
-        <h4 class="fw-bold text-dark mb-0"><i class="bi bi-person-vcard me-2" style="color: #7f1d1d;"></i> Cetak ID Card (10.5 x 21 cm)</h4>
+        <h4 class="fw-bold text-dark mb-0"><i class="bi bi-person-vcard me-2" style="color: #7f1d1d;"></i> Cetak ID Card (7.5 x 12 cm)</h4>
         <div>
             <button class="btn fw-bold text-white" style="background-color: #7f1d1d;" onclick="window.print()"><i class="bi bi-printer-fill me-2"></i> Cetak Semua</button>
             <button class="btn btn-outline-secondary ms-2" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> Kembali</button>
@@ -109,7 +110,7 @@
 
     <div id="loading" class="text-center py-5">
         <div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status"></div>
-        <p class="text-muted mt-3 fw-bold">Merakit Desain ID Card 10.5 x 21 cm...</p>
+        <p class="text-muted mt-3 fw-bold">Merakit Desain ID Card 7.5 x 12 cm...</p>
     </div>
 
     <div class="d-flex flex-wrap justify-content-center gap-4" id="containerCard"></div>
@@ -132,13 +133,13 @@
                 result.data.forEach(p => {
                     let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(p.id_qr)}`;
                     
-                    // Integrasi Direct View Google Drive (Anti-Blokir Thumbnail)
+                    // JALUR ANTI-BLOKIR GOOGLE DRIVE (lh3.googleusercontent.com)
                     let fotoHtml = `<i class="bi bi-person-fill"></i>`;
                     if(p.foto_url && p.foto_url.trim() !== '') {
                         let urlFoto = p.foto_url;
                         let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
                         if (fileIdMatch) {
-                            urlFoto = 'https://drive.google.com/uc?export=view&id=' + fileIdMatch[0];
+                            urlFoto = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[0];
                         }
                         fotoHtml = `<img src="${urlFoto}" alt="Foto Profil">`;
                     }
