@@ -45,20 +45,20 @@
             overflow: hidden;
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            touch-action: none;
+            touch-action: none; /* Mencegah layar HP scroll saat geser foto */
         }
         #draggablePhoto {
             position: absolute;
+            top: 0; left: 0;
+            transform-origin: top left; /* KUNCI PRESISI RENDER */
             cursor: grab;
             user-select: none;
-            top: 0;
-            left: 0;
         }
         #overlayFrame {
             position: absolute;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            pointer-events: none;
+            pointer-events: none; /* Frame tidak menghalangi sentuhan jari ke foto */
             z-index: 10;
         }
     </style>
@@ -97,7 +97,6 @@
                 <div class="p-3" id="boxSesiLive"><p class="text-muted small mb-0">Mengecek agenda...</p></div>
             </div>
         </div>
-
         <div class="col-md-6">
             <div class="glass-widget h-100">
                 <div class="p-2 widget-header-info">
@@ -204,7 +203,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // WAJIB PASTE API URL KAPTEN DI SINI!
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec"; 
+    const API_URL = "URL_WEB_APP_GAS_KAPTEN_PASTE_DISINI"; 
 
     const Toast = Swal.mixin({ customClass: { popup: 'swal-maroon' }, confirmButtonColor: '#7f1d1d' });
     const userData = JSON.parse(localStorage.getItem('userLogin'));
@@ -223,7 +222,7 @@
         boxStatus.innerHTML = `<i class="bi bi-check-circle-fill text-success"></i> Status: <strong>HADIR (Terkonfirmasi)</strong>`;
     } else {
         boxStatus.className = "alert alert-warning py-2 small mb-0 text-start border-0 shadow-sm text-dark";
-        boxStatus.innerHTML = `<i class="bi bi-geo-alt-fill text-danger"></i> Status: <strong>Belum Check-In</strong><br><small>Buka ID Card & tunjukkan QR ke Panitia.</small>`;
+        boxStatus.innerHTML = `<i class="bi bi-geo-alt-fill text-danger"></i> Status: <strong>Belum Check-In</strong>`;
     }
 
     let linkData = { jadwal: '', materi: '', dokumentasi: '' };
@@ -314,8 +313,7 @@
                                 </td>
                                 <td>
                                     <strong>${item.kegiatan}</strong> <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">${item.kategori}</span><br>
-                                    <small class="text-muted"><i class="bi bi-person-badge"></i> Pemateri: ${item.pemateri || '-'}</small><br>
-                                    <small class="text-muted"><i class="bi bi-person-check"></i> Moderator: ${item.moderator || '-'}</small>
+                                    <small class="text-muted"><i class="bi bi-person-badge"></i> Pemateri: ${item.pemateri || '-'}</small>
                                 </td>
                                 <td style="min-width: 100px;"><i class="bi bi-geo-alt-fill text-danger"></i> ${item.lokasi}</td>
                             </tr>
@@ -328,11 +326,12 @@
     }
 
     // ==========================================
-    // MODUL PHOTOBOOTH & LIVE FRAME OVERLAY
+    // MODUL PHOTOBOOTH (GESER & PINCH TO ZOOM)
     // ==========================================
     let photoState = { x: 0, y: 0, scale: 1, isDragging: false, startX: 0, startY: 0 };
     let initialPinchDistance = 0;
     let initialScale = 1;
+    let baseScale = 1; // Skala dasar agar pas di kotak 300x300
 
     let imgElement = document.getElementById('draggablePhoto');
     let containerElement = document.getElementById('previewContainer');
@@ -364,47 +363,55 @@
     }
 
     function bukaEditorLive(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+        const file = event.target.files[0];
+        if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        imgElement.src = e.target.result;
-        
-        imgElement.onload = function() {
-            let containerSize = 300;
-            let scaleFit = Math.max(containerSize / imgElement.naturalWidth, containerSize / imgElement.naturalHeight);
-            photoState.scale = scaleFit;
-            document.getElementById('zoomRange').value = scaleFit;
-
-            photoState.x = (containerSize - (imgElement.naturalWidth * scaleFit)) / 2;
-            photoState.y = (containerSize - (imgElement.naturalHeight * scaleFit)) / 2;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imgElement.src = e.target.result;
             
-            updatePhotoTransform();
+            imgElement.onload = function() {
+                // Kalkulasi skala awal agar gambar penuh di kotak 300x300
+                baseScale = Math.max(300 / imgElement.naturalWidth, 300 / imgElement.naturalHeight);
+                photoState.scale = 1;
+                document.getElementById('zoomRange').value = 1;
 
-            const modal = new bootstrap.Modal(document.getElementById('modalLiveEditor'));
-            modal.show();
-        }
-    };
-    reader.readAsDataURL(file);
-}
+                // Pusatkan gambar
+                let displayedWidth = imgElement.naturalWidth * baseScale;
+                let displayedHeight = imgElement.naturalHeight * baseScale;
+                
+                photoState.x = (300 - displayedWidth) / 2;
+                photoState.y = (300 - displayedHeight) / 2;
+                
+                updatePhotoTransform();
 
-function updatePhotoTransform() {
-    imgElement.style.left = photoState.x + 'px';
-    imgElement.style.top = photoState.y + 'px';
-    imgElement.style.width = (imgElement.naturalWidth * photoState.scale) + 'px';
-    imgElement.style.height = (imgElement.naturalHeight * photoState.scale) + 'px';
-}
+                const modal = new bootstrap.Modal(document.getElementById('modalLiveEditor'));
+                modal.show();
+            }
+        };
+        reader.readAsDataURL(file);
+    }
 
     function updatePhotoTransform() {
-        imgElement.style.transform = `translate(${photoState.x}px, ${photoState.y}px) scale(${photoState.scale / (imgElement.naturalWidth > 0 ? (300/imgElement.naturalWidth) : 1)})`;
+        // Kombinasi skala dasar dan zoom user dengan transform-origin top left (0,0)
+        let finalScale = baseScale * photoState.scale;
+        imgElement.style.transform = `translate(${photoState.x}px, ${photoState.y}px) scale(${finalScale})`;
     }
 
     function ubahZoom(val) {
-        photoState.scale = parseFloat(val);
+        let oldScale = photoState.scale;
+        let newScale = parseFloat(val);
+        let ratio = newScale / oldScale;
+
+        // Efek zoom yang fokus ke tengah kotak (150, 150)
+        photoState.x = 150 - (150 - photoState.x) * ratio;
+        photoState.y = 150 - (150 - photoState.y) * ratio;
+        photoState.scale = newScale;
+
         updatePhotoTransform();
     }
 
+    // --- EVENT LISTENER SENTUHAN ---
     containerElement.addEventListener('mousedown', startDrag);
     containerElement.addEventListener('touchstart', startDragTouch, {passive: false});
 
@@ -443,6 +450,7 @@ function updatePhotoTransform() {
     }
 
     function onDragTouch(e) {
+        // Cubit layar / Pinch to Zoom (2 Jari)
         if (e.touches.length === 2) {
             let currentDistance = Math.hypot(
                 e.touches[0].clientX - e.touches[1].clientX,
@@ -451,16 +459,25 @@ function updatePhotoTransform() {
             if (initialPinchDistance > 0) {
                 let factor = currentDistance / initialPinchDistance;
                 let newScale = initialScale * factor;
-                if (newScale >= 0.05 && newScale <= 10) {
+                // Batas wajar zoom (0.1x hingga 5x)
+                if (newScale >= 0.1 && newScale <= 5) {
+                    let ratio = newScale / photoState.scale;
+                    photoState.x = 150 - (150 - photoState.x) * ratio;
+                    photoState.y = 150 - (150 - photoState.y) * ratio;
                     photoState.scale = newScale;
+                    
                     document.getElementById('zoomRange').value = newScale;
                     updatePhotoTransform();
                 }
+                // Refresh referensi agar mulus
+                initialPinchDistance = currentDistance;
+                initialScale = photoState.scale;
             }
             e.preventDefault();
             return;
         }
 
+        // Geser foto (1 Jari)
         if (!photoState.isDragging || e.touches.length !== 1) return;
         photoState.x = e.touches[0].clientX - photoState.startX;
         photoState.y = e.touches[0].clientY - photoState.startY;
@@ -473,29 +490,28 @@ function updatePhotoTransform() {
         initialPinchDistance = 0;
     }
 
+    // --- RENDER FINAL MENGGUNAKAN MATEMATIKA ABSOLUT ---
     function renderHasilFinal() {
-    bootstrap.Modal.getInstance(document.getElementById('modalLiveEditor')).hide();
-    Swal.fire({ title: 'Merakit Foto & Frame...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+        bootstrap.Modal.getInstance(document.getElementById('modalLiveEditor')).hide();
+        Swal.fire({ title: 'Merakit Foto & Frame...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
 
-    const canvas = document.getElementById('canvasRenderFinal');
-    const ctx = canvas.getContext('2d');
-    ctx.clearRect(0, 0, 1080, 1080);
+        const canvas = document.getElementById('canvasRenderFinal');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, 1080, 1080);
 
-    let renderScale = 1080 / 300; // Skala konversi dari preview 300px ke kanvas 1080px
+        let renderScale = 1080 / 300; // Pembesaran dari layar 300px ke Kanvas 1080px
 
-    const userImg = new Image();
-    userImg.crossOrigin = "anonymous";
-    userImg.src = imgElement.src;
-
-    userImg.onload = function() {
-        // Pemetaan langsung berdasarkan posisi left, top, width, height yang sama persis
+        // Langsung jiplak elemen foto di layar (Tanpa perlu new Image() yang berisiko error)
+        let finalScale = baseScale * photoState.scale;
         let drawX = photoState.x * renderScale;
         let drawY = photoState.y * renderScale;
-        let drawWidth = (imgElement.naturalWidth * photoState.scale) * renderScale;
-        let drawHeight = (imgElement.naturalHeight * photoState.scale) * renderScale;
+        let drawWidth = imgElement.naturalWidth * finalScale * renderScale;
+        let drawHeight = imgElement.naturalHeight * finalScale * renderScale;
 
-        ctx.drawImage(userImg, drawX, drawY, drawWidth, drawHeight);
+        // Gambar Foto
+        ctx.drawImage(imgElement, drawX, drawY, drawWidth, drawHeight);
 
+        // Timpa Frame transparan
         const frameImg = new Image();
         frameImg.crossOrigin = "anonymous";
         frameImg.src = 'frame_dokumentasi.png';
@@ -509,7 +525,7 @@ function updatePhotoTransform() {
                 imageUrl: dataUrl,
                 imageWidth: '100%',
                 showCancelButton: true,
-                confirmButtonText: '<i class="bi bi-cloud-arrow-up-fill"></i> Upload ke Galeri',
+                confirmButtonText: '<i class="bi bi-cloud-arrow-up-fill"></i> Upload',
                 cancelButtonText: 'Batal',
                 confirmButtonColor: '#7f1d1d',
                 customClass: { popup: 'swal-maroon' }
@@ -523,8 +539,7 @@ function updatePhotoTransform() {
             Swal.fire('Error Frame', 'File frame_dokumentasi.png tidak ditemukan di GitHub.', 'error');
             resetInputKamera();
         };
-    };
-}
+    }
 
     async function uploadKeGaleriAcara(base64Data) {
         Swal.fire({ title: 'Mengunggah ke Galeri...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
