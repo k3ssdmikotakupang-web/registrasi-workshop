@@ -214,14 +214,14 @@
     document.getElementById('txtNama').innerText = userData.nama;
     document.getElementById('txtJabatan').innerText = userData.jabatan;
 
-    // KODE FOTO PROFIL
+    // KODE FOTO PROFIL (Menggunakan Direct View anti-blokir)
     if(userData.foto_url && userData.foto_url.trim() !== '') {
         let urlFoto = userData.foto_url;
         let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
         if (fileIdMatch) {
-            urlFoto = 'https://drive.google.com/thumbnail?id=' + fileIdMatch[0] + '&sz=w500';
+            urlFoto = 'https://drive.google.com/uc?export=view&id=' + fileIdMatch[0];
         }
-        document.getElementById('previewArea').innerHTML = `<img src="${urlFoto}" style="width:100%; height:100%; object-fit:cover;" alt="Foto Profil">`;
+        document.getElementById('previewArea').innerHTML = `<img src="${urlFoto}" style="width:100%; height:100%; object-fit:cover; border-radius:50%;" alt="Foto Profil">`;
     }
 
     const boxStatus = document.getElementById('p_status');
