@@ -10,7 +10,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        body { background-color: #f8fafc; font-family: 'Poppins', sans-serif; padding-bottom: 40px; margin: 0; display: flex; flex-direction: column; align-items: center; }
+        body { background-color: #f8fafc; font-family: 'Poppins', sans-serif; padding-bottom: 30px; margin: 0; display: flex; flex-direction: column; align-items: center; }
         
         /* PROPORSI KARTU 10.5 x 15 */
         .id-card-wrapper { 
@@ -19,17 +19,19 @@
             display: flex; flex-direction: column; margin-top: 20px; margin-bottom: 25px; 
         }
 
+        /* HEADER DIBERIKAN RUANG NAPAS LEBIH */
         .header-maroon { 
             background: linear-gradient(135deg, #7f1d1d, #991b1b); color: #fbbf24; 
-            padding: 30px 15px 90px 15px; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; 
+            padding: 30px 15px 80px 15px; border-bottom-left-radius: 35px; border-bottom-right-radius: 35px; 
             text-align: center; 
         }
         .header-maroon h5 { font-size: 1.15rem; font-weight: 800; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
         .header-maroon p { font-size: 0.75rem; color: #fca5a5; margin: 0; line-height: 1.4; font-weight: 600; text-transform: uppercase; }
 
+        /* KARTU DITURUNKAN KE BAWAH */
         .card-main { 
             background: #fff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
-            padding: 0 15px 25px 15px; margin: -70px 20px 20px 20px; 
+            padding: 0 15px 30px 15px; margin: -40px 15px 20px 15px; /* Margin dinaikkan dari -70px jadi -40px */
             position: relative; z-index: 10; text-align: center; border-top: 5px solid #fbbf24;
         }
         
@@ -43,12 +45,12 @@
 
         .id-name { font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.2; text-transform: uppercase; }
         .id-school { font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 2px; line-height: 1.2; }
-        .id-subrayon { font-size: 0.8rem; font-weight: 700; color: #dc3545; margin-bottom: 12px; }
+        .id-subrayon { font-size: 0.8rem; font-weight: 700; color: #dc3545; margin-bottom: 15px; }
         
         .id-role { 
             display: inline-block; background: #7f1d1d; color: #fbbf24; font-size: 0.8rem; 
             font-weight: 800; padding: 6px 20px; border-radius: 25px; text-transform: uppercase; 
-            letter-spacing: 0.5px; margin-bottom: 15px; 
+            letter-spacing: 0.5px; margin-bottom: 20px; 
         }
 
         .qr-box { background: #f8fafc; padding: 12px; border-radius: 15px; display: inline-block; border: 2px dashed #cbd5e1; margin-bottom: 5px; }
