@@ -3,119 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cetak ID Card Peserta - EMS</title>
+    <title>Cetak ID Card Peserta (10.5 x 21 cm)</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        body { background-color: #f8fafc; font-family: 'Poppins', sans-serif; }
+        body { background-color: #e2e8f0; font-family: 'Poppins', sans-serif; }
         
-        /* WADAH UTAMA ID CARD - SELARAS DENGAN DASBOR PESERTA */
+        /* DIMENSI PASTI 10.5cm x 21cm */
         .id-card-wrapper {
-            width: 7.5cm; 
-            height: 12cm;
+            width: 10.5cm; 
+            height: 21cm;
             background: #ffffff;
-            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
             position: relative;
             display: flex;
             flex-direction: column;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #cbd5e1;
             page-break-inside: avoid;
         }
 
-        /* HEADER MAROON IDENTIK */
-        .id-header {
+        /* HEADER LENGKUNG DI SKALA BESAR */
+        .header-maroon {
             background: linear-gradient(135deg, #7f1d1d, #991b1b);
             color: #fbbf24;
             text-align: center;
-            padding: 15px 8px 35px 8px;
-            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+            padding: 40px 15px 150px 15px; /* Ruang lebih lebar agar lengkungan bagus */
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
         }
-        .id-header h5 { font-size: 0.75rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; }
-        .id-header p { font-size: 0.55rem; color: #fca5a5; margin: 2px 0 0 0; font-weight: 400; line-height: 1.2; }
+        .header-maroon h5 { font-size: 1.5rem; font-weight: 800; margin: 0 0 8px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .header-maroon p { font-size: 0.95rem; color: #fca5a5; margin: 0; font-weight: 600; line-height: 1.4; text-transform: uppercase; }
 
-        /* FOTO PROFIL MELAYANG (DENGAN THUMBNAIL GOOGLE DRIVE) */
-        .id-photo {
-            width: 85px; 
-            height: 85px;
+        /* KARTU KONTEN TIMBUL */
+        .card-main {
             background: #fff;
-            border-radius: 50%;
-            border: 3px solid #fbbf24;
-            margin: -35px auto 8px auto; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center;
-            font-size: 3rem; 
-            color: #94a3b8;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-            z-index: 2;
+            border-radius: 25px;
+            padding: 0 20px 40px 20px;
+            margin: -110px 25px 25px 25px; /* Margin dinaikkan menimpa header */
             position: relative;
-            overflow: hidden;
-        }
-        .id-photo img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* BODY KONTEN IDENTIK */
-        .id-body {
+            z-index: 10;
             text-align: center;
-            padding: 0 10px;
-            flex-grow: 1;
+            border-top: 6px solid #fbbf24;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            flex-grow: 1; /* Memenuhi sisa ruang 21cm */
             display: flex;
             flex-direction: column;
-            justify-content: center;
-        }
-        .id-name {
-            font-size: 0.9rem;
-            font-weight: 800;
-            color: #7f1d1d;
-            margin-bottom: 2px;
-            line-height: 1.1;
-            text-transform: uppercase;
-        }
-        .id-school {
-            font-size: 0.6rem;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 5px;
-            line-height: 1.2;
-        }
-        .id-role {
-            display: inline-block;
-            background: #fbbf24;
-            color: #7f1d1d;
-            font-size: 0.65rem;
-            font-weight: 800;
-            padding: 3px 10px;
-            border-radius: 20px;
-            margin-bottom: auto;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 2px 5px rgba(251, 191, 36, 0.3);
+            align-items: center;
+            justify-content: flex-start;
         }
 
-        /* QR CODE */
-        .id-qr-box { text-align: center; margin-bottom: 8px; margin-top: 2px; }
-        .id-qr-box img {
-            width: 90px;  
-            height: 90px; 
-            padding: 4px;
+        /* FOTO PROFIL DIPERBESAR */
+        .foto-box {
+            width: 160px;
+            height: 160px;
             background: #fff;
-            border: 1px solid #cbd5e1;
-            border-radius: 8px;
+            border-radius: 50%;
+            border: 6px solid #fbbf24;
+            margin: -80px auto 25px auto;
+            display: flex; justify-content: center; align-items: center;
+            font-size: 5rem; color: #94a3b8;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+            z-index: 11; position: relative; overflow: hidden;
+        }
+        .foto-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* TEKS IDENTITAS DIPERBESAR */
+        .id-name { font-size: 1.4rem; font-weight: 800; color: #0f172a; margin-bottom: 5px; line-height: 1.2; text-transform: uppercase; }
+        .id-school { font-size: 1rem; font-weight: 600; color: #64748b; margin-bottom: 20px; line-height: 1.3; }
+        .id-role {
+            display: inline-block; background: #7f1d1d; color: #fbbf24;
+            font-size: 1rem; font-weight: 800; padding: 8px 22px; border-radius: 30px;
+            text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 30px;
         }
 
-        /* FOOTER */
-        .id-footer {
-            background: #7f1d1d;
-            color: #fff;
-            text-align: center;
-            font-size: 0.6rem;
-            padding: 5px;
-            font-weight: 600;
-            letter-spacing: 1px;
-        }
+        /* AREA QR CODE DIPERBESAR */
+        .qr-box { background: #f8fafc; padding: 15px; border-radius: 15px; border: 3px dashed #cbd5e1; margin-bottom: 10px; margin-top: auto; }
+        .qr-box img { width: 200px; height: 200px; display: block; }
+        .id-qr-text { font-size: 1.1rem; font-weight: 800; color: #7f1d1d; letter-spacing: 1.5px; }
 
         @media print {
             body { background: none !important; }
@@ -132,8 +99,8 @@
 <body>
 
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4 no-print glass-card p-3 rounded bg-white shadow-sm" style="border-top: 4px solid #7f1d1d;">
-        <h4 class="fw-bold text-dark mb-0"><i class="bi bi-person-vcard me-2" style="color: #7f1d1d;"></i> Cetak ID Card Peserta</h4>
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print bg-white p-3 rounded shadow-sm" style="border-top: 4px solid #7f1d1d;">
+        <h4 class="fw-bold text-dark mb-0"><i class="bi bi-person-vcard me-2" style="color: #7f1d1d;"></i> Cetak ID Card (10.5 x 21 cm)</h4>
         <div>
             <button class="btn fw-bold text-white" style="background-color: #7f1d1d;" onclick="window.print()"><i class="bi bi-printer-fill me-2"></i> Cetak Semua</button>
             <button class="btn btn-outline-secondary ms-2" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> Kembali</button>
@@ -142,7 +109,7 @@
 
     <div id="loading" class="text-center py-5">
         <div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status"></div>
-        <p class="text-muted mt-3 fw-bold">Menyusun ID Card Peserta...</p>
+        <p class="text-muted mt-3 fw-bold">Merakit Desain ID Card 10.5 x 21 cm...</p>
     </div>
 
     <div class="d-flex flex-wrap justify-content-center gap-4" id="containerCard"></div>
@@ -163,41 +130,32 @@
             if(result.status === 'success' && result.data.length > 0) {
                 let html = '';
                 result.data.forEach(p => {
-                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(p.id_qr)}`;
+                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(p.id_qr)}`;
                     
+                    // Integrasi Direct View Google Drive (Anti-Blokir Thumbnail)
                     let fotoHtml = `<i class="bi bi-person-fill"></i>`;
                     if(p.foto_url && p.foto_url.trim() !== '') {
                         let urlFoto = p.foto_url;
                         let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
                         if (fileIdMatch) {
-                            urlFoto = 'https://drive.google.com/thumbnail?id=' + fileIdMatch[0] + '&sz=w500';
+                            urlFoto = 'https://drive.google.com/uc?export=view&id=' + fileIdMatch[0];
                         }
                         fotoHtml = `<img src="${urlFoto}" alt="Foto Profil">`;
                     }
                     
                     html += `
                         <div class="id-card-wrapper">
-                            <div class="id-header">
-                                <h5>K3S SD/MI Kota Kupang</h5>
-                                <p>Peserta Workshop Manajemen Kepsek 2026</p>
+                            <div class="header-maroon">
+                                <h5>K3S SD/MI KOTA KUPANG</h5>
+                                <p>Panitia Pelaksana Workshop Manajemen Kepala SD/MI<br>Kota Kupang 2026</p>
                             </div>
-                            
-                            <div class="id-photo">
-                                ${fotoHtml}
-                            </div>
-                            
-                            <div class="id-body">
+                            <div class="card-main">
+                                <div class="foto-box">${fotoHtml}</div>
                                 <div class="id-name">${p.nama}</div>
-                                <div class="id-school">${p.sekolah || 'Nasa Cendana International Plus School'}</div>
+                                <div class="id-school">${p.sekolah || 'Nusa Cendana International Plus School'}</div>
                                 <div><span class="id-role">${p.jabatan}</span></div>
-                                
-                                <div class="id-qr-box">
-                                    <img src="${qrUrl}" alt="QR Peserta">
-                                </div>
-                            </div>
-                            
-                            <div class="id-footer">
-                                ${p.id_qr}
+                                <div class="qr-box"><img src="${qrUrl}" alt="QR Validasi"></div>
+                                <div class="id-qr-text">${p.id_qr}</div>
                             </div>
                         </div>
                     `;
