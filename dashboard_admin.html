@@ -47,7 +47,7 @@
             <small class="text-white-50">Klik di sini untuk menerbitkan informasi/instruksi realtime ke dashboard peserta</small>
           </div>
         </div>
-        <!-- Ganti bagian tombol (span) sebelumnya dengan div ini -->
+        
 <div class="d-flex gap-2 mt-2 mt-md-0">
   <button class="btn btn-sm btn-outline-info fw-bold" onclick="bukaModalListPengumuman()"><i class="bi bi-card-list"></i> Kelola Data</button>
   <button class="btn btn-sm btn-warning fw-bold" onclick="bukaModalPengumuman()"><i class="bi bi-plus-lg"></i> Buat Baru</button>
@@ -57,15 +57,20 @@
   </div>
 </div>
 
-    <!-- Menu Kesekretariatan -->
-    <h5 class="fw-bold mb-3 mt-5">Menu Kesekretariatan 2.0</h5>
+    <!-- Menu Kesekretariatan & Pantauan -->
+    <h5 class="fw-bold mb-3 mt-5">Menu Operasional & Pantauan</h5>
     <div class="row g-3">
-       <div class="col-12">
-            <!-- Tombol Baru Menuju Halaman Input SK -->
+        
+        <!-- TOMBOL BARU: REKAP PENERIMAAN KAS (Pantauan Ketua/Sekretaris) -->
+        <div class="col-12">
+            <button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-info w-100 py-3 text-start fw-bold" style="background: rgba(0, 242, 254, 0.05); border-width: 2px;">
+                <i class="bi bi-file-earmark-spreadsheet-fill me-2 text-info"></i> Rekap Daftar Sekolah & Penerimaan Kas
+            </button>
+        </div>
+
+        <div class="col-12">
             <button onclick="window.location.href='admin_panitia.html'" class="btn btn-outline-primary w-100 py-3 text-start fw-bold"><i class="bi bi-people-fill me-2"></i> Input SK & Susunan Kepanitiaan</button>
         </div>
-        
-        <!-- TOMBOL BARU UNTUK INPUT JADWAL -->
         <div class="col-12">
             <button onclick="window.location.href='admin_jadwal.html'" class="btn btn-outline-secondary w-100 py-3 text-start fw-bold"><i class="bi bi-calendar-week me-2"></i> Input & Atur Jadwal Kegiatan</button>
         </div>
@@ -85,6 +90,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     const userData = JSON.parse(localStorage.getItem('userLogin'));
@@ -161,7 +167,7 @@ async function simpanPengumuman(e) {
     }
 }
 
-    let modalListObj = null;
+let modalListObj = null;
 let modalEditObj = null;
 
 // Membuka modal daftar pengumuman & mengambil data dari server
@@ -394,6 +400,5 @@ async function simpanEditPengumuman(e) {
   </div>
 </div>
 
-    
 </body>
 </html>
