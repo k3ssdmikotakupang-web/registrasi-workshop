@@ -347,25 +347,39 @@
                     const result = await response.json();
 
                     if (result.status === 'success') {
-                        localStorage.setItem('userLogin', JSON.stringify(result.data));
+                        let userData = result.data;
+                        
+                        // RADAR PINTAR: Manipulasi tiket (role) sebelum disimpan agar lolos penjagaan satpam dasbor
+                        if (userData.role === 'Panitia') {
+                            let jabatan = (userData.jabatan || '').toLowerCase();
+                            
+                            // Jika Ketua/Sekretaris, beri tiket Admin_Pusat
+                            if (jabatan.includes('ketua') || jabatan.includes('sekretaris')) {
+                                userData.role = 'Admin_Pusat'; 
+                            } 
+                            // Jika Bendahara, beri tiket Bendahara_Panitia
+                            else if (jabatan.includes('bendahara')) {
+                                userData.role = 'Bendahara_Panitia';
+                            }
+                            // Jika panitia lapangan biasa, biarkan tiketnya tetap 'Panitia'
+                        }
+
+                        // Simpan data login yang tiketnya sudah disesuaikan ke memori perangkat
+                        localStorage.setItem('userLogin', JSON.stringify(userData));
                         
                         Toast.fire({ 
                             icon: 'success', 
                             title: 'Login Berhasil!', 
-                            text: `Selamat datang, ${result.data.nama}` 
+                            text: `Selamat datang, ${userData.nama}` 
                         }).then(() => { 
-                            // RADAR PINTAR: Mengarahkan login berdasarkan Jabatan & Role
-                            if (result.data.role === 'Panitia') {
-                                let jabatan = (result.data.jabatan || '').toLowerCase();
-                                
-                                if (jabatan.includes('ketua') || jabatan.includes('sekretaris')) {
-                                    window.location.href = "dashboard_admin.html";
-                                } else if (jabatan.includes('bendahara')) {
-                                    window.location.href = "dashboard_bendahara_panitia.html";
-                                } else {
-                                    window.location.href = "dashboard_panitia.html"; 
-                                }
-                            } else if (result.data.role === 'Peserta') {
+                            // Lakukan pengalihan (redirect) sesuai tiket di tangan
+                            if (userData.role === 'Admin_Pusat') {
+                                window.location.href = "dashboard_admin.html";
+                            } else if (userData.role === 'Bendahara_Panitia') {
+                                window.location.href = "dashboard_bendahara_panitia.html";
+                            } else if (userData.role === 'Panitia') {
+                                window.location.href = "dashboard_panitia.html"; 
+                            } else if (userData.role === 'Peserta') {
                                 window.location.href = "dashboard_peserta.html";
                             } else {
                                 Toast.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Role tidak dikenali.' });
@@ -374,6 +388,7 @@
                     } else {
                         Toast.fire({ icon: 'error', title: 'Akses Ditolak', text: result.message });
                     }
+                   
                 } catch(e) {
                     Toast.fire({ icon: 'error', title: 'Error Koneksi', text: 'Gagal menghubungi server.' });
                 }
