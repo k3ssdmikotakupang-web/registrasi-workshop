@@ -14,7 +14,7 @@
         .kwitansi-box { 
             background: #ffffff; 
             width: 21cm; 
-            height: 10.5cm; /* Strict Height */
+            height: 10.5cm; 
             margin: 30px auto; 
             position: relative; 
             box-sizing: border-box; 
@@ -25,7 +25,6 @@
             flex-direction: column;
         }
         
-        /* BINGKAI DALAM (INNER FRAME) SOFT ELEGAN */
         .kwitansi-inner {
             margin: 4px;
             height: calc(100% - 8px);
@@ -36,18 +35,17 @@
             background: #ffffff;
         }
 
-        /* WATERMARK SOFT */
+        /* WATERMARK K3S SD/MI KOTA KUPANG */
         .watermark-bg {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='150' opacity='0.02'%3E%3Ctext x='50%25' y='50%25' transform='rotate(-20 175 75)' text-anchor='middle' font-family='Arial, sans-serif' font-size='22' font-weight='bold' fill='%23475569'%3EOFFICIAL RECEIPT%3C/text%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='150' opacity='0.03'%3E%3Ctext x='50%25' y='50%25' transform='rotate(-20 175 75)' text-anchor='middle' font-family='Arial, sans-serif' font-size='22' font-weight='bold' fill='%23475569'%3EK3S SD/MI Kota Kupang%3C/text%3E%3C/svg%3E");
             background-repeat: repeat;
             background-position: center;
             z-index: 0;
             pointer-events: none;
         }
         
-        /* HEADER SOFT SLATE & PLATINUM */
         .k-header { 
             background: linear-gradient(135deg, #64748b 0%, #475569 100%);
             color: #ffffff;
@@ -68,7 +66,6 @@
         .k-no-label { font-size: 0.6rem; color: #e2e8f0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; display: block; }
         .k-no { display: inline-block; padding: 2px 10px; font-family: 'Courier New', monospace; font-size: 0.85rem; font-weight: 900; background: rgba(255, 255, 255, 0.15); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 4px; }
         
-        /* BODY CONTENT (Kalibrasi Ukuran agar tidak terpotong) */
         .k-body-wrapper {
             padding: 10px 18px;
             flex-grow: 1;
@@ -83,7 +80,6 @@
         .k-label { width: 30%; font-weight: 700; color: #64748b; font-size: 0.7rem; letter-spacing: 0.5px; text-transform: uppercase; }
         .k-value { width: 70%; font-weight: 700; color: #1e293b; border-bottom: 1px dotted #cbd5e1; padding-bottom: 1px; font-size: 0.8rem; }
         
-        /* NOMINAL BOX - PLATINUM EDITION */
         .k-nominal-container { margin-top: 4px; margin-bottom: 4px; }
         .k-nominal-box { 
             background: #f1f5f9; 
@@ -96,18 +92,16 @@
             display: inline-block;
         }
         
-        /* FOOTER & SIGNATURE */
         .k-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 5px; }
         .k-qr-box { padding: 4px; border: 1px solid #cbd5e1; border-radius: 6px; display: inline-block; background: #ffffff; }
         
         .k-ttd-container { width: 35%; text-align: center; }
         .k-ttd-date { font-size: 0.7rem; color: #64748b; margin-bottom: 2px; font-weight: 500; }
         .k-ttd-role { font-size: 0.75rem; font-weight: 800; color: #334155; text-transform: uppercase; }
-        .k-sign-box { margin-top: 28px; } /* Dikurangi agar tidak terpotong ke bawah */
+        .k-sign-box { margin-top: 28px; } 
         .k-sign-name { font-weight: 800; border-bottom: 1px solid #94a3b8; padding-bottom: 2px; display: inline-block; width: 100%; color: #1e293b; font-size: 0.8rem; }
         .k-sign-nip { font-size: 0.65rem; color: #64748b; margin-top: 3px; font-weight: 600; }
         
-        /* BUTTON */
         .btn-print { background: linear-gradient(45deg, #475569, #64748b); color: #fff; font-weight: 700; padding: 10px 25px; display: block; width: fit-content; margin: 0 auto; border-radius: 8px; border: none; transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 1px;}
         .btn-print:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(71, 85, 105, 0.2); color: #fff; }
     </style>
@@ -121,8 +115,6 @@
     </div>
 
     <div id="box-valid" class="d-none">
-        
-        <!-- AREA KWITANSI - FIXED 21x10.5cm -->
         <div class="kwitansi-box" id="kwitansi-capture">
             <div class="kwitansi-inner">
                 
@@ -178,14 +170,14 @@
                             <div class="k-ttd-role">Bendahara Panitia</div>
                             <div class="k-sign-box">
                                 <div class="k-sign-name" id="nama-bendahara">Memuat...</div>
-                                <div class="k-sign-nip">NIP. <span id="nip-bendahara">-</span></div>
+                                <div class="k-sign-nip" id="nip-bendahara"></div>
                             </div>
                         </div>
                     </div>
-                </div> <!-- End Body Wrapper -->
+                </div> 
                 
-            </div> <!-- End Inner -->
-        </div> <!-- End Box -->
+            </div>
+        </div> 
 
         <button class="btn btn-print mb-5 shadow" onclick="downloadSebagaiGambar()">
             <i class="bi bi-download me-2"></i> UNDUH KWITANSI DIGITAL
@@ -198,63 +190,54 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
     const urlParams = new URLSearchParams(window.location.search);
-    const kw = urlParams.get('kw');
+    // Mendukung pemanggilan ID dari parameter 'kw' atau 'trx'
+    const idTrx = urlParams.get('kw') || urlParams.get('trx');
 
-    if(kw) {
+    if(idTrx) {
+        // Mualim menggunakan action 'get_kwitansi' agar langsung menarik data validator yang sudah ada di database Kapten
         fetch(API_URL, { 
             method: 'POST', 
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'get_receipt_info', noKwitansi: kw }) 
+            body: JSON.stringify({ action: 'get_kwitansi', id_transaksi: idTrx }) 
         }).then(r => r.json()).then(res => {
             document.getElementById('box-loading').classList.add('d-none');
-            if(res.success) {
+            
+            if(res.status === 'success') {
+                const dt = res.data;
                 document.getElementById('box-valid').classList.remove('d-none');
-                document.getElementById('v-no').innerText = res.receipt.noKwitansi;
-                document.getElementById('v-pembayar').innerText = res.receipt.namaPembayar;
-                document.getElementById('v-sekolah').innerText = res.receipt.namaSekolah;
-                document.getElementById('v-npsn').innerText = res.receipt.npsn;
-                document.getElementById('v-nominal').innerText = "Rp " + Number(res.receipt.nominal).toLocaleString('id-ID');
-                document.getElementById('v-metode').innerText = res.receipt.metode;
                 
-                let tgl = new Date(res.receipt.tglBayar);
+                document.getElementById('v-no').innerText = dt.id_transaksi;
+                document.getElementById('v-pembayar').innerText = dt.penyetor;
+                document.getElementById('v-sekolah').innerText = dt.nama_sekolah;
+                document.getElementById('v-npsn').innerText = dt.npsn;
+                document.getElementById('v-nominal').innerText = "Rp 2.240.000";
+                document.getElementById('v-metode').innerText = dt.metode;
+                
+                let tgl = new Date(dt.tanggal);
                 if(!isNaN(tgl)) {
                     let optionsDate = { day: '2-digit', month: 'long', year: 'numeric' };
                     let optionsTime = { hour: '2-digit', minute:'2-digit' };
                     document.getElementById('v-tgl').innerText = tgl.toLocaleDateString('id-ID', optionsDate) + ' | Pukul ' + tgl.toLocaleTimeString('id-ID', optionsTime) + ' WITA';
                     document.getElementById('v-tgl-pendek').innerText = tgl.toLocaleDateString('id-ID', optionsDate);
                 } else {
-                    document.getElementById('v-tgl').innerText = res.receipt.tglBayar;
-                    document.getElementById('v-tgl-pendek').innerText = res.receipt.tglBayar.split(' ')[0];
+                    document.getElementById('v-tgl').innerText = dt.tanggal;
+                    document.getElementById('v-tgl-pendek').innerText = dt.tanggal.split(' ')[0] || dt.tanggal;
                 }
                 
-                let isiQR = "No. TRX: " + res.receipt.noKwitansi + " | Pembayar: " + res.receipt.namaSekolah + " | Total: Rp " + Number(res.receipt.nominal).toLocaleString('id-ID') + " | Waktu: " + document.getElementById('v-tgl-pendek').innerText;
+                // Menarik langsung nama validator dari respons get_kwitansi
+                document.getElementById('nama-bendahara').innerText = dt.validator;
+                document.getElementById('nip-bendahara').innerText = "-"; // NIP disembunyikan/strip karena tidak ditarik dari get_kwitansi
+                
+                let isiQR = "No. TRX: " + dt.id_transaksi + " | Pembayar: " + dt.nama_sekolah + " | Total: Rp 2.240.000 | Waktu: " + document.getElementById('v-tgl-pendek').innerText;
                 document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=1&data=" + encodeURIComponent(isiQR);
                 
-                fetchPejabat();
             } else {
                 document.getElementById('box-loading').classList.remove('d-none');
                 document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Data Kwitansi Tidak Ditemukan.</h4>';
             }
         }).catch(err => {
+            document.getElementById('box-loading').classList.remove('d-none');
             document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Gagal Menghubungi Server.</h4>';
-        });
-    }
-
-    function fetchPejabat() {
-        fetch(API_URL, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'get_pejabat_kepanitiaan' }) 
-        }).then(r => r.json()).then(resP => {
-            if(resP.status === 'success') {
-                document.getElementById('nama-bendahara').innerText = resP.data.bendahara.nama;
-                document.getElementById('nip-bendahara').innerText = (resP.data.bendahara.nip === '-' || !resP.data.bendahara.nip) ? '' : resP.data.bendahara.nip;
-            } else {
-                document.getElementById('nama-bendahara').innerText = "Belum Diatur";
-                document.getElementById('nip-bendahara').innerText = "-";
-            }
-        }).catch(e => {
-            document.getElementById('nama-bendahara').innerText = "Gagal Memuat";
         });
     }
 
