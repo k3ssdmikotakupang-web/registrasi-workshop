@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Panitia Lapangan - EMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); transition: transform 0.2s; }
+        .glass-card:hover { transform: translateY(-3px); border-color: rgba(0, 242, 254, 0.5); }
+        .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+        .btn-neon { background: linear-gradient(45deg, #00f2fe, #4facfe); border: none; color: white; font-weight: 600; border-radius: 10px; }
+        .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px !important; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
+    <div class="container-fluid px-4">
+        <span class="navbar-brand fw-bold text-info"><i class="bi bi-headset"></i> Dasbor Kepanitiaan</span>
+        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    
+    <!-- Header Profil Panitia -->
+    <div class="glass-card p-4 mb-4" style="border-left: 4px solid #4facfe;">
+        <h5 class="text-white-50 mb-1">Selamat Bertugas,</h5>
+        <h3 class="text-neon mb-3" id="namaPanitia">Memuat Nama...</h3>
+        <div class="d-flex gap-3 flex-wrap">
+            <span class="badge bg-primary px-3 py-2 fs-6"><i class="bi bi-star-fill me-2"></i><span id="jabatanPanitia">Jabatan</span></span>
+            <span class="badge bg-secondary px-3 py-2 fs-6"><i class="bi bi-list-task me-2"></i>Jobdesk: <span id="jobdeskPanitia">-</span></span>
+        </div>
+    </div>
+
+    <h6 class="fw-bold mb-3 text-white-50">Menu Akses Cepat</h6>
+    <div class="row g-3 mb-4">
+        
+        <!-- Menu Jadwal & Pengumuman (Standar) -->
+        <div class="col-6 col-md-3">
+            <div class="card glass-card p-3 text-center h-100" style="cursor: pointer;">
+                <i class="bi bi-calendar-event text-info fs-1 mb-2"></i>
+                <h6 class="mb-0 text-light">Jadwal & Info</h6>
+            </div>
+        </div>
+
+        <!-- Menu ID Card Panitia -->
+        <div class="col-6 col-md-3">
+            <div class="card glass-card p-3 text-center h-100" style="cursor: pointer;" onclick="window.location.href='cetak_idcard_panitia.html'">
+                <i class="bi bi-person-badge text-warning fs-1 mb-2"></i>
+                <h6 class="mb-0 text-light">ID Card Saya</h6>
+            </div>
+        </div>
+
+        <!-- MENU BARU 1: INPUT DOKUMENTASI -->
+        <div class="col-6 col-md-3">
+            <div class="card glass-card p-3 text-center h-100" style="cursor: pointer; border-bottom: 3px solid #f093fb;" onclick="bukaModalDokumentasi()">
+                <i class="bi bi-camera-fill text-danger fs-1 mb-2"></i>
+                <h6 class="mb-0 text-light">Dokumentasi</h6>
+            </div>
+        </div>
+
+        <!-- MENU BARU 2: CATATAN EVALUASI -->
+        <div class="col-6 col-md-3">
+            <div class="card glass-card p-3 text-center h-100" style="cursor: pointer; border-bottom: 3px solid #00f2fe;" onclick="bukaModalEvaluasi()">
+                <i class="bi bi-journal-text text-success fs-1 mb-2"></i>
+                <h6 class="mb-0 text-light">Catatan Evaluasi</h6>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Input Dokumentasi -->
+<div class="modal fade" id="modalDokumentasi" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white" style="border: 1px solid rgba(255,255,255,0.2); border-radius: 15px;">
+            <div class="modal-header border-secondary">
+                <h6 class="modal-title fw-bold text-danger"><i class="bi bi-camera-fill me-2"></i> Upload Foto Momen</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formDokumentasi" onsubmit="prosesUploadDokumentasi(event)">
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50">Pilih Foto (Maks 3MB)</label>
+                        <input type="file" id="fotoMomen" class="form-control bg-dark text-white border-secondary" required accept="image/*">
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small text-white-50">Keterangan / Caption Singkat</label>
+                        <input type="text" id="captionMomen" class="form-control bg-dark text-white border-secondary" required placeholder="Cth: Suasana Sesi 1 Pemaparan Kurikulum">
+                    </div>
+                    <button type="submit" id="btnUploadDoc" class="btn btn-danger w-100 fw-bold"><i class="bi bi-cloud-arrow-up-fill me-2"></i> Kirim ke Galeri Panitia</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Catatan Evaluasi -->
+<div class="modal fade" id="modalEvaluasi" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white" style="border: 1px solid rgba(255,255,255,0.2); border-radius: 15px;">
+            <div class="modal-header border-secondary">
+                <h6 class="modal-title fw-bold text-success"><i class="bi bi-journal-text me-2"></i> Input Catatan Evaluasi Lapangan</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEvaluasi" onsubmit="prosesKirimEvaluasi(event)">
+                    <div class="mb-3">
+                        <label class="form-label small text-white-50">Terkait Bidang / Sesi</label>
+                        <select id="kategoriEvaluasi" class="form-select bg-dark text-white border-secondary" required>
+                            <option value="">-- Pilih Bidang --</option>
+                            <option value="Registrasi & Check-In">Registrasi & Check-In</option>
+                            <option value="Konsumsi">Konsumsi</option>
+                            <option value="Perlengkapan & Sound">Perlengkapan & Sound</option>
+                            <option value="Materi & Pemateri">Materi & Pemateri</option>
+                            <option value="Lainnya">Lainnya (Umum)</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label small text-white-50">Catatan / Temuan Kendala</label>
+                        <textarea id="isiEvaluasi" class="form-control bg-dark text-white border-secondary" rows="4" required placeholder="Tuliskan temuan atau saran perbaikan di lapangan..."></textarea>
+                    </div>
+                    <button type="submit" id="btnKirimEvaluasi" class="btn btn-success w-100 fw-bold"><i class="bi bi-send-fill me-2"></i> Simpan Laporan</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // MASUKKAN API URL KAPTEN DI SINI
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    
+    let modalDoc = null;
+    let modalEval = null;
+
+    // KONFIGURASI TEMA SWEETALERT
+    const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, color: '#fff' });
+
+    // CEK SESI LOGIN
+    document.addEventListener("DOMContentLoaded", () => {
+        const userData = JSON.parse(localStorage.getItem('userLogin'));
+        
+        // Pintu Keamanan: Hanya Panitia yang boleh masuk
+        if (!userData || userData.role !== 'Panitia') {
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // Tampilkan Data Profil Panitia
+        document.getElementById('namaPanitia').innerText = userData.nama;
+        document.getElementById('jabatanPanitia').innerText = userData.jabatan;
+        document.getElementById('jobdeskPanitia').innerText = userData.jobdesk || '-';
+
+        // Inisialisasi Modal Bootstrap
+        modalDoc = new bootstrap.Modal(document.getElementById('modalDokumentasi'));
+        modalEval = new bootstrap.Modal(document.getElementById('modalEvaluasi'));
+    });
+
+    function logout() {
+        localStorage.removeItem('userLogin');
+        window.location.href = 'index.html';
+    }
+
+    function bukaModalDokumentasi() {
+        document.getElementById('formDokumentasi').reset();
+        modalDoc.show();
+    }
+
+    function bukaModalEvaluasi() {
+        document.getElementById('formEvaluasi').reset();
+        modalEval.show();
+    }
+
+    // PROSES UPLOAD FOTO DOKUMENTASI
+    async function prosesUploadDokumentasi(e) {
+        e.preventDefault();
+        const fileInput = document.getElementById('fotoMomen').files[0];
+        const caption = document.getElementById('captionMomen').value;
+        const userData = JSON.parse(localStorage.getItem('userLogin'));
+
+        if (fileInput.size > 3 * 1024 * 1024) { 
+            Toast.fire({ icon: 'warning', title: 'Terlalu Besar', text: 'Ukuran foto maksimal 3 MB.' }); 
+            return; 
+        }
+
+        const btn = document.getElementById('btnUploadDoc');
+        const teksAsli = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Mengunggah...';
+        btn.disabled = true;
+
+        const reader = new FileReader();
+        reader.onload = async function(event) {
+            const base64Data = event.target.result.split(',')[1]; 
+            const timestamp = new Date().getTime();
+            
+            // Menggunakan fungsi yang sudah ada di Code.gs Kapten
+            const payload = { 
+                action: 'upload_foto_dokumentasi', 
+                filename: `DOC_${userData.nama}_${timestamp}.jpg`, 
+                mimeType: fileInput.type, 
+                fileBase64: base64Data,
+                caption: caption,
+                uploader: userData.nama
+            };
+
+            try {
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                const result = await res.json();
+                if(result.status === 'success') {
+                    Toast.fire({ icon: 'success', title: 'Berhasil!', text: result.message });
+                    modalDoc.hide();
+                } else { 
+                    Toast.fire({ icon: 'error', title: 'Gagal', text: result.message }); 
+                }
+            } catch(error) { 
+                Toast.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungi server.' }); 
+            } finally { 
+                btn.innerHTML = teksAsli; btn.disabled = false; 
+            }
+        };
+        reader.readAsDataURL(fileInput);
+    }
+
+    // PROSES KIRIM CATATAN EVALUASI
+    async function prosesKirimEvaluasi(e) {
+        e.preventDefault();
+        const kategori = document.getElementById('kategoriEvaluasi').value;
+        const isi = document.getElementById('isiEvaluasi').value;
+        const userData = JSON.parse(localStorage.getItem('userLogin'));
+
+        const btn = document.getElementById('btnKirimEvaluasi');
+        const teksAsli = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan...';
+        btn.disabled = true;
+
+        const payload = {
+            action: 'simpan_evaluasi',
+            nama: userData.nama,
+            jabatan: userData.jabatan,
+            kategori: kategori,
+            isi: isi
+        };
+
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await res.json();
+            
+            if(result.status === 'success') {
+                Toast.fire({ icon: 'success', title: 'Tersimpan!', text: 'Laporan evaluasi berhasil diteruskan ke Ketua.' });
+                modalEval.hide();
+            } else {
+                Toast.fire({ icon: 'error', title: 'Gagal', text: result.message });
+            }
+        } catch(error) {
+            Toast.fire({ icon: 'error', title: 'Error', text: 'Gagal menghubungi server.' });
+        } finally {
+            btn.innerHTML = teksAsli; btn.disabled = false;
+        }
+    }
+</script>
+</body>
+</html>
