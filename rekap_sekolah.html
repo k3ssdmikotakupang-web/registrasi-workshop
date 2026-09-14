@@ -229,6 +229,22 @@
         window.location.href = 'index.html';
     }
 }
+    // Tambahkan fungsi ini di dalam tag <script>
+function kembaliKeDasbor() {
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    
+    if (userData) {
+        if (userData.role === 'Admin_Pusat') {
+            window.location.href = 'dashboard_admin.html'; // Pulang ke ruang Ketua
+        } else if (userData.role === 'Bendahara_Panitia') {
+            window.location.href = 'dashboard_bendahara_panitia.html'; // Pulang ke ruang Bendahara
+        } else {
+            window.history.back(); // Cadangan standar
+        }
+    } else {
+        window.location.href = 'index.html';
+    }
+}
     
 </script>
 </body>
