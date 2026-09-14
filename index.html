@@ -325,7 +325,7 @@
         }
     }
 
-    // Fungsi QR Camera (Sudah Jalan)
+    // Fungsi QR Camera dengan Logika Role-Based Access Control
     function startQRScanner() {
         document.getElementById('qr-reader').style.display = 'block';
         document.getElementById('btnScanQR').style.display = 'none';
@@ -348,9 +348,28 @@
 
                     if (result.status === 'success') {
                         localStorage.setItem('userLogin', JSON.stringify(result.data));
-                        Toast.fire({ icon: 'success', title: 'Login Berhasil!', text: `Selamat datang, ${result.data.nama}` })
-                        .then(() => { 
-                            window.location.href = "dashboard_peserta.html"; 
+                        
+                        Toast.fire({ 
+                            icon: 'success', 
+                            title: 'Login Berhasil!', 
+                            text: `Selamat datang, ${result.data.nama}` 
+                        }).then(() => { 
+                            // RADAR PINTAR: Mengarahkan login berdasarkan Jabatan & Role
+                            if (result.data.role === 'Panitia') {
+                                let jabatan = (result.data.jabatan || '').toLowerCase();
+                                
+                                if (jabatan.includes('ketua') || jabatan.includes('sekretaris')) {
+                                    window.location.href = "dashboard_admin.html";
+                                } else if (jabatan.includes('bendahara')) {
+                                    window.location.href = "dashboard_bendahara_panitia.html";
+                                } else {
+                                    window.location.href = "dashboard_panitia.html"; 
+                                }
+                            } else if (result.data.role === 'Peserta') {
+                                window.location.href = "dashboard_peserta.html";
+                            } else {
+                                Toast.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Role tidak dikenali.' });
+                            }
                         });
                     } else {
                         Toast.fire({ icon: 'error', title: 'Akses Ditolak', text: result.message });
