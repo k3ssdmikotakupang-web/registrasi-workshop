@@ -10,52 +10,27 @@
     <style>
         body { background-color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: #334155; }
         
-        /* PENGUNCIAN UKURAN ABSOLUT 21cm x 10.5cm */
         .kwitansi-box { 
-            background: #ffffff; 
-            width: 21cm; 
-            height: 10.5cm; 
-            margin: 30px auto; 
-            position: relative; 
-            box-sizing: border-box; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            border: 1px solid #cbd5e1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            background: #ffffff; width: 21cm; height: 10.5cm; margin: 30px auto; 
+            position: relative; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column;
         }
         
         .kwitansi-inner {
-            margin: 4px;
-            height: calc(100% - 8px);
-            border: 1px solid #94a3b8;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            background: #ffffff;
+            margin: 4px; height: calc(100% - 8px); border: 1px solid #94a3b8;
+            position: relative; display: flex; flex-direction: column; background: #ffffff;
         }
 
-        /* WATERMARK K3S SD/MI KOTA KUPANG */
         .watermark-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='150' opacity='0.03'%3E%3Ctext x='50%25' y='50%25' transform='rotate(-20 175 75)' text-anchor='middle' font-family='Arial, sans-serif' font-size='22' font-weight='bold' fill='%23475569'%3EK3S SD/MI Kota Kupang%3C/text%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-position: center;
-            z-index: 0;
-            pointer-events: none;
+            background-repeat: repeat; background-position: center; z-index: 0; pointer-events: none;
         }
         
         .k-header { 
             background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-            color: #ffffff;
-            padding: 10px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            z-index: 1;
-            border-bottom: 2px solid #cbd5e1;
+            color: #ffffff; padding: 10px 18px; display: flex; justify-content: space-between;
+            align-items: center; position: relative; z-index: 1; border-bottom: 2px solid #cbd5e1;
         }
         .k-title-area { text-align: left; }
         .k-title { font-weight: 800; font-size: 1.15rem; letter-spacing: 1.5px; text-transform: uppercase; color: #f8fafc; margin-bottom: 2px; line-height: 1; }
@@ -67,13 +42,8 @@
         .k-no { display: inline-block; padding: 2px 10px; font-family: 'Courier New', monospace; font-size: 0.85rem; font-weight: 900; background: rgba(255, 255, 255, 0.15); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 4px; }
         
         .k-body-wrapper {
-            padding: 10px 18px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            position: relative;
-            z-index: 1;
+            padding: 10px 18px; flex-grow: 1; display: flex; flex-direction: column;
+            justify-content: space-between; position: relative; z-index: 1;
         }
 
         .k-row { display: flex; margin-bottom: 5px; align-items: flex-end; }
@@ -82,14 +52,8 @@
         
         .k-nominal-container { margin-top: 4px; margin-bottom: 4px; }
         .k-nominal-box { 
-            background: #f1f5f9; 
-            border: 1px solid #94a3b8; 
-            padding: 6px 18px; 
-            font-size: 1.15rem; 
-            font-weight: 800; 
-            color: #334155;
-            border-radius: 6px;
-            display: inline-block;
+            background: #f1f5f9; border: 1px solid #94a3b8; padding: 6px 18px; 
+            font-size: 1.15rem; font-weight: 800; color: #334155; border-radius: 6px; display: inline-block;
         }
         
         .k-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 5px; }
@@ -190,11 +154,9 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
     const urlParams = new URLSearchParams(window.location.search);
-    // Mendukung pemanggilan ID dari parameter 'kw' atau 'trx'
     const idTrx = urlParams.get('kw') || urlParams.get('trx');
 
     if(idTrx) {
-        // Mualim menggunakan action 'get_kwitansi' agar langsung menarik data validator yang sudah ada di database Kapten
         fetch(API_URL, { 
             method: 'POST', 
             headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -224,13 +186,12 @@
                     document.getElementById('v-tgl-pendek').innerText = dt.tanggal.split(' ')[0] || dt.tanggal;
                 }
                 
-                // Menarik langsung nama validator dari respons get_kwitansi
-                document.getElementById('nama-bendahara').innerText = dt.validator;
-                document.getElementById('nip-bendahara').innerText = "-"; // NIP disembunyikan/strip karena tidak ditarik dari get_kwitansi
-                
                 let isiQR = "No. TRX: " + dt.id_transaksi + " | Pembayar: " + dt.nama_sekolah + " | Total: Rp 2.240.000 | Waktu: " + document.getElementById('v-tgl-pendek').innerText;
                 document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=1&data=" + encodeURIComponent(isiQR);
                 
+                // Minta bantuan radar untuk menarik NIP dari DB Panitia
+                // Bawa nama dt.validator sebagai cadangan jikalau koneksi bermasalah
+                fetchPejabat(dt.validator);
             } else {
                 document.getElementById('box-loading').classList.remove('d-none');
                 document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Data Kwitansi Tidak Ditemukan.</h4>';
@@ -238,6 +199,34 @@
         }).catch(err => {
             document.getElementById('box-loading').classList.remove('d-none');
             document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Gagal Menghubungi Server.</h4>';
+        });
+    }
+
+    // FUNGSI RADAR BARU YANG KEBAL ERROR
+    function fetchPejabat(namaValidatorFallback) {
+        fetch(API_URL, { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action: 'get_pejabat_kepanitiaan' }) 
+        }).then(r => r.json()).then(resP => {
+            if(resP.status === 'success') {
+                // Tampilkan nama dan NIP hasil tarikan dari DB_Panitia
+                document.getElementById('nama-bendahara').innerText = resP.data.bendahara.nama || namaValidatorFallback;
+                let nipnya = resP.data.bendahara.nip;
+                if(nipnya && nipnya !== '-' && nipnya.trim() !== '') {
+                    document.getElementById('nip-bendahara').innerText = 'NIP. ' + nipnya;
+                } else {
+                    document.getElementById('nip-bendahara').innerText = '';
+                }
+            } else {
+                // Jika error dari sisi Apps Script, kembalikan ke nama cadangan
+                document.getElementById('nama-bendahara').innerText = namaValidatorFallback;
+                document.getElementById('nip-bendahara').innerText = '';
+            }
+        }).catch(e => {
+            // Jika internet putus, kembalikan ke nama cadangan
+            document.getElementById('nama-bendahara').innerText = namaValidatorFallback;
+            document.getElementById('nip-bendahara').innerText = '';
         });
     }
 
