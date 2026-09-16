@@ -3,247 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Kwitansi VIP - EMS</title>
+    <title>Bukti Setoran Kontribusi - EMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
     <style>
-        body { background-color: #f8fafc; font-family: 'Plus Jakarta Sans', sans-serif; color: #334155; }
-        
-        .kwitansi-box { 
-            background: #ffffff; width: 21cm; height: 10.5cm; margin: 30px auto; 
-            position: relative; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            border: 1px solid #cbd5e1; overflow: hidden; display: flex; flex-direction: column;
-        }
-        
-        .kwitansi-inner {
-            margin: 4px; height: calc(100% - 8px); border: 1px solid #94a3b8;
-            position: relative; display: flex; flex-direction: column; background: #ffffff;
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+        body { 
+            background-color: #f1f5f9; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #1e293b;
+            padding: 20px 0;
         }
 
-        .watermark-bg {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='150' opacity='0.03'%3E%3Ctext x='50%25' y='50%25' transform='rotate(-20 175 75)' text-anchor='middle' font-family='Arial, sans-serif' font-size='22' font-weight='bold' fill='%23475569'%3EK3S SD/MI Kota Kupang%3C/text%3E%3C/svg%3E");
-            background-repeat: repeat; background-position: center; z-index: 0; pointer-events: none;
-        }
-        
-        .k-header { 
-            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
-            color: #ffffff; padding: 10px 18px; display: flex; justify-content: space-between;
-            align-items: center; position: relative; z-index: 1; border-bottom: 2px solid #cbd5e1;
-        }
-        .k-title-area { text-align: left; }
-        .k-title { font-weight: 800; font-size: 1.15rem; letter-spacing: 1.5px; text-transform: uppercase; color: #f8fafc; margin-bottom: 2px; line-height: 1; }
-        .k-subtitle { font-size: 0.65rem; font-weight: 600; color: #e2e8f0; letter-spacing: 0.5px; margin-bottom: 1px; }
-        .k-subtitle2 { font-size: 0.6rem; font-weight: 500; color: #cbd5e1; letter-spacing: 0.5px; }
-        
-        .k-no-area { text-align: right; }
-        .k-no-label { font-size: 0.6rem; color: #e2e8f0; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; display: block; }
-        .k-no { display: inline-block; padding: 2px 10px; font-family: 'Courier New', monospace; font-size: 0.85rem; font-weight: 900; background: rgba(255, 255, 255, 0.15); color: #ffffff; border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 4px; }
-        
-        .k-body-wrapper {
-            padding: 10px 18px; flex-grow: 1; display: flex; flex-direction: column;
-            justify-content: space-between; position: relative; z-index: 1;
+        .receipt-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+            position: relative;
         }
 
-        .k-row { display: flex; margin-bottom: 5px; align-items: flex-end; }
-        .k-label { width: 30%; font-weight: 700; color: #64748b; font-size: 0.7rem; letter-spacing: 0.5px; text-transform: uppercase; }
-        .k-value { width: 70%; font-weight: 700; color: #1e293b; border-bottom: 1px dotted #cbd5e1; padding-bottom: 1px; font-size: 0.8rem; }
-        
-        .k-nominal-container { margin-top: 4px; margin-bottom: 4px; }
-        .k-nominal-box { 
-            background: #f1f5f9; border: 1px solid #94a3b8; padding: 6px 18px; 
-            font-size: 1.15rem; font-weight: 800; color: #334155; border-radius: 6px; display: inline-block;
+        /* Hiasan Atas */
+        .receipt-header {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 30px 40px;
+            border-bottom: 5px solid #00f2fe;
+            position: relative;
         }
-        
-        .k-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto; padding-top: 5px; }
-        .k-qr-box { padding: 4px; border: 1px solid #cbd5e1; border-radius: 6px; display: inline-block; background: #ffffff; }
-        
-        .k-ttd-container { width: 35%; text-align: center; }
-        .k-ttd-date { font-size: 0.7rem; color: #64748b; margin-bottom: 2px; font-weight: 500; }
-        .k-ttd-role { font-size: 0.75rem; font-weight: 800; color: #334155; text-transform: uppercase; }
-        .k-sign-box { margin-top: 28px; } 
-        .k-sign-name { font-weight: 800; border-bottom: 1px solid #94a3b8; padding-bottom: 2px; display: inline-block; width: 100%; color: #1e293b; font-size: 0.8rem; }
-        .k-sign-nip { font-size: 0.65rem; color: #64748b; margin-top: 3px; font-weight: 600; }
-        
-        .btn-print { background: linear-gradient(45deg, #475569, #64748b); color: #fff; font-weight: 700; padding: 10px 25px; display: block; width: fit-content; margin: 0 auto; border-radius: 8px; border: none; transition: transform 0.2s, box-shadow 0.2s; letter-spacing: 1px;}
-        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(71, 85, 105, 0.2); color: #fff; }
+
+        .receipt-header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: 40px;
+            font-family: "bootstrap-icons";
+            content: "\F28A"; /* Ikon check-circle */
+            font-size: 6rem;
+            color: rgba(255, 255, 255, 0.05);
+            line-height: 1;
+        }
+
+        .receipt-body {
+            padding: 40px;
+        }
+
+        .table-custom td {
+            padding: 12px 0;
+            border: none;
+            vertical-align: top;
+        }
+
+        .table-custom td:first-child {
+            width: 180px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .table-custom td:nth-child(2) {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nominal-box {
+            background: linear-gradient(45deg, #f8fafc, #f1f5f9);
+            border: 1px solid #e2e8f0;
+            border-left: 5px solid #00f2fe;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .validator-area {
+            margin-top: 50px;
+            text-align: right;
+        }
+
+        /* Fix untuk nama validator yang panjang */
+        .validator-name {
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-decoration: underline;
+            color: #0f172a;
+            display: inline-block;
+            max-width: 100%;
+            word-wrap: break-word; /* Memaksa teks turun jika kepanjangan */
+        }
+
+        .disclaimer-box {
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 4px solid #f59e0b;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: #92400e;
+        }
+
+        /* Mode Cetak (Print) */
+        @media print {
+            body { background: white; padding: 0; }
+            .receipt-container { box-shadow: none; max-width: 100%; }
+            .btn-print { display: none !important; }
+            .receipt-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .nominal-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .disclaimer-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container py-4">
-    <div id="box-loading" class="text-center py-5">
-        <div class="spinner-border text-secondary" role="status" style="width: 3rem; height: 3rem;"></div>
-        <h5 class="mt-3 fw-bold text-secondary">Memverifikasi Transaksi...</h5>
+<div class="container">
+    <div class="text-center mb-3 btn-print">
+        <button class="btn btn-dark fw-bold px-4 rounded-pill shadow" onclick="window.print()">
+            <i class="bi bi-printer-fill me-2"></i> Cetak Dokumen
+        </button>
     </div>
 
-    <div id="box-valid" class="d-none">
-        <div class="kwitansi-box" id="kwitansi-capture">
-            <div class="kwitansi-inner">
-                
-                <div class="watermark-bg"></div>
-
-                <div class="k-header">
-                    <div class="k-title-area">
-                        <div class="k-title">E-Kwitansi Resmi</div>
-                        <div class="k-subtitle">Panitia Pelaksana Workshop Manajemen Kepsek SD/MI Kota Kupang</div>
-                        <div class="k-subtitle2">K3S SD/MI Kota Kupang</div>
-                    </div>
-                    <div class="k-no-area">
-                        <span class="k-no-label">Nomor Transaksi</span>
-                        <div class="k-no" id="v-no"></div>
-                    </div>
-                </div>
-                
-                <div class="k-body-wrapper">
-                    <div>
-                        <div class="k-row">
-                            <div class="k-label">Telah Terima Dari</div>
-                            <div class="k-value" id="v-pembayar"></div>
-                        </div>
-                        <div class="k-row">
-                            <div class="k-label">Asal Instansi</div>
-                            <div class="k-value"><span id="v-sekolah"></span> (NPSN: <span id="v-npsn"></span>)</div>
-                        </div>
-                        <div class="k-row">
-                            <div class="k-label">Pembayaran via</div>
-                            <div class="k-value" id="v-metode"></div>
-                        </div>
-                        <div class="k-row">
-                            <div class="k-label">Waktu Validasi</div>
-                            <div class="k-value" id="v-tgl"></div>
-                        </div>
-                        <div class="k-row">
-                            <div class="k-label">Guna Membayar</div>
-                            <div class="k-value" style="border: none;">Kontribusi Workshop Manajemen Kepsek - K3S Kota Kupang 2026</div>
-                        </div>
-                    </div>
-                    
-                    <div class="k-nominal-container">
-                        <div class="k-nominal-box" id="v-nominal"></div>
-                    </div>
-                
-                    <div class="k-footer">
-                        <div class="k-qr-box">
-                            <img id="v-qr" src="" width="85" height="85" alt="QR Validasi">
-                        </div>
-                        
-                        <div class="k-ttd-container">
-                            <div class="k-ttd-date">Kupang, <span id="v-tgl-pendek"></span></div>
-                            <div class="k-ttd-role">Bendahara Panitia</div>
-                            <div class="k-sign-box">
-                                <div class="k-sign-name" id="nama-bendahara">Memuat...</div>
-                                <div class="k-sign-nip" id="nip-bendahara"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div> 
-                
+    <div class="receipt-container">
+        <!-- HEADER -->
+        <div class="receipt-header d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="fw-bold mb-1" style="letter-spacing: 1px;">BUKTI SETORAN KONTRIBUSI</h3>
+                <p class="mb-0 text-white-50 small">K3S SD/MI KOTA KUPANG - WORKSHOP MANAJEMEN</p>
             </div>
-        </div> 
+            <div class="text-end">
+                <span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 fs-6">
+                    <i class="bi bi-check-circle-fill me-1"></i> LUNAS
+                </span>
+            </div>
+        </div>
 
-        <button class="btn btn-print mb-5 shadow" onclick="downloadSebagaiGambar()">
-            <i class="bi bi-download me-2"></i> UNDUH KWITANSI DIGITAL
-        </button>
+        <!-- BODY -->
+        <div class="receipt-body">
+            
+            <div class="row mb-4">
+                <div class="col-6">
+                    <p class="small text-muted mb-1">No. Referensi / TRX:</p>
+                    <h6 class="fw-bold font-monospace" id="txtIdTrx">Memuat...</h6>
+                </div>
+                <div class="col-6 text-end">
+                    <p class="small text-muted mb-1">Tanggal Transaksi:</p>
+                    <h6 class="fw-bold" id="txtTanggal">Memuat...</h6>
+                </div>
+            </div>
+
+            <hr class="border-secondary opacity-25 mb-4">
+
+            <table class="table table-custom">
+                <tr>
+                    <td>Telah Terima Dari</td>
+                    <td>:</td>
+                    <td>
+                        <h5 class="fw-bold text-dark mb-0" id="txtNamaSekolah">Memuat Data Sekolah...</h5>
+                        <p class="small text-muted mb-0" id="txtNpsn">NPSN: -</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Guna Membayar</td>
+                    <td>:</td>
+                    <td>
+                        <div class="fs-6 lh-base text-dark">
+                            Kontribusi Sekolah Peserta Workshop Manajemen Kepsek - Pembayaran <span id="txtMetode" class="fw-bold">...</span> sebesar:
+                        </div>
+                        <div class="nominal-box">
+                            <h2 class="fw-bold mb-0 text-dark" id="txtNominal">Rp 0</h2>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- AREA VALIDATOR -->
+            <div class="validator-area">
+                <p class="mb-4 text-muted">Kupang, <span id="txtTanggalBawah">...</span><br>Penerima / Validator,</p>
+                <!-- Class 'validator-name' akan memastikan teks yang panjang akan turun (wrap) dengan rapi -->
+                <div class="validator-name" id="txtValidator">Memuat...</div>
+                <p class="small text-muted mt-1">Petugas EMS</p>
+            </div>
+
+            <!-- DISCLAIMER BARU SESUAI REQUEST KAPTEN -->
+            <div class="disclaimer-box d-flex align-items-start">
+                <i class="bi bi-info-circle-fill fs-5 me-3 mt-1"></i>
+                <div>
+                    <strong>Perhatian:</strong><br>
+                    Dokumen ini merupakan bukti pengumpulan kontribusi sekolah yang sah dan terekam di dalam sistem (EMS). <strong>E-Kwitansi Resmi Panitia</strong> akan diserahkan secara terpisah oleh Bendahara Panitia Kegiatan.
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
 <script>
-    // WAJIB PASTE API URL KAPTEN DI SINI!
+    // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const idTrx = urlParams.get('kw') || urlParams.get('trx');
 
-    if(idTrx) {
-        fetch(API_URL, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'get_kwitansi', id_transaksi: idTrx }) 
-        }).then(r => r.json()).then(res => {
-            document.getElementById('box-loading').classList.add('d-none');
-            
-            if(res.status === 'success') {
-                const dt = res.data;
-                document.getElementById('box-valid').classList.remove('d-none');
+    // Fungsi format rupiah
+    function formatRp(angka) {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+    }
+
+    // Fungsi format tanggal cantik (Misal: 25 Oktober 2026)
+    function formatTanggal(isoString) {
+        if(!isoString) return '-';
+        const date = new Date(isoString);
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        return date.toLocaleDateString('id-ID', options);
+    }
+
+    async function muatDataKwitansi() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idTrx = urlParams.get('trx') || urlParams.get('id');
+
+        if (!idTrx) {
+            document.body.innerHTML = '<div class="container mt-5"><div class="alert alert-danger text-center">ID Transaksi tidak ditemukan di URL!</div></div>';
+            return;
+        }
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_kwitansi', id_transaksi: idTrx })
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                const data = result.data;
                 
-                document.getElementById('v-no').innerText = dt.id_transaksi;
-                document.getElementById('v-pembayar').innerText = dt.penyetor;
-                document.getElementById('v-sekolah').innerText = dt.nama_sekolah;
-                document.getElementById('v-npsn').innerText = dt.npsn;
-                document.getElementById('v-nominal').innerText = "Rp 2.240.000";
-                document.getElementById('v-metode').innerText = dt.metode;
+                // Isi ke dalam HTML
+                document.getElementById('txtIdTrx').innerText = data.id_transaksi;
                 
-                let tgl = new Date(dt.tanggal);
-                if(!isNaN(tgl)) {
-                    let optionsDate = { day: '2-digit', month: 'long', year: 'numeric' };
-                    let optionsTime = { hour: '2-digit', minute:'2-digit' };
-                    document.getElementById('v-tgl').innerText = tgl.toLocaleDateString('id-ID', optionsDate) + ' | Pukul ' + tgl.toLocaleTimeString('id-ID', optionsTime) + ' WITA';
-                    document.getElementById('v-tgl-pendek').innerText = tgl.toLocaleDateString('id-ID', optionsDate);
-                } else {
-                    document.getElementById('v-tgl').innerText = dt.tanggal;
-                    document.getElementById('v-tgl-pendek').innerText = dt.tanggal.split(' ')[0] || dt.tanggal;
+                let tglFormatted = formatTanggal(data.tanggal);
+                document.getElementById('txtTanggal').innerText = tglFormatted;
+                document.getElementById('txtTanggalBawah').innerText = tglFormatted;
+                
+                document.getElementById('txtNamaSekolah').innerText = data.nama_sekolah;
+                document.getElementById('txtNpsn').innerText = `NPSN: ${data.npsn}`;
+                
+                document.getElementById('txtMetode').innerText = data.metode;
+                document.getElementById('txtNominal').innerText = formatRp(data.nominal);
+                
+                // MENGATASI NAMA VALIDATOR TERPOTONG: 
+                // Jika mengandung kata "via", kita bersihkan agar hanya namanya saja yang muncul
+                let namaPetugas = data.validator;
+                if(namaPetugas.toLowerCase().includes('via ')) {
+                    namaPetugas = namaPetugas.split(/via /i)[1]; 
                 }
-                
-                let isiQR = "No. TRX: " + dt.id_transaksi + " | Pembayar: " + dt.nama_sekolah + " | Total: Rp 2.240.000 | Waktu: " + document.getElementById('v-tgl-pendek').innerText;
-                document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&margin=1&data=" + encodeURIComponent(isiQR);
-                
-                // Minta bantuan radar untuk menarik NIP dari DB Panitia
-                // Bawa nama dt.validator sebagai cadangan jikalau koneksi bermasalah
-                fetchPejabat(dt.validator);
+                document.getElementById('txtValidator').innerText = namaPetugas;
+
             } else {
-                document.getElementById('box-loading').classList.remove('d-none');
-                document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Data Kwitansi Tidak Ditemukan.</h4>';
+                alert("Gagal memuat data: " + result.message);
             }
-        }).catch(err => {
-            document.getElementById('box-loading').classList.remove('d-none');
-            document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Gagal Menghubungi Server.</h4>';
-        });
+        } catch (error) {
+            alert("Koneksi bermasalah. Gagal memuat data dari server.");
+        }
     }
 
-    // FUNGSI RADAR BARU YANG KEBAL ERROR
-    function fetchPejabat(namaValidatorFallback) {
-        fetch(API_URL, { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'get_pejabat_kepanitiaan' }) 
-        }).then(r => r.json()).then(resP => {
-            if(resP.status === 'success') {
-                // Tampilkan nama dan NIP hasil tarikan dari DB_Panitia
-                document.getElementById('nama-bendahara').innerText = resP.data.bendahara.nama || namaValidatorFallback;
-                let nipnya = resP.data.bendahara.nip;
-                if(nipnya && nipnya !== '-' && nipnya.trim() !== '') {
-                    document.getElementById('nip-bendahara').innerText = 'NIP. ' + nipnya;
-                } else {
-                    document.getElementById('nip-bendahara').innerText = '';
-                }
-            } else {
-                // Jika error dari sisi Apps Script, kembalikan ke nama cadangan
-                document.getElementById('nama-bendahara').innerText = namaValidatorFallback;
-                document.getElementById('nip-bendahara').innerText = '';
-            }
-        }).catch(e => {
-            // Jika internet putus, kembalikan ke nama cadangan
-            document.getElementById('nama-bendahara').innerText = namaValidatorFallback;
-            document.getElementById('nip-bendahara').innerText = '';
-        });
-    }
-
-    function downloadSebagaiGambar() {
-        const btn = document.querySelector('.btn-print');
-        const teksAsli = btn.innerHTML;
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Memproses...';
-        
-        const box = document.getElementById('kwitansi-capture');
-        html2canvas(box, { scale: 3, useCORS: true }).then(canvas => {
-            let link = document.createElement('a');
-            link.download = 'Kwitansi_' + document.getElementById('v-no').innerText + '.jpg';
-            link.href = canvas.toDataURL('image/jpeg', 1.0);
-            link.click();
-            btn.innerHTML = teksAsli;
-        });
-    }
+    // Jalankan saat halaman dibuka
+    muatDataKwitansi();
 </script>
+
 </body>
 </html>
