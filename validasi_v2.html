@@ -23,8 +23,13 @@
             transition: all 0.3s ease;
         }
         .card-antrean.bayar-tunai { border-left-color: #f093fb; }
+        .card-antrean.lunas-card { border-left-color: #20c997; background: rgba(32, 201, 151, 0.03); }
         .card-antrean:hover { background: rgba(255, 255, 255, 0.08); }
         
+        /* Modifikasi Nav Tabs */
+        .nav-pills .nav-link { color: #64748b; border: 1px solid rgba(255,255,255,0.1); margin-right: 5px; border-radius: 8px; }
+        .nav-pills .nav-link.active { background: linear-gradient(45deg, #00f2fe, #4facfe); color: white; border-color: transparent; }
+
         .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px !important; }
     </style>
 </head>
@@ -40,13 +45,23 @@
 </nav>
 
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h5 class="fw-bold mb-0">Antrean Validasi</h5>
+            <h5 class="fw-bold mb-0">Loket Bendahara</h5>
             <p class="small text-white-50 mb-0" id="infoPetugas">Memuat data petugas...</p>
         </div>
         <button class="btn btn-sm btn-info" onclick="muatAntrean()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
     </div>
+
+    <!-- Sistem Tab (Pills) -->
+    <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+        <li class="nav-item flex-fill text-center" role="presentation">
+            <button class="nav-link active w-100 fw-bold" id="pills-antrean-tab" data-bs-toggle="pill" data-bs-target="#pills-antrean" type="button" role="tab">Antrean (<span id="countAntrean">0</span>)</button>
+        </li>
+        <li class="nav-item flex-fill text-center" role="presentation">
+            <button class="nav-link w-100 fw-bold" id="pills-lunas-tab" data-bs-toggle="pill" data-bs-target="#pills-lunas" type="button" role="tab">Sudah Lunas (<span id="countLunas">0</span>)</button>
+        </li>
+    </ul>
 
     <!-- Area Loading -->
     <div id="loadingArea" class="text-center py-5">
@@ -54,9 +69,19 @@
         <p class="mt-3 text-white-50">Menarik data dari server...</p>
     </div>
 
-    <!-- Area List Antrean -->
-    <div id="listAntrean" style="display: none;">
-        <!-- Data akan masuk ke sini via JavaScript -->
+    <!-- Konten Tab -->
+    <div class="tab-content" id="pills-tabContent" style="display: none;">
+        
+        <!-- TAB 1: ANTREAN -->
+        <div class="tab-pane fade show active" id="pills-antrean" role="tabpanel">
+            <!-- Data Antrean masuk sini -->
+        </div>
+
+        <!-- TAB 2: LUNAS & CETAK KWITANSI -->
+        <div class="tab-pane fade" id="pills-lunas" role="tabpanel">
+            <!-- Data Lunas masuk sini -->
+        </div>
+
     </div>
 </div>
 
@@ -64,17 +89,14 @@
     // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
-    // Keamanan & Cek Identitas Petugas
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData || (userData.role !== 'Bendahara_Panitia' && userData.role !== 'Bendahara_Subrayon')) {
         window.location.href = "index.html";
     }
 
     document.getElementById('infoPetugas').innerText = `Petugas: ${userData.nama_pic} (${userData.role.replace('_', ' ')})`;
-
     const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
 
-    // JURUS AUTO-RETRY
     async function fetchDenganAntrean(url, options, maksimalPercobaan = 3) {
         for (let i = 0; i < maksimalPercobaan; i++) {
             try {
@@ -88,119 +110,117 @@
         }
     }
 
-    // Fungsi Pulang ke Dasbor yang Tepat
     function kembaliKeDasbor() {
-        if (userData.role === 'Bendahara_Panitia') {
-            window.location.href = 'dashboard_bendahara_panitia.html';
-        } else {
-            window.location.href = 'dashboard_bendahara_subrayon.html';
-        }
+        if (userData.role === 'Bendahara_Panitia') window.location.href = 'dashboard_bendahara_panitia.html';
+        else window.location.href = 'dashboard_bendahara_subrayon.html';
     }
 
     function formatRp(angka) {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
     }
 
-    // Menarik data antrean dari backend
+    function cetakKwitansi(idTrx) {
+        if(!idTrx) {
+            Swal.fire('Oops!', 'ID Transaksi belum terbentuk. Silakan refresh halaman.', 'error');
+            return;
+        }
+        // Langsung arahkan ke halaman e-kwitansi VIP Kapten
+        window.open(`verify.html?trx=${idTrx}`, '_blank');
+    }
+
     async function muatAntrean() {
         document.getElementById('loadingArea').style.display = 'block';
-        document.getElementById('listAntrean').style.display = 'none';
-        const wadah = document.getElementById('listAntrean');
-        wadah.innerHTML = '';
+        document.getElementById('pills-tabContent').style.display = 'none';
+        
+        const wadahAntrean = document.getElementById('pills-antrean');
+        const wadahLunas = document.getElementById('pills-lunas');
+        wadahAntrean.innerHTML = '';
+        wadahLunas.innerHTML = '';
 
         try {
             const result = await fetchDenganAntrean(API_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ 
-                    action: 'get_antrian_validasi', 
-                    role: userData.role, 
-                    subrayon: userData.subrayon 
-                })
+                body: JSON.stringify({ action: 'get_antrian_validasi', role: userData.role, subrayon: userData.subrayon })
             });
 
             document.getElementById('loadingArea').style.display = 'none';
-            document.getElementById('listAntrean').style.display = 'block';
+            document.getElementById('pills-tabContent').style.display = 'block';
 
             if (result.status === 'success') {
-                if (result.data.length === 0) {
-                    wadah.innerHTML = `
-                        <div class="text-center py-5 glass-card">
-                            <i class="bi bi-emoji-smile fs-1 text-white-50"></i>
-                            <h6 class="mt-3 text-white-50">Hore! Seluruh sekolah sudah Lunas.</h6>
-                        </div>`;
-                    return;
+                // Memisahkan data
+                const dataPending = result.data.filter(item => item.status !== 'Lunas');
+                const dataLunas = result.data.filter(item => item.status === 'Lunas');
+
+                document.getElementById('countAntrean').innerText = dataPending.length;
+                document.getElementById('countLunas').innerText = dataLunas.length;
+
+                // --- RENDER TAB ANTREAN ---
+                if (dataPending.length === 0) {
+                    wadahAntrean.innerHTML = `<div class="text-center py-5 glass-card"><i class="bi bi-emoji-smile fs-1 text-white-50"></i><h6 class="mt-3 text-white-50">Hore! Antrean kosong.</h6></div>`;
+                } else {
+                    dataPending.forEach(item => {
+                        let badgeInfo = ''; let btnAksi = ''; let classBorder = '';
+
+                        if (item.status === 'Pending') {
+                            classBorder = ''; 
+                            badgeInfo = `<span class="badge bg-primary bg-opacity-25 text-primary border border-primary small"><i class="bi bi-cloud-check"></i> Bukti Transfer Ada</span>`;
+                            let btnCekBukti = item.link_bukti ? `<button class="btn btn-sm btn-outline-info w-100 mb-2" onclick="window.open('${item.link_bukti}', '_blank')"><i class="bi bi-eye"></i> Cek Bukti Transfer</button>` : '';
+
+                            btnAksi = `
+                                <div class="col-12">${btnCekBukti}</div>
+                                <div class="col-6"><button class="btn btn-sm btn-success w-100 fw-bold" onclick="eksekusiValidasi('${item.id_trx}', '${item.npsn}', 'Transfer', '${item.nama}')"><i class="bi bi-check-circle"></i> Sahkan Transfer</button></div>
+                                <div class="col-6"><button class="btn btn-sm btn-outline-warning w-100 fw-bold" onclick="eksekusiValidasi('${item.id_trx}', '${item.npsn}', 'Tunai', '${item.nama}')">Beralih Tunai</button></div>
+                            `;
+                        } else {
+                            classBorder = 'bayar-tunai'; 
+                            badgeInfo = `<span class="badge bg-secondary bg-opacity-25 text-white-50 border border-secondary small"><i class="bi bi-clock"></i> Sudah Terdaftar (Belum Bayar)</span>`;
+                            btnAksi = `<div class="col-12"><button class="btn btn-sm w-100 fw-bold text-dark" style="background: linear-gradient(45deg, #f093fb, #f5576c); border: none;" onclick="eksekusiValidasi('', '${item.npsn}', 'Tunai', '${item.nama}')"><i class="bi bi-cash-coin me-1"></i> Terima Pembayaran Tunai (Rp 2.240.000)</button></div>`;
+                        }
+
+                        wadahAntrean.innerHTML += `
+                            <div class="card-antrean p-3 ${classBorder}">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div><h6 class="fw-bold mb-1 ${item.status === 'Pending' ? 'text-warning' : 'text-white'}">${item.nama}</h6><div class="small text-white-50">NPSN: ${item.npsn} | Subrayon: ${item.subrayon}</div></div>
+                                    <div class="text-end"><div class="fw-bold text-white">${formatRp(item.nominal)}</div><div class="mt-1">${badgeInfo}</div></div>
+                                </div>
+                                <hr class="border-secondary opacity-25 my-2">
+                                <div class="row g-2 mt-1">${btnAksi}</div>
+                            </div>
+                        `;
+                    });
                 }
 
-                result.data.forEach(item => {
-                    let badgeInfo = '';
-                    let btnAksi = '';
-                    let classBorder = '';
-
-                    // JIKA STATUS PENDING (Sudah Upload Bukti Transfer)
-                    if (item.status === 'Pending') {
-                        classBorder = ''; // default kuning
-                        badgeInfo = `<span class="badge bg-primary bg-opacity-25 text-primary border border-primary small"><i class="bi bi-cloud-check"></i> Bukti Transfer Ada</span>`;
-                        let btnCekBukti = item.link_bukti ? `<button class="btn btn-sm btn-outline-info w-100 mb-2" onclick="window.open('${item.link_bukti}', '_blank')"><i class="bi bi-eye"></i> Cek Bukti Transfer</button>` : '';
-
-                        btnAksi = `
-                            <div class="col-12">${btnCekBukti}</div>
-                            <div class="col-6">
-                                <button class="btn btn-sm btn-success w-100 fw-bold" onclick="eksekusiValidasi('${item.id_trx}', '${item.npsn}', 'Transfer', '${item.nama}')">
-                                    <i class="bi bi-check-circle"></i> Sahkan Transfer
-                                </button>
-                            </div>
-                            <div class="col-6">
-                                <button class="btn btn-sm btn-outline-warning w-100 fw-bold" onclick="eksekusiValidasi('${item.id_trx}', '${item.npsn}', 'Tunai', '${item.nama}')">
-                                    Beralih Tunai
-                                </button>
-                            </div>
-                        `;
-                    } 
-                    // JIKA BELUM BAYAR (Sekolah yang belum melakukan aksi apa-apa)
-                    else {
-                        classBorder = 'bayar-tunai'; // warna ungu
-                        badgeInfo = `<span class="badge bg-secondary bg-opacity-25 text-white-50 border border-secondary small"><i class="bi bi-clock"></i> Belum Mendaftar / Belum Bayar</span>`;
-                        
-                        btnAksi = `
-                            <div class="col-12">
-                                <button class="btn btn-sm w-100 fw-bold text-dark" style="background: linear-gradient(45deg, #f093fb, #f5576c); border: none;" onclick="eksekusiValidasi('', '${item.npsn}', 'Tunai', '${item.nama}')">
-                                    <i class="bi bi-cash-coin me-1"></i> Input Pembayaran Tunai (Rp 2.240.000)
-                                </button>
-                            </div>
-                        `;
-                    }
-
-                    wadah.innerHTML += `
-                        <div class="card-antrean p-3 ${classBorder}">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <div>
-                                    <h6 class="fw-bold mb-1 ${item.status === 'Pending' ? 'text-warning' : 'text-white'}">${item.nama}</h6>
-                                    <div class="small text-white-50">NPSN: ${item.npsn} | Subrayon: ${item.subrayon}</div>
+                // --- RENDER TAB LUNAS ---
+                if (dataLunas.length === 0) {
+                    wadahLunas.innerHTML = `<div class="text-center py-5 glass-card"><i class="bi bi-box-seam fs-1 text-white-50"></i><h6 class="mt-3 text-white-50">Belum ada sekolah yang lunas.</h6></div>`;
+                } else {
+                    dataLunas.forEach(item => {
+                        let badgeInfo = `<span class="badge bg-success bg-opacity-25 text-success border border-success small"><i class="bi bi-check-circle-fill"></i> LUNAS (${item.metode})</span>`;
+                        wadahLunas.innerHTML += `
+                            <div class="card-antrean lunas-card p-3">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div><h6 class="fw-bold mb-1 text-success">${item.nama}</h6><div class="small text-white-50">NPSN: ${item.npsn} | Subrayon: ${item.subrayon}</div></div>
+                                    <div class="text-end"><div class="fw-bold text-white">${formatRp(item.nominal)}</div><div class="mt-1">${badgeInfo}</div></div>
                                 </div>
-                                <div class="text-end">
-                                    <div class="fw-bold text-white">${formatRp(item.nominal)}</div>
-                                    <div class="mt-1">${badgeInfo}</div>
+                                <hr class="border-secondary opacity-25 my-2">
+                                <div class="row mt-1">
+                                    <div class="col-12"><button class="btn btn-sm btn-outline-info w-100 fw-bold" onclick="cetakKwitansi('${item.id_trx}')"><i class="bi bi-printer"></i> Cetak E-Kwitansi VIP</button></div>
                                 </div>
                             </div>
-                            <hr class="border-secondary opacity-25 my-2">
-                            <div class="row g-2 mt-1">
-                                ${btnAksi}
-                            </div>
-                        </div>
-                    `;
-                });
+                        `;
+                    });
+                }
             } else {
-                wadah.innerHTML = `<div class="alert alert-danger small">Gagal mengambil data: ${result.message}</div>`;
+                wadahAntrean.innerHTML = `<div class="alert alert-danger small">Gagal mengambil data.</div>`;
             }
         } catch (error) {
             document.getElementById('loadingArea').style.display = 'none';
-            document.getElementById('listAntrean').style.display = 'block';
-            wadah.innerHTML = `<div class="alert alert-danger small">Gagal menghubungi server. Pastikan koneksi internet stabil.</div>`;
+            document.getElementById('pills-tabContent').style.display = 'block';
+            wadahAntrean.innerHTML = `<div class="alert alert-danger small">Gagal menghubungi server.</div>`;
         }
     }
 
-    // Fungsi Eksekusi Validasi ke Database
     function eksekusiValidasi(idTrx, npsnSekolah, metodeBayar, namaSekolah) {
         let pesanAlert = metodeBayar === 'Tunai' ? 
             `Anda menerima uang Tunai dari ${namaSekolah}. Lanjutkan?` : 
@@ -213,28 +233,19 @@
             showCancelButton: true,
             confirmButtonText: 'Ya, Sahkan & Terbitkan Kwitansi!',
             cancelButtonText: 'Batal',
-            customClass: { popup: 'swal-dark' },
-            background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
+            customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
         }).then(async (result) => {
             if (result.isConfirmed) {
                 Toast.fire({ title: 'Memproses Validasi...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-                
                 try {
                     const response = await fetchDenganAntrean(API_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ 
-                            action: 'eksekusi_validasi', 
-                            id_trx: idTrx, 
-                            npsn: npsnSekolah,
-                            metode: metodeBayar,
-                            nama_validator: userData.nama_pic 
-                        })
+                        body: JSON.stringify({ action: 'eksekusi_validasi', id_trx: idTrx, npsn: npsnSekolah, metode: metodeBayar, nama_validator: userData.nama_pic })
                     });
-
                     if (response.status === 'success') {
                         Swal.fire({ icon: 'success', title: 'Validasi Sukses!', text: 'Kwitansi otomatis terbit untuk sekolah tersebut.', customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe' });
-                        muatAntrean(); // Refresh otomatis list antreannya
+                        muatAntrean(); 
                     } else {
                         Swal.fire({ icon: 'error', title: 'Gagal', text: response.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
                     }
