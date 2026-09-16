@@ -15,20 +15,20 @@
             background-color: #e2e8f0; 
             color: #1e293b; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            padding: 30px 0;
+            padding: 20px 0;
             min-height: 100vh;
         }
 
-        /* UKURAN KERTAS KUITANSI PAS: 10.5cm x 21cm (Lanskap Profesional) */
+        /* KUNCI UTAMA UKURAN: 10.5cm x 21cm PAS */
         .kwitansi-box { 
             background: #ffffff; 
-            border: 1px solid #cbd5e1; 
+            border: 1.5px solid #0f172a; 
             width: 21cm; 
-            min-height: 10.5cm; 
+            height: 10.5cm; 
             margin: 0 auto; 
             padding: 0; 
-            border-radius: 12px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             position: relative; 
             overflow: hidden; 
             box-sizing: border-box;
@@ -38,81 +38,81 @@
         .receipt-header {
             background: #0f172a;
             color: #ffffff;
-            padding: 20px 30px;
-            border-bottom: 4px solid #00f2fe;
+            padding: 12px 20px;
+            border-bottom: 3px solid #00f2fe;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
         .receipt-body {
-            padding: 25px 30px;
+            padding: 12px 20px;
         }
 
         .k-title { 
             font-weight: 800; 
-            font-size: 1.3rem; 
-            letter-spacing: 1px; 
+            font-size: 1.15rem; 
+            letter-spacing: 0.5px; 
             color: #ffffff;
             text-transform: uppercase; 
             margin-bottom: 2px; 
         }
         
-        .k-subtitle { font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .k-subtitle { font-size: 0.7rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .k-no { 
             display: inline-block; 
-            padding: 4px 12px; 
+            padding: 2px 8px; 
             border: 1px solid rgba(0, 242, 254, 0.4); 
             font-family: 'Courier Prime', monospace; 
-            font-size: 0.8rem; 
+            font-size: 0.75rem; 
             font-weight: bold; 
             background: rgba(0, 242, 254, 0.1);
             color: #00f2fe;
-            border-radius: 6px;
+            border-radius: 4px;
         }
 
-        .k-row { display: flex; margin-bottom: 10px; align-items: baseline; font-size: 0.85rem; }
+        .k-row { display: flex; margin-bottom: 6px; align-items: baseline; font-size: 0.8rem; }
         .k-label { width: 28%; font-weight: 600; color: #64748b; }
-        .k-value { width: 72%; font-weight: 700; color: #0f172a; border-bottom: 1px dotted #cbd5e1; padding-bottom: 2px; }
+        .k-value { width: 72%; font-weight: 700; color: #0f172a; border-bottom: 1px dotted #cbd5e1; padding-bottom: 1px; }
 
-        /* KOTAK NOMINAL BERSIH & TEGAS */
+        /* KOTAK NOMINAL */
         .k-nominal-box { 
             background: #f8fafc;
             border: 1.5px solid #0f172a; 
-            padding: 8px 20px; 
-            font-size: 1.4rem; 
+            padding: 4px 15px; 
+            font-size: 1.25rem; 
             font-weight: 800; 
             color: #0f172a;
-            border-radius: 8px;
+            border-radius: 6px;
             display: inline-block; 
-            margin: 5px 0; 
+            margin: 2px 0; 
         }
 
         .k-footer { 
             display: flex; 
             justify-content: space-between; 
             align-items: flex-end; 
-            margin-top: 15px; 
+            margin-top: 8px; 
             border-top: 1px solid #e2e8f0; 
-            padding-top: 15px; 
+            padding-top: 8px; 
         }
 
-        .k-qr-box { padding: 4px; border: 1px solid #cbd5e1; border-radius: 6px; background: #ffffff; display: inline-block; }
+        .k-qr-box { padding: 3px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; display: inline-block; }
         
-        .k-ttd-container { width: 38%; text-align: center; font-size: 0.8rem; }
-        .k-sign-box { margin-top: 35px; }
-        .k-sign-name { font-weight: 800; font-size: 0.95rem; border-bottom: 1.5px solid #0f172a; padding-bottom: 2px; display: inline-block; width: 100%; color: #0f172a; }
-        .k-sign-nip { font-size: 0.75rem; color: #64748b; margin-top: 2px; }
+        .k-ttd-container { width: 35%; text-align: center; font-size: 0.75rem; }
+        .k-sign-box { margin-top: 25px; }
+        .k-sign-name { font-weight: 800; font-size: 0.85rem; border-bottom: 1.5px solid #0f172a; padding-bottom: 1px; display: inline-block; width: 100%; color: #0f172a; }
+        .k-sign-nip { font-size: 0.65rem; color: #64748b; margin-top: 1px; }
         
         .badge-status {
             background: rgba(34, 197, 94, 0.1);
             border: 1px solid #22c55e;
             color: #15803d;
-            padding: 4px 12px;
+            padding: 2px 8px;
             border-radius: 20px;
             font-weight: 700;
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             letter-spacing: 0.5px;
         }
 
@@ -120,12 +120,13 @@
             background: #0f172a; 
             color: #fff; 
             font-weight: 700; 
-            padding: 10px 25px; 
+            padding: 8px 20px; 
             border-radius: 30px; 
             border: none;
             cursor: pointer; 
             box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
             transition: background 0.2s;
+            font-size: 0.9rem;
         }
         .btn-action-print:hover { background: #1e293b; }
 
@@ -133,30 +134,55 @@
             background: #0284c7;
             color: #fff;
             font-weight: 700;
-            padding: 10px 25px;
+            padding: 8px 20px;
             border-radius: 30px;
             border: none;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
             transition: background 0.2s;
+            font-size: 0.9rem;
         }
         .btn-action-img:hover { background: #0369a1; }
 
+        /* PENGATURAN KHUSUS SAAT DICETAK (FORCE 10.5 x 21 CM) */
         @media print {
-            body { background: #ffffff !important; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page {
+                size: 21cm 10.5cm;
+                margin: 0;
+            }
+            body { 
+                background: #ffffff !important; 
+                padding: 0 !important; 
+                margin: 0 !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
             .btn-print-area { display: none !important; }
-            .kwitansi-box { border: 1px solid #000; box-shadow: none; margin: 0; width: 100%; }
-            .receipt-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; background: #0f172a !important; color: #fff !important; }
+            .kwitansi-box { 
+                border: 1px solid #000 !important; 
+                box-shadow: none !important; 
+                margin: 0 !important; 
+                width: 21cm !important; 
+                height: 10.5cm !important; 
+                position: absolute;
+                top: 0; left: 0;
+            }
+            .receipt-header { 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+                background: #0f172a !important; 
+                color: #fff !important; 
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container py-4">
+<div class="container py-3">
     <!-- Area Loading -->
     <div id="box-loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;"></div>
-        <h5 class="mt-3 text-secondary">Memverifikasi E-Kwitansi Resmi Panitia...</h5>
+        <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+        <h6 class="mt-3 text-secondary">Memverifikasi E-Kwitansi Resmi Panitia...</h6>
     </div>
 
     <!-- Area Dokumen Valid -->
@@ -184,25 +210,25 @@
                 <div class="k-row"><div class="k-label">Waktu Transaksi</div><div class="k-value" id="v-tgl">...</div></div>
                 <div class="k-row"><div class="k-label">Tujuan Pembayaran</div><div class="k-value" style="border: none;">Kontribusi Keikutsertaan Workshop Manajemen Kepala SD/MI Kota Kupang Tahun 2026</div></div>
                 
-                <div class="mt-2 text-center">
-                    <div class="small text-muted text-uppercase fw-bold mb-1">Jumlah Kontribusi Diterima:</div>
+                <div class="text-center">
+                    <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.65rem;">Jumlah Kontribusi Diterima:</div>
                     <div class="k-nominal-box" id="v-nominal">Rp 0</div>
                 </div>
             </div>
             
             <!-- FOOTER -->
-            <div class="receipt-body pt-0 pb-3">
+            <div class="receipt-body pt-0 pb-2">
                 <div class="k-footer">
                     <div class="d-flex align-items-center gap-2">
-                        <div class="k-qr-box"><img id="v-qr" src="" width="65" height="65"></div>
-                        <div class="text-muted" style="font-size: 0.7rem; max-width: 180px; line-height: 1.2;">
-                            <i class="bi bi-info-circle text-primary"></i> Scan QR untuk verifikasi keaslian dokumen keuangan panitia.
+                        <div class="k-qr-box"><img id="v-qr" src="" width="55" height="55"></div>
+                        <div class="text-muted" style="font-size: 0.6rem; max-width: 160px; line-height: 1.1;">
+                            <i class="bi bi-info-circle text-primary"></i> Scan QR untuk verifikasi keaslian dokumen.
                         </div>
                     </div>
                     
                     <div class="k-ttd-container">
                         <div class="text-muted">Kupang, <span id="v-tgl-pendek">...</span></div>
-                        <div class="fw-bold text-dark mb-1">Bendahara Panitia,</div>
+                        <div class="fw-bold text-dark mb-0">Bendahara Panitia,</div>
                         <div class="k-sign-box">
                             <div class="k-sign-name text-uppercase" id="nama-bendahara">Memuat...</div>
                             <div class="k-sign-nip">NIP. <span id="nip-bendahara">-</span></div>
@@ -213,8 +239,8 @@
 
         </div>
 
-        <!-- TOMBOL AKSI (TIDAK DIHILANGKAN SESUAI PERMINTAAN) -->
-        <div class="text-center mt-4 btn-print-area d-flex justify-content-center gap-3">
+        <!-- TOMBOL AKSI -->
+        <div class="text-center mt-3 btn-print-area d-flex justify-content-center gap-3">
             <button class="btn-action-print shadow" onclick="window.print()">
                 <i class="bi bi-printer-fill me-2"></i> Cetak Dokumen PDF
             </button>
