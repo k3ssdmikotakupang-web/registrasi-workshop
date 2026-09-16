@@ -175,7 +175,7 @@
                         } else {
                             classBorder = 'bayar-tunai'; 
                             badgeInfo = `<span class="badge bg-secondary bg-opacity-25 text-white-50 border border-secondary small"><i class="bi bi-clock"></i> Sudah Terdaftar (Belum Bayar)</span>`;
-                            btnAksi = `<div class="col-12"><button class="btn btn-sm w-100 fw-bold text-dark" style="background: linear-gradient(45deg, #f093fb, #f5576c); border: none;" onclick="eksekusiValidasi('', '${item.npsn}', 'Tunai', '${item.nama}')"><i class="bi bi-cash-coin me-1"></i> Terima Pembayaran Tunai (Rp 2.240.000)</button></div>`;
+                            btnAksi = `<div class="col-12"><button class="btn btn-sm w-100 fw-bold text-dark" style="background: linear-gradient(45deg, #f093fb, #f5576c); border: none;" onclick="eksekusiValidasi('', '${item.npsn}', 'Tunai', '${item.nama}')"><i class="bi bi-cash-coin me-1"></i> Terima Pembayaran Tunai (${formatRp(item.nominal)})</button></div>`;
                         }
 
                         wadahAntrean.innerHTML += `
