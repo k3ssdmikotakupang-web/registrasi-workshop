@@ -65,6 +65,20 @@
     let html5QrCode = null;
     const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
 
+    // Fungsi Auto-Retry (Coba 3x jika server sibuk)
+    async function fetchDenganAntrean(url, options, maksimalPercobaan = 3) {
+        for (let i = 0; i < maksimalPercobaan; i++) {
+            try {
+                const response = await fetch(url, options);
+                if (!response.ok) throw new Error('Jaringan bermasalah');
+                return await response.json(); 
+            } catch (err) {
+                if (i === maksimalPercobaan - 1) throw err; 
+                await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1))); 
+            }
+        }
+    }
+
     function mulaiScanner() {
         document.getElementById('btnMulaiScan').style.display = 'none';
         document.getElementById('btnStopScan').style.display = 'block';
@@ -78,16 +92,16 @@
                 Toast.fire({ title: 'Memvalidasi...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
 
                 try {
-                    const response = await fetch(API_URL, {
+                    // MENGGUNAKAN JURUS AUTO-RETRY 3X
+                    const result = await fetchDenganAntrean(API_URL, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // Ini kuncinya Kapt!
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                         body: JSON.stringify({ 
                             action: 'proses_checkin', 
                             id_qr: decodedText,
                             sesi: document.getElementById('pilihSesi').value 
                         })
                     });
-                    const result = await response.json();
 
                     if (result.status === 'success') {
                         Swal.fire({ icon: 'success', title: 'BERHASIL!', text: result.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
@@ -100,13 +114,13 @@
                         }).then(() => { mulaiScanner(); });
                     }
                 } catch(e) {
-                    Toast.fire({ icon: 'error', title: 'Error Koneksi' });
+                    Toast.fire({ icon: 'error', title: 'Jaringan Padat', text: 'Server sedang antre panjang, silakan scan ulang.' });
                     mulaiScanner();
                 }
             },
             (errorMessage) => {}
         ).catch(err => {
-            Toast.fire({ icon: 'error', title: 'Gagal Akses Kamera' });
+            Toast.fire({ icon: 'error', title: 'Gagal Akses Kamera', text: 'Pastikan izin kamera aktif.' });
             document.getElementById('btnMulaiScan').style.display = 'block';
             document.getElementById('btnStopScan').style.display = 'none';
         });
