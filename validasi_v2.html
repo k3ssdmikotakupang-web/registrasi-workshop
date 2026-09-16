@@ -22,7 +22,8 @@
             margin-bottom: 15px;
             transition: all 0.3s ease;
         }
-        .card-antrean:hover { background: rgba(255, 255, 255, 0.08); border-left-color: #00f2fe; }
+        .card-antrean.bayar-tunai { border-left-color: #f093fb; }
+        .card-antrean:hover { background: rgba(255, 255, 255, 0.08); }
         
         .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px !important; }
     </style>
@@ -31,7 +32,7 @@
 
 <nav class="navbar navbar-dark neon-nav sticky-top mb-4">
     <div class="container">
-        <span class="navbar-brand text-neon"><i class="bi bi-check2-square"></i> Validasi Keuangan</span>
+        <span class="navbar-brand text-neon"><i class="bi bi-check2-square"></i> Validasi & Terima Tunai</span>
         <button class="btn btn-sm btn-outline-light" onclick="kembaliKeDasbor()">
             <i class="bi bi-arrow-left"></i> Kembali
         </button>
@@ -122,31 +123,59 @@
             document.getElementById('listAntrean').style.display = 'block';
 
             if (result.status === 'success') {
-                // Filter hanya yang statusnya "Pending" atau belum Lunas
-                const dataPending = result.data.filter(item => item.status !== 'Lunas');
-                
-                if (dataPending.length === 0) {
+                if (result.data.length === 0) {
                     wadah.innerHTML = `
                         <div class="text-center py-5 glass-card">
                             <i class="bi bi-emoji-smile fs-1 text-white-50"></i>
-                            <h6 class="mt-3 text-white-50">Hore! Tidak ada antrean validasi saat ini.</h6>
+                            <h6 class="mt-3 text-white-50">Hore! Seluruh sekolah sudah Lunas.</h6>
                         </div>`;
                     return;
                 }
 
-                dataPending.forEach(item => {
-                    let badgeInfo = item.link_bukti ? 
-                        `<span class="badge bg-primary bg-opacity-25 text-primary border border-primary small"><i class="bi bi-cloud-check"></i> Bukti Transfer Ada</span>` : 
-                        `<span class="badge bg-warning bg-opacity-25 text-warning border border-warning small"><i class="bi bi-cash"></i> Bayar Tunai</span>`;
+                result.data.forEach(item => {
+                    let badgeInfo = '';
+                    let btnAksi = '';
+                    let classBorder = '';
 
-                    let btnCekBukti = item.link_bukti ? 
-                        `<button class="btn btn-sm btn-outline-info w-100 mb-2" onclick="window.open('${item.link_bukti}', '_blank')"><i class="bi bi-eye"></i> Cek Bukti Transfer</button>` : '';
+                    // JIKA STATUS PENDING (Sudah Upload Bukti Transfer)
+                    if (item.status === 'Pending') {
+                        classBorder = ''; // default kuning
+                        badgeInfo = `<span class="badge bg-primary bg-opacity-25 text-primary border border-primary small"><i class="bi bi-cloud-check"></i> Bukti Transfer Ada</span>`;
+                        let btnCekBukti = item.link_bukti ? `<button class="btn btn-sm btn-outline-info w-100 mb-2" onclick="window.open('${item.link_bukti}', '_blank')"><i class="bi bi-eye"></i> Cek Bukti Transfer</button>` : '';
+
+                        btnAksi = `
+                            <div class="col-12">${btnCekBukti}</div>
+                            <div class="col-6">
+                                <button class="btn btn-sm btn-success w-100 fw-bold" onclick="eksekusiValidasi('${item.id_trx}', '${item.npsn}', 'Transfer', '${item.nama}')">
+                                    <i class="bi bi-check-circle"></i> Sahkan Transfer
+                                </button>
+                            </div>
+                            <div class="col-6">
+                                <button class="btn btn-sm btn-outline-warning w-100 fw-bold" onclick="eksekusiValidasi('${item.id_trx}', '${item.npsn}', 'Tunai', '${item.nama}')">
+                                    Beralih Tunai
+                                </button>
+                            </div>
+                        `;
+                    } 
+                    // JIKA BELUM BAYAR (Sekolah yang belum melakukan aksi apa-apa)
+                    else {
+                        classBorder = 'bayar-tunai'; // warna ungu
+                        badgeInfo = `<span class="badge bg-secondary bg-opacity-25 text-white-50 border border-secondary small"><i class="bi bi-clock"></i> Belum Mendaftar / Belum Bayar</span>`;
+                        
+                        btnAksi = `
+                            <div class="col-12">
+                                <button class="btn btn-sm w-100 fw-bold text-dark" style="background: linear-gradient(45deg, #f093fb, #f5576c); border: none;" onclick="eksekusiValidasi('', '${item.npsn}', 'Tunai', '${item.nama}')">
+                                    <i class="bi bi-cash-coin me-1"></i> Input Pembayaran Tunai (Rp 2.240.000)
+                                </button>
+                            </div>
+                        `;
+                    }
 
                     wadah.innerHTML += `
-                        <div class="card-antrean p-3">
+                        <div class="card-antrean p-3 ${classBorder}">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <div>
-                                    <h6 class="fw-bold mb-1 text-warning">${item.nama}</h6>
+                                    <h6 class="fw-bold mb-1 ${item.status === 'Pending' ? 'text-warning' : 'text-white'}">${item.nama}</h6>
                                     <div class="small text-white-50">NPSN: ${item.npsn} | Subrayon: ${item.subrayon}</div>
                                 </div>
                                 <div class="text-end">
@@ -156,17 +185,7 @@
                             </div>
                             <hr class="border-secondary opacity-25 my-2">
                             <div class="row g-2 mt-1">
-                                <div class="col-12">${btnCekBukti}</div>
-                                <div class="col-6">
-                                    <button class="btn btn-sm btn-success w-100 fw-bold" onclick="eksekusiValidasi('${item.id_trx}', 'Transfer', '${item.nama}')">
-                                        <i class="bi bi-check-circle"></i> Sahkan Transfer
-                                    </button>
-                                </div>
-                                <div class="col-6">
-                                    <button class="btn btn-sm btn-warning w-100 fw-bold text-dark" onclick="eksekusiValidasi('${item.id_trx}', 'Tunai', '${item.nama}')">
-                                        <i class="bi bi-cash-coin"></i> Terima Tunai
-                                    </button>
-                                </div>
+                                ${btnAksi}
                             </div>
                         </div>
                     `;
@@ -182,13 +201,17 @@
     }
 
     // Fungsi Eksekusi Validasi ke Database
-    function eksekusiValidasi(idTrx, metodeBayar, namaSekolah) {
+    function eksekusiValidasi(idTrx, npsnSekolah, metodeBayar, namaSekolah) {
+        let pesanAlert = metodeBayar === 'Tunai' ? 
+            `Anda menerima uang Tunai dari ${namaSekolah}. Lanjutkan?` : 
+            `Anda mensahkan bukti Transfer dari ${namaSekolah}. Lanjutkan?`;
+
         Swal.fire({
-            title: 'Konfirmasi Validasi',
-            text: `Anda akan mensahkan pembayaran ${metodeBayar} untuk ${namaSekolah}. Lanjutkan?`,
+            title: 'Konfirmasi Pembayaran',
+            text: pesanAlert,
             icon: 'question',
             showCancelButton: true,
-            confirmButtonText: 'Ya, Sahkan!',
+            confirmButtonText: 'Ya, Sahkan & Terbitkan Kwitansi!',
             cancelButtonText: 'Batal',
             customClass: { popup: 'swal-dark' },
             background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
@@ -203,6 +226,7 @@
                         body: JSON.stringify({ 
                             action: 'eksekusi_validasi', 
                             id_trx: idTrx, 
+                            npsn: npsnSekolah,
                             metode: metodeBayar,
                             nama_validator: userData.nama_pic 
                         })
@@ -221,7 +245,6 @@
         });
     }
 
-    // Jalankan saat halaman pertama kali dibuka
     muatAntrean();
 </script>
 
