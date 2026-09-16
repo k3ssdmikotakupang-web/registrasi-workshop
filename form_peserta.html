@@ -23,60 +23,136 @@
 <div class="container mt-4">
     <button class="btn btn-outline-secondary mb-3" onclick="window.location.href='dashboard.html'"><i class="bi bi-arrow-left"></i> Kembali ke Dasbor</button>
     
-    <div class="glass-card p-4 mx-auto" style="max-width: 600px;">
+    <div class="glass-card p-4 mx-auto" style="max-width: 800px;">
         <h4 class="text-neon text-center mb-1">DATA PESERTA WORKSHOP</h4>
         <p class="text-center text-white-50 small mb-4">SD/MI: <span id="namaSekolahLabel" class="fw-bold text-info">Memuat...</span></p>
 
         <form id="formPeserta">
+            
             <!-- PESERTA 1 -->
             <div class="p-3 mb-4 rounded" style="background: rgba(0,0,0,0.2); border-left: 3px solid #00f2fe;">
-                <h6 class="text-info"><i class="bi bi-person-badge"></i> Peserta 1 (Unsur Pimpinan)</h6>
-                <div class="mb-2">
-                    <label class="form-label small">Nama Lengkap & Gelar</label>
-                    <input type="text" id="nama1" class="form-control form-control-sm" required>
-                </div>
-                <div class="mb-2">
-                    <label class="form-label small">Jabatan</label>
-                    <select id="jabatan1" class="form-select form-select-sm" onchange="cekJabatan()" required>
-                        <option value="Kepala Sekolah">Kepala Sekolah</option>
-                        <option value="Guru (Mewakili Kepsek)">Guru (Mewakili Kepsek)</option>
-                    </select>
-                </div>
+                <h5 class="text-info mb-3"><i class="bi bi-person-badge"></i> Peserta 1 (Unsur Pimpinan)</h5>
                 
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label small">Nama Lengkap & Gelar</label>
+                        <input type="text" id="nama1" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Jabatan</label>
+                        <select id="jabatan1" class="form-select form-select-sm" onchange="cekJabatan()" required>
+                            <option value="Kepala Sekolah">Kepala Sekolah</option>
+                            <option value="Guru (Mewakili Kepsek)">Guru (Mewakili Kepsek)</option>
+                        </select>
+                    </div>
+                </div>
+
                 <!-- Surat Tugas (Muncul jika wakil) -->
                 <div class="mb-2" id="boxSuratTugas" style="display: none;">
                     <label class="form-label small text-warning">Upload Surat Tugas Kepsek (PDF/JPG, Max 2MB)</label>
                     <input type="file" id="fileSurat" class="form-control form-control-sm" accept=".pdf, .jpg, .jpeg, .png">
                 </div>
+
+                <!-- Kelengkapan Data Dinas P1 -->
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><label class="form-label small">Tempat Lahir</label><input type="text" id="tempatLahir1" class="form-control form-control-sm" required></div>
+                    <div class="col-md-6"><label class="form-label small">Tanggal Lahir</label><input type="date" id="tglLahir1" class="form-control form-control-sm" required></div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label small">Jenis Kelamin</label>
+                        <select id="jk1" class="form-select form-select-sm" required>
+                            <option value="" disabled selected>Pilih...</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6"><label class="form-label small">NIP (Isi '-' jika Non-PNS)</label><input type="text" id="nip1" class="form-control form-control-sm" required></div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><label class="form-label small">Pangkat / Golongan</label><input type="text" id="pangkat1" class="form-control form-control-sm" placeholder="Isi '-' jika tidak ada" required></div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Status Jabatan</label>
+                        <select id="statusJab1" class="form-select form-select-sm" required>
+                            <option value="" disabled selected>Pilih...</option><option value="Definitif">Definitif</option><option value="PLT">PLT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><label class="form-label small">No. WhatsApp Aktif</label><input type="number" id="wa1" class="form-control form-control-sm" required></div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Pendidikan Terakhir</label>
+                        <select id="pend1" class="form-select form-select-sm" required>
+                            <option value="" disabled selected>Pilih...</option><option value="D3">D3</option><option value="S1/D4">S1 / D4</option><option value="S2">S2</option><option value="S3">S3</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <!-- PESERTA 2 -->
             <div class="p-3 mb-4 rounded" style="background: rgba(0,0,0,0.2); border-left: 3px solid #f093fb;">
-                <h6 style="color: #f093fb;"><i class="bi bi-person"></i> Peserta 2 (Unsur Guru)</h6>
-                <div class="mb-2">
-                    <label class="form-label small">Nama Lengkap & Gelar</label>
-                    <input type="text" id="nama2" class="form-control form-control-sm" required>
+                <h5 style="color: #f093fb;" class="mb-3"><i class="bi bi-person"></i> Peserta 2 (Unsur Guru)</h5>
+                
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label small">Nama Lengkap & Gelar</label>
+                        <input type="text" id="nama2" class="form-control form-control-sm" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Jabatan</label>
+                        <input type="text" id="jabatan2" class="form-control form-control-sm" value="Guru" readonly>
+                    </div>
                 </div>
-                <div class="mb-2">
-                    <label class="form-label small">Jabatan</label>
-                    <input type="text" id="jabatan2" class="form-control form-control-sm" value="Guru" readonly>
+
+                <!-- Kelengkapan Data Dinas P2 -->
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><label class="form-label small">Tempat Lahir</label><input type="text" id="tempatLahir2" class="form-control form-control-sm" required></div>
+                    <div class="col-md-6"><label class="form-label small">Tanggal Lahir</label><input type="date" id="tglLahir2" class="form-control form-control-sm" required></div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6">
+                        <label class="form-label small">Jenis Kelamin</label>
+                        <select id="jk2" class="form-select form-select-sm" required>
+                            <option value="" disabled selected>Pilih...</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6"><label class="form-label small">NIP (Isi '-' jika Non-PNS)</label><input type="text" id="nip2" class="form-control form-control-sm" required></div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><label class="form-label small">Pangkat / Golongan</label><input type="text" id="pangkat2" class="form-control form-control-sm" placeholder="Isi '-' jika tidak ada" required></div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Status Jabatan</label>
+                        <select id="statusJab2" class="form-select form-select-sm" required>
+                            <option value="Guru" selected>Guru</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><label class="form-label small">No. WhatsApp Aktif</label><input type="number" id="wa2" class="form-control form-control-sm" required></div>
+                    <div class="col-md-6">
+                        <label class="form-label small">Pendidikan Terakhir</label>
+                        <select id="pend2" class="form-select form-select-sm" required>
+                            <option value="" disabled selected>Pilih...</option><option value="D3">D3</option><option value="S1/D4">S1 / D4</option><option value="S2">S2</option><option value="S3">S3</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
-            <button type="button" id="btnSimpan" class="btn btn-neon w-100 py-2" onclick="prosesSimpan()">Simpan & Generate QR Code</button>
+            <button type="button" id="btnSimpan" class="btn btn-neon w-100 py-3 mb-4" onclick="prosesSimpan()">
+                <i class="bi bi-floppy-fill me-2"></i> Simpan Data & Terbitkan ID Card
+            </button>
         </form>
     </div>
 </div>
 
 <script>
+    // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if(!userData) window.location.href = "index.html";
     
     document.getElementById('namaSekolahLabel').innerText = userData.nama_pic;
     const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
 
-    // Fungsi menampilkan form Surat Tugas jika memilih Guru (Mewakili Kepsek)
     function cekJabatan() {
         const jab = document.getElementById('jabatan1').value;
         const box = document.getElementById('boxSuratTugas');
@@ -88,7 +164,6 @@
         }
     }
 
-    // Fungsi konversi file ke Base64 (Promise)
     function getBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -98,49 +173,74 @@
         });
     }
 
-    async function prosesSimpan() {
-        const nama1 = document.getElementById('nama1').value;
-        const jabatan1 = document.getElementById('jabatan1').value;
-        const nama2 = document.getElementById('nama2').value;
-        const jabatan2 = document.getElementById('jabatan2').value;
-        const fileInput = document.getElementById('fileSurat');
+    // Fungsi Validasi Form Sederhana
+    function validasiForm() {
+        const formIds = [
+            'nama1', 'tempatLahir1', 'tglLahir1', 'jk1', 'nip1', 'pangkat1', 'statusJab1', 'wa1', 'pend1',
+            'nama2', 'tempatLahir2', 'tglLahir2', 'jk2', 'nip2', 'pangkat2', 'statusJab2', 'wa2', 'pend2'
+        ];
+        for (let id of formIds) {
+            if (!document.getElementById(id).value) return false;
+        }
+        return true;
+    }
 
-        if(!nama1 || !nama2) {
-            Toast.fire({ icon: 'warning', title: 'Data belum lengkap!' });
+    async function prosesSimpan() {
+        if (!validasiForm()) {
+            Toast.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Mohon isi seluruh form untuk kedua peserta.' });
             return;
         }
 
-        let base64Data1 = null;
-        let mimeType1 = null;
-        let fileName1 = null;
+        const jabatan1 = document.getElementById('jabatan1').value;
+        const fileInput = document.getElementById('fileSurat');
+        let base64Data1 = null; let mimeType1 = null; let fileName1 = null;
 
-        // Cek jika Surat Tugas wajib diisi
         if(jabatan1 === 'Guru (Mewakili Kepsek)') {
             if(fileInput.files.length === 0) {
-                Toast.fire({ icon: 'warning', title: 'Surat Tugas wajib diupload!' });
-                return;
+                Toast.fire({ icon: 'warning', title: 'Perhatian', text: 'Surat Tugas wajib diupload!' }); return;
             }
             if(fileInput.files[0].size > 2 * 1024 * 1024) {
-                Toast.fire({ icon: 'warning', title: 'Ukuran file maksimal 2MB!' });
-                return;
+                Toast.fire({ icon: 'warning', title: 'Ukuran file maksimal 2MB!' }); return;
             }
-            // Konversi file
             base64Data1 = await getBase64(fileInput.files[0]);
             mimeType1 = fileInput.files[0].type;
             fileName1 = `ST_${userData.username}_${fileInput.files[0].name}`;
         }
 
         const btnSimpan = document.getElementById('btnSimpan');
-        btnSimpan.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Memproses Data & File...';
+        btnSimpan.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan ke Database Dinas...';
         btnSimpan.disabled = true;
 
-        // Susun payload
         const payload = {
             action: 'simpan_peserta',
             npsn: userData.username,
             peserta: [
-                { nama: nama1, jabatan: jabatan1, base64Data: base64Data1, mimeType: mimeType1, fileName: fileName1 },
-                { nama: nama2, jabatan: jabatan2, base64Data: null, mimeType: null, fileName: null }
+                {
+                    nama: document.getElementById('nama1').value, 
+                    jabatan: jabatan1, 
+                    tempat_lahir: document.getElementById('tempatLahir1').value,
+                    tanggal_lahir: document.getElementById('tglLahir1').value,
+                    jenis_kelamin: document.getElementById('jk1').value,
+                    nip: document.getElementById('nip1').value,
+                    pangkat_gol: document.getElementById('pangkat1').value,
+                    status_jab: document.getElementById('statusJab1').value,
+                    no_wa: document.getElementById('wa1').value,
+                    pendidikan: document.getElementById('pend1').value,
+                    base64Data: base64Data1, mimeType: mimeType1, fileName: fileName1 
+                },
+                {
+                    nama: document.getElementById('nama2').value, 
+                    jabatan: document.getElementById('jabatan2').value,
+                    tempat_lahir: document.getElementById('tempatLahir2').value,
+                    tanggal_lahir: document.getElementById('tglLahir2').value,
+                    jenis_kelamin: document.getElementById('jk2').value,
+                    nip: document.getElementById('nip2').value,
+                    pangkat_gol: document.getElementById('pangkat2').value,
+                    status_jab: document.getElementById('statusJab2').value,
+                    no_wa: document.getElementById('wa2').value,
+                    pendidikan: document.getElementById('pend2').value,
+                    base64Data: null, mimeType: null, fileName: null 
+                }
             ]
         };
 
@@ -154,23 +254,20 @@
 
             if(result.status === 'success') {
                 Swal.fire({
-                    icon: 'success', title: 'Berhasil!', text: 'Data peserta telah tersimpan.',
+                    icon: 'success', title: 'Berhasil!', text: 'Data administrasi dinas telah tersimpan utuh.',
                     customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
-                }).then(() => {
-                    window.location.href = 'dashboard.html';
-                });
+                }).then(() => { window.location.href = 'dashboard.html'; });
             } else {
                 Toast.fire({ icon: 'error', title: 'Gagal', text: result.message });
             }
         } catch (error) {
-            Toast.fire({ icon: 'error', title: 'Error Koneksi', text: 'Server tidak merespons.' });
+            Toast.fire({ icon: 'error', title: 'Jaringan Padat', text: 'Server sedang sibuk, silakan coba lagi.' });
         } finally {
-            btnSimpan.innerHTML = 'Simpan & Generate QR Code';
+            btnSimpan.innerHTML = '<i class="bi bi-floppy-fill me-2"></i> Simpan Data & Terbitkan ID Card';
             btnSimpan.disabled = false;
         }
     }
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
