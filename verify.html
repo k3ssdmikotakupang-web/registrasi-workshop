@@ -5,50 +5,149 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>E-Kwitansi Resmi Panitia - EMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
-        body { background-color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; color: #000; }
-        
-        .kwitansi-box { 
-            background: #fff; border: 2px solid #000; 
-            width: 21cm; min-height: 10.5cm; height: auto;
-            margin: 20px auto; padding: 15px 25px; 
-            position: relative; overflow: hidden; 
-            color: #000; box-sizing: border-box; 
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Courier+Prime:wght@700&display=swap');
+
+        body { 
+            background-color: #0f172a; 
+            color: #ffffff; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            padding: 40px 0;
+            min-height: 100vh;
         }
-        
-        /* WATERMARK SVG MENYEBAR RATA */
+
+        /* KOTAK UTAMA KWITANSI (Glassmorphism Profesional) */
+        .kwitansi-box { 
+            background: rgba(30, 41, 59, 0.75); 
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 254, 0.3); 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 40px; 
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            position: relative; 
+            overflow: hidden; 
+        }
+
+        /* Garis Neon Hiasan di Atas Kartu */
+        .kwitansi-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 5px;
+            background: linear-gradient(90deg, #00f2fe, #4facfe, #f093fb);
+        }
+
+        /* WATERMARK ELEGAN DI BELAKANG */
         .watermark-bg {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='350' height='150' opacity='0.05'%3E%3Ctext x='50%25' y='50%25' transform='rotate(-25 175 75)' text-anchor='middle' font-family='Arial, sans-serif' font-size='22' font-weight='bold' fill='%23000'%3EK3S SD/MI KOTA KUPANG%3C/text%3E%3C/svg%3E");
-            background-repeat: repeat;
-            background-position: center;
-            z-index: 0;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%) rotate(-25deg);
+            font-size: 4rem;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.02);
+            white-space: nowrap;
             pointer-events: none;
+            z-index: 0;
+            letter-spacing: 5px;
+        }
+
+        .k-header { 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+            padding-bottom: 20px; 
+            margin-bottom: 30px; 
+            position: relative; 
+            z-index: 1; 
         }
         
-        .k-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; position: relative; z-index: 1; }
-        .k-title { font-weight: 800; font-size: 1.2rem; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 2px; }
-        .k-subtitle { font-size: 0.75rem; font-weight: 700; }
-        .k-no { display: inline-block; padding: 2px 10px; border: 1px solid #000; font-family: monospace; font-size: 0.8rem; margin-top: 5px; font-weight: bold; background: #fff; }
+        .k-title { 
+            font-weight: 800; 
+            font-size: 1.6rem; 
+            letter-spacing: 1px; 
+            background: linear-gradient(to right, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase; 
+            margin-bottom: 5px; 
+        }
         
-        .k-body { position: relative; z-index: 1; font-size: 0.8rem; line-height: 1.4; }
-        .k-row { display: flex; margin-bottom: 4px; }
-        .k-label { width: 30%; font-weight: 600; color: #000; }
-        .k-value { width: 70%; font-weight: 700; border-bottom: 1px dotted #000; padding-bottom: 1px; }
-        .k-nominal-box { border: 2px solid #000; padding: 4px 15px; font-size: 1.1rem; font-weight: 800; display: inline-block; margin: 8px 0; background: #f8f9fa; }
+        .k-subtitle { font-size: 0.85rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
-        .k-footer { display: flex; justify-content: space-between; align-items: end; margin-top: 5px; position: relative; z-index: 1; }
-        .k-qr-box { padding: 3px; border: 1px solid #000; display: inline-block; background: #fff; }
+        .k-no { 
+            display: inline-block; 
+            padding: 6px 15px; 
+            border: 1px solid rgba(0, 242, 254, 0.4); 
+            font-family: 'Courier Prime', monospace; 
+            font-size: 0.85rem; 
+            font-weight: bold; 
+            background: rgba(0, 242, 254, 0.05);
+            color: #00f2fe;
+            border-radius: 8px;
+        }
         
-        .k-ttd-container { width: 35%; text-align: center; font-size: 0.8rem; margin-left: auto; }
-        .k-sign-box { margin-top: 45px; }
-        .k-sign-name { font-weight: 800; border-bottom: 1px solid #000; padding-bottom: 2px; display: inline-block; width: 100%; }
-        .k-sign-nip { font-size: 0.75rem; margin-top: 2px; }
+        .k-body { position: relative; z-index: 1; font-size: 0.95rem; line-height: 1.6; }
         
-        .btn-print { background: #000; color: #fff; font-weight: 700; padding: 10px 25px; display: block; width: fit-content; margin: 0 auto; border-radius: 5px; border: none; cursor: pointer; }
-        .btn-print:hover { background: #333; }
+        .k-row { display: flex; margin-bottom: 15px; align-items: baseline; }
+        .k-label { width: 32%; font-weight: 600; color: #94a3b8; }
+        .k-value { width: 68%; font-weight: 700; color: #f8fafc; border-bottom: 1px dashed rgba(255, 255, 255, 0.15); padding-bottom: 4px; }
+        
+        /* KOTAK NOMINAL MENGGELEAR WOOOW */
+        .k-nominal-box { 
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(79, 172, 254, 0.05));
+            border: 1px solid rgba(0, 242, 254, 0.4); 
+            padding: 15px 25px; 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            color: #00f2fe;
+            border-radius: 12px;
+            display: inline-block; 
+            margin: 10px 0; 
+            box-shadow: 0 5px 20px rgba(0, 242, 254, 0.1);
+        }
+        
+        .k-footer { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 30px; position: relative; z-index: 1; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 20px; }
+        .k-qr-box { padding: 8px; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 10px; background: #ffffff; display: inline-block; }
+        
+        .k-ttd-container { width: 45%; text-align: center; font-size: 0.9rem; }
+        .k-sign-box { margin-top: 50px; }
+        .k-sign-name { font-weight: 800; font-size: 1.05Nrem; border-bottom: 2px solid #ffffff; padding-bottom: 2px; display: inline-block; width: 100%; color: #f8fafc; }
+        .k-sign-nip { font-size: 0.8rem; color: #94a3b8; margin-top: 4px; }
+        
+        .badge-status {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            color: #4ade80;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-action { 
+            background: linear-gradient(45deg, #00f2fe, #4facfe); 
+            color: #0f172a; 
+            font-weight: 800; 
+            padding: 12px 30px; 
+            border-radius: 30px; 
+            border: none;
+            cursor: pointer; 
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 5px 20px rgba(0, 242, 254, 0.3);
+        }
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 242, 254, 0.5);
+        }
+
+        @media print {
+            body { background: #0f172a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .btn-print-area { display: none !important; }
+            .kwitansi-box { border: 2px solid #00f2fe; box-shadow: none; }
+        }
     </style>
 </head>
 <body>
@@ -56,49 +155,69 @@
 <div class="container py-4">
     <!-- Area Loading -->
     <div id="box-loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status"></div>
-        <h5 class="mt-3 text-secondary">Memverifikasi E-Kwitansi Resmi Panitia...</h5>
+        <div class="spinner-border text-info" role="status" style="width: 3rem; height: 3rem;"></div>
+        <h5 class="mt-3 text-white-50">Memverifikasi E-Kwitansi Resmi Panitia...</h5>
     </div>
 
     <!-- Area Dokumen Valid -->
     <div id="box-valid" class="d-none">
+        
         <div class="kwitansi-box" id="kwitansi-capture">
-            <!-- Elemen Watermark -->
-            <div class="watermark-bg"></div>
+            <div class="watermark-bg">K3S KOTA KUPANG</div>
 
-            <div class="k-header">
-                <div class="k-title">E-Kwitansi Resmi Pembayaran</div>
-                <div class="k-subtitle">K3S SD/MI Kota Kupang</div>
-                <div class="k-no">NO: <span id="v-no"></span></div>
+            <div class="k-header d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="k-title"><i class="bi bi-patch-check-fill me-1"></i> E-Kwitansi Resmi</div>
+                    <div class="k-subtitle">Panitia Pelaksana Workshop Manajemen SD/MI Kota Kupang</div>
+                </div>
+                <div class="text-end">
+                    <div class="badge-status mb-2"><i class="bi bi-shield-check-fill"></i> LUNAS & SAH</div>
+                    <div><span class="k-no" id="v-no">TRX-...</span></div>
+                </div>
             </div>
             
             <div class="k-body">
-                <div class="k-row"><div class="k-label">Telah Terima Dari</div><div class="k-value" id="v-pembayar"></div></div>
-                <div class="k-row"><div class="k-label">Asal Sekolah</div><div class="k-value"><span id="v-sekolah"></span> (NPSN: <span id="v-npsn"></span>)</div></div>
-                <div class="k-row"><div class="k-label">Metode Pembayaran</div><div class="k-value" id="v-metode"></div></div>
-                <div class="k-row"><div class="k-label">Waktu Transaksi</div><div class="k-value" id="v-tgl"></div></div>
-                <div class="k-row"><div class="k-label">Tujuan Pembayaran</div><div class="k-value" style="border: none;">Kontribusi Workshop Manajemen Kepala SD/MI Kota Kupang 2026</div></div>
+                <div class="k-row"><div class="k-label">Telah Terima Dari</div><div class="k-value" id="v-pembayar">...</div></div>
+                <div class="k-row"><div class="k-label">Asal Sekolah</div><div class="k-value"><span id="v-sekolah">...</span> <span class="text-info fw-normal">(NPSN: <span id="v-npsn">...</span>)</span></div></div>
+                <div class="k-row"><div class="k-label">Metode Pembayaran</div><div class="k-value" id="v-metode">...</div></div>
+                <div class="k-row"><div class="k-label">Waktu Transaksi</div><div class="k-value text-warning" id="v-tgl">...</div></div>
+                <div class="k-row"><div class="k-label">Tujuan Pembayaran</div><div class="k-value" style="border: none;">Kontribusi Keikutsertaan Workshop Manajemen Kepala SD/MI Kota Kupang Tahun 2026</div></div>
                 
-                <div class="k-nominal-box" id="v-nominal"></div>
+                <div class="mt-3 text-center">
+                    <div class="small text-muted text-uppercase fw-bold mb-1">Jumlah Kontribusi Diterima:</div>
+                    <div class="k-nominal-box" id="v-nominal">Rp 0</div>
+                </div>
             </div>
             
             <div class="k-footer">
-                <div class="k-qr-box"><img id="v-qr" src="" width="70" height="70"></div>
+                <div class="d-flex align-items-center gap-3">
+                    <div class="k-qr-box"><img id="v-qr" src="" width="75" height="75"></div>
+                    <div class="text-white-50" style="font-size: 0.75rem; max-width: 200px;">
+                        <i class="bi bi-info-circle text-info"></i> Scan QR untuk verifikasi keaslian dokumen keuangan panitia.
+                    </div>
+                </div>
                 
                 <div class="k-ttd-container">
-                    <div>Kupang, <span id="v-tgl-pendek"></span></div>
-                    <div class="fw-bold">Bendahara Panitia</div>
+                    <div class="text-white-50">Kupang, <span id="v-tgl-pendek">...</span></div>
+                    <div class="fw-bold text-info mb-1">Bendahara Panitia,</div>
                     <div class="k-sign-box">
-                        <div class="k-sign-name" id="nama-bendahara">Memuat...</div>
+                        <div class="k-sign-name text-uppercase" id="nama-bendahara">Memuat...</div>
                         <div class="k-sign-nip">NIP. <span id="nip-bendahara">-</span></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <button class="btn btn-print mb-5 shadow" onclick="downloadSebagaiGambar()">
-            UNDUH KWITANSI DIGITAL
-        </button>
+        <!-- Tombol Aksi Cetak & Unduh -->
+        <div class="text-center mt-4 btn-print-area d-flex justify-content-center gap-3">
+            <button class="btn-action shadow" onclick="window.print()">
+                <i class="bi bi-printer-fill me-2"></i> Cetak Dokumen PDF
+            </button>
+            <button class="btn btn-outline-info fw-bold px-4 rounded-pill py-2" onclick="downloadSebagaiGambar()">
+                <i class="bi bi-image me-2"></i> Unduh Sebagai Gambar
+            </button>
+        </div>
+
     </div>
 </div>
 
@@ -106,7 +225,7 @@
     // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
-    // Penangkap Multi-Parameter (Mendukung kw, trx, atau id)
+    // Penangkap Multi-Parameter (Aman dari error parameter)
     const urlParams = new URLSearchParams(window.location.search);
     const kw = urlParams.get('kw') || urlParams.get('trx') || urlParams.get('id');
 
@@ -137,7 +256,7 @@
                     document.getElementById('v-tgl-pendek').innerText = res.receipt.tglBayar.split(' ')[0];
                 }
                 
-                let isiQR = "No. TRX: " + res.receipt.noKwitansi + " | Pembayar: " + res.receipt.namaSekolah + " | Total: Rp " + Number(res.receipt.nominal).toLocaleString('id-ID') + " | Waktu: " + document.getElementById('v-tgl-pendek').innerText;
+                let isiQR = "RESMI PANITIA - No. TRX: " + res.receipt.noKwitansi + " | Pembayar: " + res.receipt.namaSekolah + " | Total: Rp " + Number(res.receipt.nominal).toLocaleString('id-ID');
                 document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
                 
                 fetchPejabat();
@@ -149,6 +268,7 @@
             document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Gagal Menghubungi Server.</h4>';
         });
     } else {
+        document.getElementById('box-loading').classList.remove('d-none');
         document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Parameter URL Tidak Valid.</h4>';
     }
 
@@ -174,8 +294,8 @@
         const box = document.getElementById('kwitansi-capture');
         html2canvas(box, { scale: 2 }).then(canvas => {
             let link = document.createElement('a');
-            link.download = document.getElementById('v-no').innerText + '.jpg';
-            link.href = canvas.toDataURL('image/jpeg', 0.9);
+            link.download = document.getElementById('v-no').innerText + '_Kwitansi_Resmi.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
             link.click();
         });
     }
