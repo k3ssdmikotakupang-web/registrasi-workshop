@@ -35,49 +35,67 @@
                 
                 <div class="row g-2 mb-2">
                     <div class="col-md-6">
-                        <label class="form-label small">Nama Lengkap & Gelar</label>
+                        <label class="form-label small">Nama Kepsek / Pimpinan (Wajib)</label>
                         <input type="text" id="nama1" class="form-control form-control-sm" required>
                     </div>
                     <div class="col-md-6">
-                        <label class="form-label small">Jabatan</label>
+                        <label class="form-label small">Kehadiran Pimpinan</label>
                         <select id="jabatan1" class="form-select form-select-sm" onchange="cekJabatan()" required>
-                            <option value="Kepala Sekolah">Kepala Sekolah</option>
-                            <option value="Guru (Mewakili Kepsek)">Guru (Mewakili Kepsek)</option>
+                            <option value="Kepala Sekolah">Hadir Sendiri (Kepala Sekolah)</option>
+                            <option value="Guru (Mewakili Kepsek)">Berhalangan (Diwakili Guru)</option>
                         </select>
                     </div>
                 </div>
 
-                <div class="mb-2" id="boxSuratTugas" style="display: none;">
-                    <label class="form-label small text-warning">Upload Surat Tugas Kepsek (PDF/JPG, Max 2MB)</label>
-                    <input type="file" id="fileSurat" class="form-control form-control-sm" accept=".pdf, .jpg, .jpeg, .png">
+                <!-- BLOK WAKIL & SURAT TUGAS (Disembunyikan secara default) -->
+                <div id="boxWakil" class="p-3 mb-3 mt-3 rounded" style="display: none; background: rgba(255, 193, 7, 0.1); border: 1px dashed #ffc107;">
+                    <h6 class="text-warning small fw-bold mb-2"><i class="bi bi-person-bounding-box"></i> Data Guru Yang Mewakili (Hadir di Lokasi)</h6>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-12">
+                            <label class="form-label small text-white-50">Nama Lengkap Wakil & Gelar</label>
+                            <input type="text" id="namaWakil" class="form-control form-control-sm bg-dark text-white">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-white-50">NIP Wakil (Isi '-' jika Non-PNS)</label>
+                            <input type="text" id="nipWakil" class="form-control form-control-sm bg-dark text-white">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small text-white-50">No. WhatsApp Wakil</label>
+                            <input type="number" id="waWakil" class="form-control form-control-sm bg-dark text-white">
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="form-label small text-warning fw-bold"><i class="bi bi-file-earmark-arrow-up"></i> Upload Surat Tugas Kepsek (PDF/JPG, Max 2MB)</label>
+                        <input type="file" id="fileSurat" class="form-control form-control-sm bg-dark text-white border-warning" accept=".pdf, .jpg, .jpeg, .png">
+                    </div>
                 </div>
 
                 <div class="row g-2 mb-2">
-                    <div class="col-md-6"><label class="form-label small">Tempat Lahir</label><input type="text" id="tempatLahir1" class="form-control form-control-sm" required></div>
-                    <div class="col-md-6"><label class="form-label small">Tanggal Lahir</label><input type="date" id="tglLahir1" class="form-control form-control-sm" required></div>
+                    <div class="col-md-6"><label class="form-label small">Tempat Lahir (Kepsek)</label><input type="text" id="tempatLahir1" class="form-control form-control-sm" required></div>
+                    <div class="col-md-6"><label class="form-label small">Tanggal Lahir (Kepsek)</label><input type="date" id="tglLahir1" class="form-control form-control-sm" required></div>
                 </div>
                 <div class="row g-2 mb-2">
                     <div class="col-md-6">
-                        <label class="form-label small">Jenis Kelamin</label>
+                        <label class="form-label small">Jenis Kelamin (Kepsek)</label>
                         <select id="jk1" class="form-select form-select-sm" required>
                             <option value="" disabled selected>Pilih...</option><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option>
                         </select>
                     </div>
-                    <div class="col-md-6"><label class="form-label small">NIP (Isi '-' jika Non-PNS)</label><input type="text" id="nip1" class="form-control form-control-sm" required></div>
+                    <div class="col-md-6"><label class="form-label small">NIP Kepsek (Isi '-' jika Non-PNS)</label><input type="text" id="nip1" class="form-control form-control-sm" required></div>
                 </div>
                 <div class="row g-2 mb-2">
-                    <div class="col-md-6"><label class="form-label small">Pangkat / Golongan</label><input type="text" id="pangkat1" class="form-control form-control-sm" placeholder="Isi '-' jika tidak ada" required></div>
+                    <div class="col-md-6"><label class="form-label small">Pangkat / Golongan Kepsek</label><input type="text" id="pangkat1" class="form-control form-control-sm" placeholder="Isi '-' jika tidak ada" required></div>
                     <div class="col-md-6">
-                        <label class="form-label small">Status Jabatan</label>
+                        <label class="form-label small">Status Jabatan Kepsek</label>
                         <select id="statusJab1" class="form-select form-select-sm" required>
                             <option value="" disabled selected>Pilih...</option><option value="Definitif">Definitif</option><option value="PLT">PLT</option>
                         </select>
                     </div>
                 </div>
                 <div class="row g-2 mb-2">
-                    <div class="col-md-6"><label class="form-label small">No. WhatsApp Aktif</label><input type="number" id="wa1" class="form-control form-control-sm" required></div>
+                    <div class="col-md-6"><label class="form-label small">No. WhatsApp Kepsek</label><input type="number" id="wa1" class="form-control form-control-sm" required></div>
                     <div class="col-md-6">
-                        <label class="form-label small">Pendidikan Terakhir</label>
+                        <label class="form-label small">Pendidikan Terakhir Kepsek</label>
                         <select id="pend1" class="form-select form-select-sm" required>
                             <option value="" disabled selected>Pilih...</option><option value="D3">D3</option><option value="S1/D4">S1 / D4</option><option value="S2">S2</option><option value="S3">S3</option>
                         </select>
@@ -85,7 +103,7 @@
                 </div>
             </div>
 
-            <!-- PESERTA 2 (Diberi ID Khusus agar bisa disembunyikan otomatis) -->
+            <!-- PESERTA 2 (Disembunyikan jika format_peserta = 1) -->
             <div id="peserta2-block" class="p-3 mb-4 rounded" style="background: rgba(0,0,0,0.2); border-left: 3px solid #f093fb;">
                 <h5 style="color: #f093fb;" class="mb-3"><i class="bi bi-person"></i> Peserta 2 (Unsur Guru)</h5>
                 
@@ -150,9 +168,8 @@
     document.getElementById('namaSekolahLabel').innerText = userData.nama_pic;
     const Toast = Swal.mixin({ customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
 
-    let maxPeserta = 2; // Default jika gagal ambil data
+    let maxPeserta = 2; // Default
 
-    // 1. OTOMATIS TANYA PENGATURAN KE PUSAT SAAT HALAMAN DIBUKA
     async function muatPengaturan() {
         try {
             const res = await fetch(API_URL, { 
@@ -165,7 +182,6 @@
             if (result.status === 'success') {
                 maxPeserta = parseInt(result.data.format_peserta) || 2;
                 
-                // JIKA HANYA 1 PESERTA, SEMBUNYIKAN PESERTA 2 & CABUT STATUS "REQUIRED"-NYA
                 if (maxPeserta === 1) {
                     document.getElementById('peserta2-block').style.display = 'none';
                     const formIds2 = ['nama2', 'tempatLahir2', 'tglLahir2', 'jk2', 'nip2', 'pangkat2', 'statusJab2', 'wa2', 'pend2'];
@@ -175,22 +191,31 @@
                     });
                 }
             }
-        } catch(e) {
-            console.log("Gagal memuat aturan peserta dari server.");
-        }
+        } catch(e) {}
     }
-    
-    // Jalankan fungsinya segera
     muatPengaturan();
 
+    // Fungsi memunculkan form Wakil Guru
     function cekJabatan() {
         const jab = document.getElementById('jabatan1').value;
-        const box = document.getElementById('boxSuratTugas');
+        const boxWakil = document.getElementById('boxWakil');
+        
         if(jab === 'Guru (Mewakili Kepsek)') {
-            box.style.display = 'block';
+            boxWakil.style.display = 'block';
+            document.getElementById('namaWakil').setAttribute('required', 'true');
+            document.getElementById('nipWakil').setAttribute('required', 'true');
+            document.getElementById('waWakil').setAttribute('required', 'true');
         } else {
-            box.style.display = 'none';
+            boxWakil.style.display = 'none';
             document.getElementById('fileSurat').value = '';
+            document.getElementById('namaWakil').removeAttribute('required');
+            document.getElementById('nipWakil').removeAttribute('required');
+            document.getElementById('waWakil').removeAttribute('required');
+            
+            // Bersihkan data wakil jika batal
+            document.getElementById('namaWakil').value = '';
+            document.getElementById('nipWakil').value = '';
+            document.getElementById('waWakil').value = '';
         }
     }
 
@@ -205,19 +230,26 @@
 
     function validasiForm() {
         let formIds = ['nama1', 'tempatLahir1', 'tglLahir1', 'jk1', 'nip1', 'pangkat1', 'statusJab1', 'wa1', 'pend1'];
-        // Hanya wajibkan form 2 jika maxPeserta = 2
+        
+        // Cek apakah guru wakil aktif
+        if (document.getElementById('jabatan1').value === 'Guru (Mewakili Kepsek)') {
+            formIds = formIds.concat(['namaWakil', 'nipWakil', 'waWakil']);
+        }
+
         if (maxPeserta === 2) {
             formIds = formIds.concat(['nama2', 'tempatLahir2', 'tglLahir2', 'jk2', 'nip2', 'pangkat2', 'statusJab2', 'wa2', 'pend2']);
         }
+        
         for (let id of formIds) {
-            if (!document.getElementById(id).value) return false;
+            let el = document.getElementById(id);
+            if (el && !el.value) return false;
         }
         return true;
     }
 
     async function prosesSimpan() {
         if (!validasiForm()) {
-            Toast.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Mohon lengkapi semua isian formulir.' });
+            Toast.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Mohon lengkapi semua isian formulir (termasuk Data Wakil jika ada).' });
             return;
         }
 
@@ -252,10 +284,13 @@
             status_jab: document.getElementById('statusJab1').value,
             no_wa: document.getElementById('wa1').value,
             pendidikan: document.getElementById('pend1').value,
+            // AMBIL DATA WAKIL (Jika ada)
+            nama_wakil: document.getElementById('namaWakil').value || '-',
+            nip_wakil: document.getElementById('nipWakil').value || '-',
+            wa_wakil: document.getElementById('waWakil').value || '-',
             base64Data: base64Data1, mimeType: mimeType1, fileName: fileName1 
         }];
 
-        // HANYA MASUKKAN DATA PESERTA 2 JIKA PUSAT MEMINTA 2 PESERTA
         if (maxPeserta === 2) {
             listPeserta.push({
                 nama: document.getElementById('nama2').value, 
@@ -268,15 +303,12 @@
                 status_jab: document.getElementById('statusJab2').value,
                 no_wa: document.getElementById('wa2').value,
                 pendidikan: document.getElementById('pend2').value,
+                nama_wakil: '-', nip_wakil: '-', wa_wakil: '-',
                 base64Data: null, mimeType: null, fileName: null 
             });
         }
 
-        const payload = {
-            action: 'simpan_peserta',
-            npsn: userData.username,
-            peserta: listPeserta
-        };
+        const payload = { action: 'simpan_peserta', npsn: userData.username, peserta: listPeserta };
 
         try {
             const response = await fetch(API_URL, {
@@ -288,7 +320,7 @@
 
             if(result.status === 'success') {
                 Swal.fire({
-                    icon: 'success', title: 'Berhasil!', text: 'Data administrasi dinas telah tersimpan utuh.',
+                    icon: 'success', title: 'Berhasil!', text: 'Data administrasi dinas (Kepsek & Wakil) telah tersimpan utuh.',
                     customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
                 }).then(() => { window.location.href = 'dashboard.html'; });
             } else {
