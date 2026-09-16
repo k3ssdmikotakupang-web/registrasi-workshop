@@ -3,202 +3,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Kwitansi Workshop K3S</title>
-    <!-- Bootstrap & Font -->
+    <title>Bukti Setoran Kontribusi - EMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        :root {
-            --primary-color: #007bff;
-            --gradient-header: linear-gradient(135deg, #0056b3, #00d2ff);
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
         body { 
-            background: #eef2f6; 
-            font-family: 'Poppins', sans-serif; 
-            color: var(--text-dark); 
-            padding-bottom: 40px;
-        }
-        .receipt-wrapper { 
-            max-width: 650px; 
-            margin: 40px auto; 
-        }
-        .receipt-card { 
-            background: #fff; 
-            border-radius: 20px; 
-            overflow: hidden; 
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08); 
-            position: relative; 
-        }
-        .receipt-header { 
-            background: var(--gradient-header); 
-            color: #fff; 
-            padding: 35px 30px; 
-            text-align: center; 
-        }
-        .receipt-header h4 { font-weight: 700; letter-spacing: 1px; }
-        .receipt-header p { margin: 0; color: rgba(255,255,255,0.9); font-size: 0.9rem; }
-        
-        .receipt-body { 
-            padding: 40px 35px; 
-            position: relative; 
-            z-index: 1;
-        }
-        
-        /* Watermark Transparan */
-        .receipt-body::before { 
-            content: "LUNAS"; 
-            position: absolute; 
-            top: 45%; 
-            left: 50%; 
-            transform: translate(-50%, -50%) rotate(-30deg); 
-            font-size: 120px; 
-            color: rgba(0, 200, 83, 0.04); 
-            font-weight: 800; 
-            z-index: -1; 
-            pointer-events: none; 
+            background-color: #f1f5f9; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #1e293b;
+            padding: 20px 0;
         }
 
-        .data-row { 
-            display: flex; 
-            justify-content: space-between;
-            border-bottom: 1px dashed #e2e8f0; 
-            padding: 12px 0; 
+        .receipt-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            overflow: hidden;
+            position: relative;
         }
-        .data-row:last-child { border-bottom: none; }
-        .data-label { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
-        .data-value { font-weight: 600; text-align: right; font-size: 0.95rem; }
 
-        .amount-box { 
-            background: rgba(0, 123, 255, 0.05); 
-            border: 1px solid rgba(0, 123, 255, 0.2); 
-            border-radius: 12px; 
-            padding: 20px; 
-            text-align: center; 
-            margin: 30px 0; 
+        /* Hiasan Atas */
+        .receipt-header {
+            background: #0f172a;
+            color: #ffffff;
+            padding: 30px 40px;
+            border-bottom: 5px solid #00f2fe;
+            position: relative;
         }
-        .amount-text { 
-            font-size: 2rem; 
-            font-weight: 700; 
-            color: var(--primary-color); 
-            margin: 0; 
-        }
-        .desc-text { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; }
 
-        .qr-box { 
-            background: #fff; 
-            padding: 10px; 
-            border-radius: 12px; 
+        .receipt-header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: 40px;
+            font-family: "bootstrap-icons";
+            content: "\F28A"; /* Ikon check-circle */
+            font-size: 6rem;
+            color: rgba(255, 255, 255, 0.05);
+            line-height: 1;
+        }
+
+        .receipt-body {
+            padding: 40px;
+        }
+
+        .table-custom td {
+            padding: 12px 0;
+            border: none;
+            vertical-align: top;
+        }
+
+        .table-custom td:first-child {
+            width: 180px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .table-custom td:nth-child(2) {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nominal-box {
+            background: linear-gradient(45deg, #f8fafc, #f1f5f9);
             border: 1px solid #e2e8f0;
-            display: inline-block; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+            border-left: 5px solid #00f2fe;
+            padding: 15px 20px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 10px;
         }
-        
-        .signature-area { margin-top: 15px; }
-        .signature-name { font-weight: 700; text-decoration: underline; margin-bottom: 0; font-size: 1rem; }
-        
-        /* Pengaturan Khusus Mode Cetak (Print) */
+
+        .validator-area {
+            margin-top: 50px;
+            text-align: right;
+        }
+
+        /* Fix untuk nama validator yang panjang */
+        .validator-name {
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+            font-size: 1.1rem;
+            text-decoration: underline;
+            color: #0f172a;
+            display: inline-block;
+            max-width: 100%;
+            word-wrap: break-word; /* Memaksa teks turun jika kepanjangan */
+        }
+
+        .disclaimer-box {
+            background-color: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 4px solid #f59e0b;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+            font-size: 0.85rem;
+            color: #92400e;
+        }
+
+        /* Mode Cetak (Print) */
         @media print {
-            body { background: #fff; padding: 0; }
-            .receipt-wrapper { margin: 0; max-width: 100%; }
-            .receipt-card { box-shadow: none; border: 2px solid #333; border-radius: 0; }
-            .receipt-header { background: #fff; color: #000; border-bottom: 3px solid #000; padding: 25px 20px; }
-            .receipt-header h4, .receipt-header p { color: #000 !important; }
-            .no-print { display: none !important; }
-            .amount-box { border: 2px solid #000; background: transparent; }
-            .amount-text { color: #000; }
-            .data-row { border-bottom: 1px solid #eee; }
-            .receipt-body::before { color: rgba(0, 0, 0, 0.03); }
+            body { background: white; padding: 0; }
+            .receipt-container { box-shadow: none; max-width: 100%; }
+            .btn-print { display: none !important; }
+            .receipt-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .nominal-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .disclaimer-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
 
-<div class="container receipt-wrapper">
-    <!-- Tombol Aksi (Tidak ikut tercetak) -->
-    <div class="d-flex justify-content-center gap-3 mt-4 mb-4 no-print">
-        <button class="btn btn-primary px-4 fw-bold" onclick="window.print()"><i class="bi bi-printer me-2"></i>Cetak Kwitansi</button>
-        <button class="btn btn-outline-secondary px-4 fw-bold" onclick="window.close()"><i class="bi bi-x-circle me-2"></i>Tutup</button>
+<div class="container">
+    <div class="text-center mb-3 btn-print">
+        <button class="btn btn-dark fw-bold px-4 rounded-pill shadow" onclick="window.print()">
+            <i class="bi bi-printer-fill me-2"></i> Cetak Dokumen
+        </button>
     </div>
 
-    <!-- Area Loading -->
-    <div id="loading" class="text-center mt-5">
-        <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;"></div>
-        <h5 class="fw-bold text-muted">Memverifikasi Transaksi...</h5>
-    </div>
-
-    <!-- Desain Kwitansi Utama -->
-    <div class="receipt-card" id="areaKwitansi" style="display: none;">
-        
-        <!-- Header Kwitansi -->
-        <div class="receipt-header">
-            <h4 class="mb-2"><i class="bi bi-patch-check-fill me-2"></i>E-KWITANSI RESMI</h4>
-            <p class="fw-medium">WORKSHOP MANAJEMEN KEPALA SD/MI KOTA KUPANG 2026</p>
-            <p class="small opacity-75">Kelompok Kerja Kepala Sekolah (K3S) SD/MI Kota Kupang</p>
+    <div class="receipt-container">
+        <!-- HEADER -->
+        <div class="receipt-header d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="fw-bold mb-1" style="letter-spacing: 1px;">BUKTI SETORAN KONTRIBUSI</h3>
+                <p class="mb-0 text-white-50 small">K3S SD/MI KOTA KUPANG - WORKSHOP MANAJEMEN</p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 fs-6">
+                    <i class="bi bi-check-circle-fill me-1"></i> LUNAS
+                </span>
+            </div>
         </div>
 
-        <!-- Body Kwitansi -->
+        <!-- BODY -->
         <div class="receipt-body">
             
-            <div class="data-row">
-                <div class="data-label">No. Transaksi</div>
-                <div class="data-value text-primary font-monospace" id="k_id">...</div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">Tanggal Validasi</div>
-                <div class="data-value" id="k_tgl">...</div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">Telah Terima Dari</div>
-                <div class="data-value fs-6" id="k_sekolah">...</div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">Disetor Oleh (PIC)</div>
-                <div class="data-value" id="k_penyetor">...</div>
-            </div>
-            <div class="data-row">
-                <div class="data-label">NPSN Sekolah</div>
-                <div class="data-value" id="k_npsn">...</div>
-            </div>
-
-            <!-- Box Nominal Utama -->
-            <div class="amount-box">
-                <p class="data-label mb-1">Guna Membayar</p>
-                <h2 class="amount-text">Rp 2.240.000</h2>
-                <div class="desc-text">Kontribusi Workshop Manajemen Kepsek - Pembayaran <span id="k_metode" class="fw-bold">...</span></div>
-            </div>
-
-            <!-- Footer (QR & Tanda Tangan) -->
-            <div class="row align-items-center mt-5">
-                <div class="col-5 text-center">
-                    <div class="qr-box">
-                        <img id="qrValidasi" src="" alt="QR Validasi" width="110">
-                    </div>
-                    <div class="small mt-2 text-muted fw-medium"><i class="bi bi-upc-scan me-1"></i>Scan untuk validasi</div>
+            <div class="row mb-4">
+                <div class="col-6">
+                    <p class="small text-muted mb-1">No. Referensi / TRX:</p>
+                    <h6 class="fw-bold font-monospace" id="txtIdTrx">Memuat...</h6>
                 </div>
-                <div class="col-7 text-center signature-area">
-                    <p class="mb-5 text-muted small">Bendahara Panitia / Validator,</p>
-                    <p class="signature-name" id="k_validator">...</p>
-                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 mt-2 px-3 py-1">Disahkan Secara Digital</span>
+                <div class="col-6 text-end">
+                    <p class="small text-muted mb-1">Tanggal Transaksi:</p>
+                    <h6 class="fw-bold" id="txtTanggal">Memuat...</h6>
                 </div>
             </div>
-            
+
+            <hr class="border-secondary opacity-25 mb-4">
+
+            <table class="table table-custom">
+                <tr>
+                    <td>Telah Terima Dari</td>
+                    <td>:</td>
+                    <td>
+                        <h5 class="fw-bold text-dark mb-0" id="txtNamaSekolah">Memuat Data Sekolah...</h5>
+                        <p class="small text-muted mb-0" id="txtNpsn">NPSN: -</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Guna Membayar</td>
+                    <td>:</td>
+                    <td>
+                        <div class="fs-6 lh-base text-dark">
+                            Kontribusi Sekolah Peserta Workshop Manajemen Kepsek - Pembayaran <span id="txtMetode" class="fw-bold">...</span> sebesar:
+                        </div>
+                        <div class="nominal-box">
+                            <h2 class="fw-bold mb-0 text-dark" id="txtNominal">Rp 0</h2>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- AREA VALIDATOR -->
+            <div class="validator-area">
+                <p class="mb-4 text-muted">Kupang, <span id="txtTanggalBawah">...</span><br>Penerima / Validator,</p>
+                <!-- Class 'validator-name' akan memastikan teks yang panjang akan turun (wrap) dengan rapi -->
+                <div class="validator-name" id="txtValidator">Memuat...</div>
+                <p class="small text-muted mt-1">Petugas EMS</p>
+            </div>
+
+            <!-- DISCLAIMER BARU SESUAI REQUEST KAPTEN -->
+            <div class="disclaimer-box d-flex align-items-start">
+                <i class="bi bi-info-circle-fill fs-5 me-3 mt-1"></i>
+                <div>
+                    <strong>Perhatian:</strong><br>
+                    Dokumen ini merupakan bukti pengumpulan kontribusi sekolah yang sah dan terekam di dalam sistem (EMS). <strong>E-Kwitansi Resmi Panitia</strong> akan diserahkan secara terpisah oleh Bendahara Panitia Kegiatan.
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
 
 <script>
+    // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
 
-    // Ambil ID dari URL (contoh: kwitansi.html?trx=TRX-12345)
-    const urlParams = new URLSearchParams(window.location.search);
-    const idTrx = urlParams.get('trx');
+    // Fungsi format rupiah
+    function formatRp(angka) {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+    }
 
-    async function loadKwitansi() {
-        if(!idTrx) { alert("ID Transaksi tidak ditemukan!"); return; }
+    // Fungsi format tanggal cantik (Misal: 25 Oktober 2026)
+    function formatTanggal(isoString) {
+        if(!isoString) return '-';
+        const date = new Date(isoString);
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        return date.toLocaleDateString('id-ID', options);
+    }
+
+    async function muatDataKwitansi() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idTrx = urlParams.get('trx') || urlParams.get('id');
+
+        if (!idTrx) {
+            document.body.innerHTML = '<div class="container mt-5"><div class="alert alert-danger text-center">ID Transaksi tidak ditemukan di URL!</div></div>';
+            return;
+        }
 
         try {
             const response = await fetch(API_URL, {
@@ -208,34 +235,41 @@
             });
             const result = await response.json();
 
-            if(result.status === 'success') {
-                const dt = result.data;
-                const tgl = new Date(dt.tanggal).toLocaleString('id-ID');
-
-                document.getElementById('k_id').innerText = dt.id_transaksi;
-                document.getElementById('k_tgl').innerText = tgl;
-                document.getElementById('k_sekolah').innerText = dt.nama_sekolah;
-                document.getElementById('k_penyetor').innerText = dt.penyetor;
-                document.getElementById('k_npsn').innerText = dt.npsn;
-                document.getElementById('k_metode').innerText = dt.metode;
-                document.getElementById('k_validator').innerText = dt.validator;
-
-                // --- MAGIC GENERATE QR CODE ---
-                const isiQR = `Tgl: ${tgl}\nPenyetor: ${dt.penyetor}\nSekolah: ${dt.nama_sekolah}\nNPSN: ${dt.npsn}\nPenerima: ${dt.validator}\nStatus: ${dt.status} (Rp 2.240.000)`;
+            if (result.status === 'success') {
+                const data = result.data;
                 
-                // Gunakan URL encode agar teks aman diproses
-                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(isiQR)}`;
-                document.getElementById('qrValidasi').src = qrUrl;
+                // Isi ke dalam HTML
+                document.getElementById('txtIdTrx').innerText = data.id_transaksi;
+                
+                let tglFormatted = formatTanggal(data.tanggal);
+                document.getElementById('txtTanggal').innerText = tglFormatted;
+                document.getElementById('txtTanggalBawah').innerText = tglFormatted;
+                
+                document.getElementById('txtNamaSekolah').innerText = data.nama_sekolah;
+                document.getElementById('txtNpsn').innerText = `NPSN: ${data.npsn}`;
+                
+                document.getElementById('txtMetode').innerText = data.metode;
+                document.getElementById('txtNominal').innerText = formatRp(data.nominal);
+                
+                // MENGATASI NAMA VALIDATOR TERPOTONG: 
+                // Jika mengandung kata "via", kita bersihkan agar hanya namanya saja yang muncul
+                let namaPetugas = data.validator;
+                if(namaPetugas.toLowerCase().includes('via ')) {
+                    namaPetugas = namaPetugas.split(/via /i)[1]; 
+                }
+                document.getElementById('txtValidator').innerText = namaPetugas;
 
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('areaKwitansi').style.display = 'block';
+            } else {
+                alert("Gagal memuat data: " + result.message);
             }
         } catch (error) {
-            document.getElementById('loading').innerHTML = '<h5 class="text-danger mt-3"><i class="bi bi-exclamation-triangle-fill me-2"></i>Gagal menarik data dari server.</h5>';
+            alert("Koneksi bermasalah. Gagal memuat data dari server.");
         }
     }
 
-    loadKwitansi();
+    // Jalankan saat halaman dibuka
+    muatDataKwitansi();
 </script>
+
 </body>
 </html>
