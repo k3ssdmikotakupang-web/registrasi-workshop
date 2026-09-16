@@ -13,6 +13,7 @@
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
         .stat-box { border-left: 4px solid #00f2fe; background: linear-gradient(90deg, rgba(0,242,254,0.1) 0%, transparent 100%); }
+        .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px !important; }
     </style>
 </head>
 <body>
@@ -33,78 +34,58 @@
         <div class="col-6"><div class="glass-card stat-box p-3" style="border-left-color: #20c997;"><p class="small text-white-50 mb-1">Peserta Hadir</p><h3 class="fw-bold mb-0 text-success" id="s_hadir">0</h3></div></div>
     </div>
 
+    <!-- KONTROL KEPESERTAAN & BIAYA (Milik Admin Pusat) -->
     <div class="card p-3 mb-3 bg-dark text-white border-info">
-    <h6 class="fw-bold text-info"><i class="bi bi-gear-fill"></i> Kontrol Kepesertaan & Biaya</h6>
-    <div class="row g-2 mt-2">
-        <div class="col-md-6">
-            <label class="small text-white-50">Format Jumlah Peserta:</label>
-            <select id="setFormatPeserta" class="form-select form-select-sm bg-dark text-white">
-                <option value="1">1 Orang (Hanya Kepsek)</option>
-                <option value="2">2 Orang (Kepsek & Guru)</option>
-            </select>
+        <h6 class="fw-bold text-info"><i class="bi bi-gear-fill"></i> Kontrol Kepesertaan & Biaya</h6>
+        <div class="row g-2 mt-2">
+            <div class="col-md-6">
+                <label class="small text-white-50">Format Jumlah Peserta:</label>
+                <select id="setFormatPeserta" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="1">1 Orang (Hanya Kepsek)</option>
+                    <option value="2" selected>2 Orang (Kepsek & Guru)</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label class="small text-white-50">Nominal Kontribusi per Sekolah (Rp):</label>
+                <input type="text" id="setNominalKontribusi" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Contoh: 2.240.000" oninput="formatRibuan(this)">
+            </div>
         </div>
-        <div class="col-md-6">
-            <label class="small text-white-50">Nominal Kontribusi per Sekolah (Rp):</label>
-            <input type="number" id="setNominalKontribusi" class="form-control form-control-sm bg-dark text-white" placeholder="Contoh: 2240000">
-        </div>
+        <button id="btnUpdateAturan" class="btn btn-sm btn-info w-100 mt-3 fw-bold" onclick="simpanAturanBaru()">Update Aturan Sistem</button>
     </div>
-    <button class="btn btn-sm btn-info w-100 mt-3 fw-bold" onclick="simpanAturanBaru()">Update Aturan Sistem</button>
-</div>
-
-   <!-- KONTROL KEPESERTAAN & BIAYA (Milik Admin Pusat) -->
-<div class="card p-3 mb-3 bg-dark text-white border-info">
-    <h6 class="fw-bold text-info"><i class="bi bi-gear-fill"></i> Kontrol Kepesertaan & Biaya</h6>
-    <div class="row g-2 mt-2">
-        <div class="col-md-6">
-            <label class="small text-white-50">Format Jumlah Peserta:</label>
-            <select id="setFormatPeserta" class="form-select form-select-sm bg-dark text-white">
-                <option value="1">1 Orang (Hanya Kepsek)</option>
-                <option value="2" selected>2 Orang (Kepsek & Guru)</option>
-            </select>
-        </div>
-        <div class="col-md-6">
-            <label class="small text-white-50">Nominal Kontribusi per Sekolah (Rp):</label>
-            <input type="text" id="setNominalKontribusi" class="form-control form-control-sm bg-dark text-white" placeholder="Contoh: 2.240.000" oninput="formatRibuan(this)">
-        </div>
-    </div>
-    <button id="btnUpdateAturan" class="btn btn-sm btn-info w-100 mt-3 fw-bold" onclick="simpanAturanBaru()">Update Aturan Sistem</button>
-</div>
     
     <!-- Widget Utama Rilis Pengumuman -->
-<div class="row g-3 mb-4">
-  <div class="col-12">
-    <div class="card glass-card p-3 text-white" onclick="bukaModalPengumuman()" style="cursor: pointer; border-left: 5px solid #f59e0b; background: rgba(15, 23, 42, 0.8);">
-      <div class="d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center">
-          <div class="rounded-circle bg-warning text-dark p-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
-            <i class="bi bi-megaphone-fill fs-4"></i>
-          </div>
-          <div>
-            <h6 class="fw-bold text-warning mb-1"><i class="bi bi-broadcast"></i> Rilis Pengumuman Panitia</h6>
-            <small class="text-white-50">Klik di sini untuk menerbitkan informasi/instruksi realtime ke dashboard peserta</small>
+    <div class="row g-3 mb-4">
+      <div class="col-12">
+        <div class="card glass-card p-3 text-white" style="border-left: 5px solid #f59e0b; background: rgba(15, 23, 42, 0.8);">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center" onclick="bukaModalPengumuman()" style="cursor: pointer;">
+              <div class="rounded-circle bg-warning text-dark p-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i class="bi bi-megaphone-fill fs-4"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-warning mb-1"><i class="bi bi-broadcast"></i> Rilis Pengumuman Panitia</h6>
+                <small class="text-white-50">Klik di sini untuk menerbitkan informasi/instruksi realtime</small>
+              </div>
+            </div>
+            
+            <div class="d-flex gap-2 mt-2 mt-md-0">
+              <button class="btn btn-sm btn-outline-info fw-bold" onclick="bukaModalListPengumuman()"><i class="bi bi-card-list"></i> Kelola Data</button>
+              <button class="btn btn-sm btn-warning fw-bold" onclick="bukaModalPengumuman()"><i class="bi bi-plus-lg"></i> Buat Baru</button>
+            </div>
           </div>
         </div>
-        
-<div class="d-flex gap-2 mt-2 mt-md-0">
-  <button class="btn btn-sm btn-outline-info fw-bold" onclick="bukaModalListPengumuman()"><i class="bi bi-card-list"></i> Kelola Data</button>
-  <button class="btn btn-sm btn-warning fw-bold" onclick="bukaModalPengumuman()"><i class="bi bi-plus-lg"></i> Buat Baru</button>
-</div>
       </div>
     </div>
-  </div>
-</div>
 
     <!-- Menu Kesekretariatan & Pantauan -->
-    <h5 class="fw-bold mb-3 mt-5">Menu Operasional & Pantauan</h5>
+    <h5 class="fw-bold mb-3 mt-4">Menu Operasional & Pantauan</h5>
     <div class="row g-3">
-        
-        <!-- TOMBOL BARU: REKAP PENERIMAAN KAS (Pantauan Ketua/Sekretaris) -->
+        <!-- TOMBOL BARU: REKAP PENERIMAAN KAS -->
         <div class="col-12">
             <button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-info w-100 py-3 text-start fw-bold" style="background: rgba(0, 242, 254, 0.05); border-width: 2px;">
                 <i class="bi bi-file-earmark-spreadsheet-fill me-2 text-info"></i> Rekap Daftar Sekolah & Penerimaan Kas
             </button>
         </div>
-
         <div class="col-12">
             <button onclick="window.location.href='admin_panitia.html'" class="btn btn-outline-primary w-100 py-3 text-start fw-bold"><i class="bi bi-people-fill me-2"></i> Input SK & Susunan Kepanitiaan</button>
         </div>
@@ -126,331 +107,11 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
-    const userData = JSON.parse(localStorage.getItem('userLogin'));
-    
-    if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
+<!-- ============================================== -->
+<!-- AREA MODAL (POP-UP) -->
+<!-- ============================================== -->
 
-    async function muatStatistik() {
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'get_stats_admin' })
-            });
-            const result = await response.json();
-            if(result.status === 'success') {
-                document.getElementById('s_lunas').innerText = result.data.lunas;
-                document.getElementById('s_pending').innerText = result.data.pending;
-                document.getElementById('s_peserta').innerText = result.data.peserta;
-                document.getElementById('s_hadir').innerText = result.data.hadir;
-            }
-        } catch (error) {}
-    }
-
-    function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
-    muatStatistik();
-
-    let modalPengumumanObj = null;
-
-function bukaModalPengumuman() {
-    if(!modalPengumumanObj) {
-        modalPengumumanObj = new bootstrap.Modal(document.getElementById('modalFormPengumuman'));
-    }
-    document.getElementById('formPengumuman').reset();
-    modalPengumumanObj.show();
-}
-
-    async function simpanAturanBaru() {
-    let payload = {
-        action: 'update_pengaturan',
-        format_peserta: document.getElementById('setFormatPeserta').value,
-        nominal_kontribusi: document.getElementById('setNominalKontribusi').value
-        // Sertakan juga value jadwal, materi dll jika satu form
-    };
-    
-    // (Lakukan fetch ke API_URL dengan method POST seperti biasa)
-    // ...
-}
-    
-async function simpanPengumuman(e) {
-    e.preventDefault();
-    
-    const submitBtn = document.getElementById('btnKirimPengumuman');
-    const teksAsli = submitBtn.innerText;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menerbitkan...';
-
-    const payload = {
-        action: 'add_pengumuman',
-        role: 'admin', 
-        jabatan: 'panitia',
-        judul: document.getElementById('pJudul').value,
-        isi: document.getElementById('pIsi').value,
-        target: document.getElementById('pTarget').value,
-        status: document.getElementById('pStatus').value
-    };
-
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payload)
-        });
-        const result = await response.json();
-
-        if (result.status === 'success') {
-            Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, background: '#1e293b', color: '#fff' });
-            modalPengumumanObj.hide();
-        } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, background: '#1e293b', color: '#fff' });
-        }
-    } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server database.', background: '#1e293b', color: '#fff' });
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = teksAsli;
-    }
-}
-
-let modalListObj = null;
-let modalEditObj = null;
-
-// Membuka modal daftar pengumuman & mengambil data dari server
-async function bukaModalListPengumuman() {
-    if (!modalListObj) {
-        modalListObj = new bootstrap.Modal(document.getElementById('modalListPengumuman'));
-    }
-    modalListObj.show();
-    
-    const tbody = document.getElementById('bodyTabelPengumuman');
-    tbody.innerHTML = '<tr><td colspan="3" class="text-center text-white-50 py-3">Memuat data... <span class="spinner-border spinner-border-sm"></span></td></tr>';
-    
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action: 'get_all_pengumuman' })
-        });
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            tbody.innerHTML = '';
-            if (result.data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-3">Belum ada pengumuman.</td></tr>';
-                return;
-            }
-            
-            result.data.forEach(item => {
-                // Tentukan warna lencana status
-                let badgeStatus = item.status.toLowerCase() === 'aktif' ? 'bg-success' : 'bg-secondary';
-                
-                tbody.innerHTML += `
-                    <tr>
-                        <td style="min-width: 100px;">
-                            <small class="text-info d-block">${item.tanggal}</small>
-                            <span class="badge ${badgeStatus}">${item.status}</span>
-                        </td>
-                        <td>
-                            <strong class="text-warning">${item.judul}</strong> <span class="badge bg-dark border border-secondary text-white-50" style="font-size: 0.6rem;">${item.target}</span>
-                            <div class="text-white-50" style="font-size: 0.8rem;">${item.isi}</div>
-                        </td>
-                        <td style="min-width: 80px;">
-                            <button class="btn btn-sm btn-outline-light" onclick="bukaEditPengumuman(${item.id}, '${item.judul.replace(/'/g, "\\'")}', '${item.isi.replace(/\n/g, ' ').replace(/'/g, "\\'")}', '${item.target}', '${item.status}')">
-                                <i class="bi bi-pencil"></i> Edit
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-    } catch (e) {
-        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger py-3">Gagal memuat data.</td></tr>';
-    }
-}
-
-// Membuka modal edit dan mengisi form dengan data yang dipilih
-function bukaEditPengumuman(id, judul, isi, target, status) {
-    modalListObj.hide(); // Sembunyikan list
-    
-    if (!modalEditObj) {
-        modalEditObj = new bootstrap.Modal(document.getElementById('modalEditPengumuman'));
-    }
-    
-    // Isi data ke dalam form edit
-    document.getElementById('eId').value = id;
-    document.getElementById('eJudul').value = judul;
-    document.getElementById('eIsi').value = isi;
-    document.getElementById('eTarget').value = target;
-    document.getElementById('eStatus').value = status;
-    
-    modalEditObj.show();
-}
-
-// Menyimpan pembaruan pengumuman ke server
-async function simpanEditPengumuman(e) {
-    e.preventDefault();
-    
-    const submitBtn = document.getElementById('btnUpdatePengumuman');
-    const teksAsli = submitBtn.innerText;
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan...';
-    
-    const payload = {
-        action: 'edit_pengumuman',
-        id: document.getElementById('eId').value, // Mengirimkan nomor baris
-        judul: document.getElementById('eJudul').value,
-        isi: document.getElementById('eIsi').value,
-        target: document.getElementById('eTarget').value,
-        status: document.getElementById('eStatus').value
-    };
-    
-    try {
-        const response = await fetch(API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payload)
-        });
-        const result = await response.json();
-        
-        if (result.status === 'success') {
-            Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, background: '#1e293b', color: '#fff' });
-            modalEditObj.hide();
-            // Buka list lagi otomatis supaya kelihatan updatenya
-            setTimeout(bukaModalListPengumuman, 500); 
-        } else {
-            Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, background: '#1e293b', color: '#fff' });
-        }
-    } catch (err) {
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server.', background: '#1e293b', color: '#fff' });
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = teksAsli;
-    }
-}
-
-    // FUNGSI 1: MEMBUAT TITIK RIBUAN SECARA REAL-TIME
-    function formatRibuan(input) {
-        let angkaPolos = input.value.replace(/[^0-9]/g, '');
-        if (angkaPolos) {
-            input.value = parseInt(angkaPolos, 10).toLocaleString('id-ID');
-        } else {
-            input.value = '';
-        }
-    }
-
-    // FUNGSI 2: MENYIMPAN ATURAN KE DATABASE (API_URL harus sudah terdefinisi di atasnya)
-    async function simpanAturanBaru() {
-        const btn = document.getElementById('btnUpdateAturan');
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
-        btn.disabled = true;
-
-        // Ambil nominal yang diketik, lalu BERSIHKAN TITIKNYA sebelum dikirim
-        let nominalKotor = document.getElementById('setNominalKontribusi').value;
-        let nominalBersih = nominalKotor.replace(/\./g, ''); // Hapus semua titik
-
-        // Susun kargo data yang mau dikirim
-        let payload = {
-            action: 'update_pengaturan',
-            format_peserta: document.getElementById('setFormatPeserta').value,
-            nominal_kontribusi: nominalBersih
-        };
-
-        try {
-            const response = await fetch(API_URL, { // Pastikan variabel API_URL ada di file ini
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload)
-            });
-            
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                Swal.fire({
-                    icon: 'success', title: 'Berhasil!', text: result.message,
-                    customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error', title: 'Gagal', text: result.message,
-                    customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff'
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error', title: 'Jaringan Padat', text: 'Gagal menghubungi server.',
-                customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff'
-            });
-        } finally {
-            btn.innerHTML = 'Update Aturan Sistem';
-            btn.disabled = false;
-        }
-    }
-
-    // FUNGSI 1: MEMBUAT TITIK RIBUAN SECARA REAL-TIME
-    function formatRibuan(input) {
-        let angkaPolos = input.value.replace(/[^0-9]/g, '');
-        if (angkaPolos) {
-            input.value = parseInt(angkaPolos, 10).toLocaleString('id-ID');
-        } else {
-            input.value = '';
-        }
-    }
-
-    // FUNGSI 2: MENYIMPAN ATURAN KE DATABASE (API_URL harus sudah terdefinisi di atasnya)
-    async function simpanAturanBaru() {
-        const btn = document.getElementById('btnUpdateAturan');
-        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Menyimpan...';
-        btn.disabled = true;
-
-        // Ambil nominal yang diketik, lalu BERSIHKAN TITIKNYA sebelum dikirim
-        let nominalKotor = document.getElementById('setNominalKontribusi').value;
-        let nominalBersih = nominalKotor.replace(/\./g, ''); // Hapus semua titik
-
-        // Susun kargo data yang mau dikirim
-        let payload = {
-            action: 'update_pengaturan',
-            format_peserta: document.getElementById('setFormatPeserta').value,
-            nominal_kontribusi: nominalBersih
-        };
-
-        try {
-            const response = await fetch(API_URL, { // Pastikan variabel API_URL ada di file ini
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload)
-            });
-            
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                Swal.fire({
-                    icon: 'success', title: 'Berhasil!', text: result.message,
-                    customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff', confirmButtonColor: '#00f2fe'
-                });
-            } else {
-                Swal.fire({
-                    icon: 'error', title: 'Gagal', text: result.message,
-                    customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff'
-                });
-            }
-        } catch (error) {
-            Swal.fire({
-                icon: 'error', title: 'Jaringan Padat', text: 'Gagal menghubungi server.',
-                customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff'
-            });
-        } finally {
-            btn.innerHTML = 'Update Aturan Sistem';
-            btn.disabled = false;
-        }
-    }
-    
-</script>
-
-    <!-- Modal Input Pengumuman -->
+<!-- Modal Input Pengumuman -->
 <div class="modal fade" id="modalFormPengumuman" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content glass-card text-white" style="background: #0f172a; border: 1px solid #f59e0b;">
@@ -492,7 +153,7 @@ async function simpanEditPengumuman(e) {
   </div>
 </div>
 
-    <!-- Modal Daftar Pengumuman -->
+<!-- Modal Daftar Pengumuman -->
 <div class="modal fade" id="modalListPengumuman" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
     <div class="modal-content glass-card text-white" style="background: #0f172a; border: 1px solid #0dcaf0;">
@@ -530,9 +191,7 @@ async function simpanEditPengumuman(e) {
       </div>
       <div class="modal-body">
         <form id="formEditPengumuman" onsubmit="simpanEditPengumuman(event)">
-          <!-- Hidden Input untuk menyimpan ID / Nomor Baris -->
           <input type="hidden" id="eId">
-          
           <div class="mb-3">
             <label class="form-label small">Judul Pengumuman</label>
             <input type="text" id="eJudul" class="form-control bg-dark text-white border-secondary" required>
@@ -565,5 +224,231 @@ async function simpanEditPengumuman(e) {
   </div>
 </div>
 
+<!-- ============================================== -->
+<!-- AREA SCRIPT JAVASCRIPT UTAMA -->
+<!-- ============================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    
+    // Proteksi Halaman
+    if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
+
+    function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
+
+    // -----------------------------------------
+    // 1. STATISTIK DASHBOARD
+    // -----------------------------------------
+    async function muatStatistik() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_stats_admin' })
+            });
+            const result = await response.json();
+            if(result.status === 'success') {
+                document.getElementById('s_lunas').innerText = result.data.lunas;
+                document.getElementById('s_pending').innerText = result.data.pending;
+                document.getElementById('s_peserta').innerText = result.data.peserta;
+                document.getElementById('s_hadir').innerText = result.data.hadir;
+            }
+        } catch (error) {}
+    }
+    muatStatistik();
+
+    // -----------------------------------------
+    // 2. KONTROL KEPESERTAAN & BIAYA (BEBAS TITIK GANDA)
+    // -----------------------------------------
+    function formatRibuan(input) {
+        let angkaPolos = input.value.replace(/[^0-9]/g, '');
+        if (angkaPolos) {
+            input.value = parseInt(angkaPolos, 10).toLocaleString('id-ID');
+        } else {
+            input.value = '';
+        }
+    }
+
+    async function simpanAturanBaru() {
+        const btn = document.getElementById('btnUpdateAturan');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan...';
+        btn.disabled = true;
+
+        let nominalKotor = document.getElementById('setNominalKontribusi').value;
+        let nominalBersih = nominalKotor.replace(/\./g, ''); // Membersihkan semua titik sebelum dikirim
+
+        let payload = {
+            action: 'update_pengaturan',
+            format_peserta: document.getElementById('setFormatPeserta').value,
+            nominal_kontribusi: nominalBersih
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+
+            if (result.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, customClass: { popup: 'swal-dark' } });
+            }
+        } catch (error) {
+            Swal.fire({ icon: 'error', title: 'Jaringan Padat', text: 'Gagal menghubungi server.', customClass: { popup: 'swal-dark' } });
+        } finally {
+            btn.innerHTML = 'Update Aturan Sistem';
+            btn.disabled = false;
+        }
+    }
+
+    // -----------------------------------------
+    // 3. FITUR PENGUMUMAN PANITIA
+    // -----------------------------------------
+    let modalPengumumanObj = null;
+    let modalListObj = null;
+    let modalEditObj = null;
+
+    function bukaModalPengumuman() {
+        if(!modalPengumumanObj) modalPengumumanObj = new bootstrap.Modal(document.getElementById('modalFormPengumuman'));
+        document.getElementById('formPengumuman').reset();
+        modalPengumumanObj.show();
+    }
+
+    async function simpanPengumuman(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('btnKirimPengumuman');
+        const teksAsli = submitBtn.innerText;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menerbitkan...';
+
+        const payload = {
+            action: 'add_pengumuman',
+            role: 'admin', 
+            jabatan: 'panitia',
+            judul: document.getElementById('pJudul').value,
+            isi: document.getElementById('pIsi').value,
+            target: document.getElementById('pTarget').value,
+            status: document.getElementById('pStatus').value
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, customClass: { popup: 'swal-dark' } });
+                modalPengumumanObj.hide();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, customClass: { popup: 'swal-dark' } });
+            }
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server database.', customClass: { popup: 'swal-dark' } });
+        } finally {
+            submitBtn.disabled = false; submitBtn.innerText = teksAsli;
+        }
+    }
+
+    async function bukaModalListPengumuman() {
+        if (!modalListObj) modalListObj = new bootstrap.Modal(document.getElementById('modalListPengumuman'));
+        modalListObj.show();
+        
+        const tbody = document.getElementById('bodyTabelPengumuman');
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-white-50 py-3">Memuat data... <span class="spinner-border spinner-border-sm"></span></td></tr>';
+        
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'get_all_pengumuman' })
+            });
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                tbody.innerHTML = '';
+                if (result.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-3">Belum ada pengumuman.</td></tr>';
+                    return;
+                }
+                result.data.forEach(item => {
+                    let badgeStatus = item.status.toLowerCase() === 'aktif' ? 'bg-success' : 'bg-secondary';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td style="min-width: 100px;">
+                                <small class="text-info d-block">${item.tanggal}</small>
+                                <span class="badge ${badgeStatus}">${item.status}</span>
+                            </td>
+                            <td>
+                                <strong class="text-warning">${item.judul}</strong> <span class="badge bg-dark border border-secondary text-white-50" style="font-size: 0.6rem;">${item.target}</span>
+                                <div class="text-white-50" style="font-size: 0.8rem;">${item.isi}</div>
+                            </td>
+                            <td style="min-width: 80px;">
+                                <button class="btn btn-sm btn-outline-light" onclick="bukaEditPengumuman(${item.id}, '${item.judul.replace(/'/g, "\\'")}', '${item.isi.replace(/\n/g, ' ').replace(/'/g, "\\'")}', '${item.target}', '${item.status}')">
+                                    <i class="bi bi-pencil"></i> Edit
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger py-3">Gagal memuat data.</td></tr>';
+        }
+    }
+
+    function bukaEditPengumuman(id, judul, isi, target, status) {
+        modalListObj.hide();
+        if (!modalEditObj) modalEditObj = new bootstrap.Modal(document.getElementById('modalEditPengumuman'));
+        
+        document.getElementById('eId').value = id;
+        document.getElementById('eJudul').value = judul;
+        document.getElementById('eIsi').value = isi;
+        document.getElementById('eTarget').value = target;
+        document.getElementById('eStatus').value = status;
+        
+        modalEditObj.show();
+    }
+
+    async function simpanEditPengumuman(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('btnUpdatePengumuman');
+        const teksAsli = submitBtn.innerText;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan...';
+        
+        const payload = {
+            action: 'edit_pengumuman',
+            id: document.getElementById('eId').value, 
+            judul: document.getElementById('eJudul').value,
+            isi: document.getElementById('eIsi').value,
+            target: document.getElementById('eTarget').value,
+            status: document.getElementById('eStatus').value
+        };
+        
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, customClass: { popup: 'swal-dark' } });
+                modalEditObj.hide();
+                setTimeout(bukaModalListPengumuman, 500); 
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, customClass: { popup: 'swal-dark' } });
+            }
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server.', customClass: { popup: 'swal-dark' } });
+        } finally {
+            submitBtn.disabled = false; submitBtn.innerText = teksAsli;
+        }
+    }
+</script>
 </body>
 </html>
