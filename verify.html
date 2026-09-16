@@ -155,9 +155,11 @@
     // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
-    // Mesin Penarik Data (Diambil dari backup Kapten)
+    // Mesin Penarik Data (Diperbarui dengan Jaring Penangkap Multi-Parameter)
     const urlParams = new URLSearchParams(window.location.search);
-    const kw = urlParams.get('kw'); // <-- INI KUNCI YANG BIKIN JALAN!
+    
+    // KUNCI SAKTI: Tangkap semua kemungkinan nama parameter di URL!
+    const kw = urlParams.get('kw') || urlParams.get('trx') || urlParams.get('id'); 
 
     if(kw) {
         fetch(API_URL, { 
@@ -178,7 +180,7 @@
                 document.getElementById('txtMetode').innerText = res.receipt.metode;
                 document.getElementById('txtNominal').innerText = "Rp " + Number(res.receipt.nominal).toLocaleString('id-ID');
                 
-                // Format Tanggal (Dari backend biasanya ISO atau Teks)
+                // Format Tanggal
                 let tglString = res.receipt.tglBayar;
                 let tglPendek = tglString;
                 
@@ -198,7 +200,7 @@
                     }
                 } catch(e) {}
                 
-                // Bersihkan nama validator (Hapus kata 'Pembayaran Tunai via' jika ada)
+                // Bersihkan nama validator
                 let namaPetugas = res.receipt.operator || "Petugas EMS";
                 if(namaPetugas.toLowerCase().includes('via ')) {
                     namaPetugas = namaPetugas.split(/via /i)[1]; 
@@ -220,7 +222,7 @@
         document.getElementById('box-loading').innerHTML = '<h4 class="text-danger fw-bold">Parameter URL Tidak Valid.</h4>';
     }
 
-    // Fungsi Unduh Gambar (Dari Backup Kapten)
+    // Fungsi Unduh Gambar
     function downloadSebagaiGambar() {
         const box = document.getElementById('kwitansi-capture');
         html2canvas(box, { scale: 2 }).then(canvas => {
