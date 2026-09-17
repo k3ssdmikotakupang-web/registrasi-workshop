@@ -12,7 +12,6 @@
         .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
-        .btn-neon { background: linear-gradient(45deg, #00f2fe, #4facfe); border: none; color: white; border-radius: 8px; font-weight: 600; }
         
         .card-saldo { background: linear-gradient(135deg, rgba(0,242,254,0.1) 0%, rgba(79,172,254,0.1) 100%); border-left: 5px solid #00f2fe; }
         .card-masuk { border-left: 5px solid #198754; background: rgba(25,135,84,0.05); }
@@ -57,23 +56,19 @@
         </div>
     </div>
 
-    <!-- TOMBOL CETAK MASSAL -->
-<button class="btn btn-warning fw-bold px-3 py-2 shadow rounded-pill" onclick="bukaCetakMassal()">
-    <i class="bi bi-printer-fill me-2"></i> Cetak Semua Kuitansi Lunas (Massal)
-</button>
-
-    <div class="col-12">
-            <button onclick="window.location.href='rekap_transport_pusat.html'" class="btn btn-outline-info w-100 py-3 text-start fw-bold">
-                <i class="bi bi-pie-chart-fill me-2"></i> Rekap Master Transport & Honor Panitia
-            </button>
-        </div>
+    <div class="mb-4">
+        <button onclick="window.location.href='rekap_transport_pusat.html'" class="btn btn-outline-info w-100 py-3 text-start fw-bold">
+            <i class="bi bi-pie-chart-fill me-2"></i> Rekap Master Transport & Honor Panitia
+        </button>
+    </div>
 
     <!-- Tombol Navigasi Operasional -->
     <h6 class="text-white-50 mb-3">Menu Operasional</h6>
     <div class="row g-3 mb-4">
         <div class="col-12"><button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-info w-100 py-3 text-start"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Rekap Daftar Sekolah & Penerimaan</button></div>
         <div class="col-12"><button onclick="window.location.href='validasi_v2.html'" class="btn btn-outline-warning w-100 py-3 text-start"><i class="bi bi-check-circle-fill me-2"></i> Validasi Transfer & Terima Tunai</button></div>
-        <div class="col-12"><button onclick="window.location.href='dashboard_pengeluaran.html'" class="btn btn-neon w-100 py-3 text-start text-dark fw-bold"><i class="bi bi-cart-dash me-2"></i> Manajemen Pengeluaran & Transport</button></div>
+        <!-- TOMBOL MANAJEMEN PENGELUARAN DINORMALKAN MENJADI OUTLINE-LIGHT AGAR SERAGAM -->
+        <div class="col-12"><button onclick="window.location.href='dashboard_pengeluaran.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-cart-dash me-2"></i> Manajemen Pengeluaran & Transport</button></div>
         <div class="col-12"><button onclick="window.location.href='laporan_bku.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-journal-check me-2"></i> Laporan BKU / RKAS</button></div>
     </div>
 </div>
@@ -147,11 +142,6 @@
             Swal.fire('Error', 'Gagal menghubungi server.', 'error');
             sakelar.checked = !sakelar.checked; // Balikkan ke semula jika error
         }
-    }
-    function bukaCetakMassal() {
-        // Membuka halaman cetak massal di tab baru dengan membawa parameter ?page=cetak_massal
-        const targetUrl = DEPLOY_URL + "?page=cetak_massal";
-        window.open(targetUrl, '_blank');
     }
 
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
