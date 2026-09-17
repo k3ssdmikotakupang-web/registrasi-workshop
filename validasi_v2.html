@@ -136,11 +136,9 @@
         window.open(`verify.html?trx=${idTrx}`, '_blank');
     }
 
-    // FUNGSI UTAMA PEMBUKA CETAK MASSAL
     function bukaCetakMassal() {
-        // Membuka halaman cetak massal di tab baru dengan membawa parameter ?page=cetak_massal
-        const targetUrl = API_URL + "?page=cetak_massal";
-        window.open(targetUrl, '_blank');
+    // Membuka file cetak_massal.html langsung dari GitHub Pages
+    window.open('cetak_massal.html', '_blank');
     }
 
     async function muatAntrean() {
