@@ -29,7 +29,7 @@
         .kwitansi-box { 
             background: #ffffff; 
             border: 1.5px solid #0f172a; 
-            width: 18.5cm; /* Dirampingkan menjadi 18.5cm */
+            width: 18.5cm; 
             height: 10.2cm; 
             margin: 0 auto; 
             padding: 0; 
@@ -127,11 +127,11 @@
             letter-spacing: 0.5px;
         }
 
-        /* 🖨️ SETELAN CETAK KHUSUS F4 / LEGAL (DIGESER KE KIRI) */
+        /* 🖨️ SETELAN CETAK JURUS PAMUNGKAS (ANTI-POTONG KANAN) */
         @media print {
             @page {
                 size: 21.59cm 33cm; 
-                margin: 5mm 5mm 5mm 5mm; /* Kunci margin rata 5mm di semua sisi */
+                margin: 5mm; 
             }
             body { 
                 background: #ffffff !important; 
@@ -140,6 +140,15 @@
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact; 
             }
+            
+            /* JURUS 1: Hancurkan padding/batas bawaan Bootstrap yang mendorong kertas ke kanan */
+            .container {
+                max-width: 100% !important;
+                width: 100% !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
             .no-print { display: none !important; }
             
             .page-wrapper {
@@ -150,9 +159,10 @@
             .kwitansi-box { 
                 border: 1.5px solid #000 !important; 
                 box-shadow: none !important; 
-                /* MENGHILANGKAN AUTO CENTER, MEMAKSA RATA KIRI DENGAN MARGIN BAWAH 6MM */
-                margin: 0 0 6mm 0 !important; 
-                width: 18.5cm !important; /* Dirampingkan agar tidak nabrak kanan */
+                /* JURUS 2: Margin kiri dinolkan agar merapat kiri mentok, margin bawah 5mm */
+                margin: 0 0 5mm 0 !important; 
+                /* JURUS 3: Lebar super aman (18cm), sisa 3.5cm di sisi kanan kertas F4 dibiarkan kosong agar tidak terpotong printer */
+                width: 18cm !important; 
                 height: 10.2cm !important; 
                 page-break-inside: avoid !important;
             }
@@ -172,7 +182,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 no-print bg-white p-4 rounded shadow-sm">
         <div>
             <h4 class="fw-bold mb-1 text-dark"><i class="bi bi-printer-fill text-primary me-2"></i>Cetak Massal E-Kwitansi Resmi</h4>
-            <p class="text-muted small mb-0">Tampilan 3 kuitansi per halaman (Kertas F4/Legal) diratakan ke kiri agar tidak terpotong.</p>
+            <p class="text-muted small mb-0">Perbaikan Final: Rata kiri mentok & bebas padding Bootstrap agar aman dari potongan printer F4/Legal.</p>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary fw-bold px-3 rounded-pill" onclick="window.close()">Tutup</button>
