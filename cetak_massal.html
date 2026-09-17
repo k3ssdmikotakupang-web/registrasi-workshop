@@ -18,28 +18,27 @@
             min-height: 100vh;
         }
 
-        /* UKURAN STANDAR KUITANSI PERSIS VERIFY.HTML: 10.5cm x 21cm */
+        /* UKURAN STANDAR KUITANSI A4 PORTRAIT (3 PER HALAMAN) */
         .kwitansi-box { 
             background: #ffffff; 
             border: 1.5px solid #0f172a; 
-            width: 21cm; 
-            height: 10.5cm; 
-            margin: 0 auto 30px auto; 
+            width: 19cm; /* Disesuaikan agar pas di lebar A4 */
+            height: 9.2cm; /* Disesuaikan agar pas 3 tumpuk di tinggi A4 */
+            margin: 0 auto 15px auto; 
             padding: 0; 
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             position: relative; 
             overflow: hidden; 
             box-sizing: border-box;
-            page-break-after: always;
-            page-break-inside: avoid;
+            page-break-inside: avoid; /* Mencegah kuitansi terpotong di tengah halaman */
         }
 
         /* HEADER BERWARNA EKSKLUSIF */
         .receipt-header {
             background: #0f172a;
             color: #ffffff;
-            padding: 10px 18px;
+            padding: 8px 18px;
             border-bottom: 3px solid #00f2fe;
             display: flex;
             justify-content: space-between;
@@ -47,19 +46,19 @@
         }
 
         .receipt-body {
-            padding: 8px 18px;
+            padding: 6px 18px;
         }
 
         .k-title { 
             font-weight: 800; 
-            font-size: 1.1rem; 
+            font-size: 1.05rem; 
             letter-spacing: 0.5px; 
             color: #ffffff;
             text-transform: uppercase; 
             margin-bottom: 0px; 
         }
         
-        .k-subtitle { font-size: 0.65rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .k-subtitle { font-size: 0.6rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .k-no { 
             display: inline-block; 
@@ -73,38 +72,37 @@
             border-radius: 4px;
         }
 
-        .k-row { display: flex; margin-bottom: 4px; align-items: baseline; font-size: 0.78rem; }
-        .k-label { width: 27%; font-weight: 600; color: #64748b; }
-        .k-value { width: 73%; font-weight: 700; color: #0f172a; border-bottom: 1px dotted #cbd5e1; padding-bottom: 1px; }
+        .k-row { display: flex; margin-bottom: 3px; align-items: baseline; font-size: 0.75rem; }
+        .k-label { width: 28%; font-weight: 600; color: #64748b; }
+        .k-value { width: 72%; font-weight: 700; color: #0f172a; border-bottom: 1px dotted #cbd5e1; padding-bottom: 1px; }
 
         /* KOTAK NOMINAL COMPACT */
         .k-nominal-box { 
             background: #f8fafc;
             border: 1.5px solid #0f172a; 
             padding: 2px 12px; 
-            font-size: 1.15rem; 
+            font-size: 1.1rem; 
             font-weight: 800; 
             color: #0f172a;
             border-radius: 6px;
             display: inline-block; 
-            margin: 1px 0; 
+            margin: 2px 0; 
         }
 
         .k-footer { 
             display: flex; 
             justify-content: space-between; 
             align-items: flex-end; 
-            margin-top: 4px; 
+            margin-top: 2px; 
             border-top: 1px solid #e2e8f0; 
             padding-top: 6px; 
         }
 
         .k-qr-box { padding: 3px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; display: inline-block; }
         
-        .k-ttd-container { width: 36%; text-align: center; font-size: 0.72rem; }
-        .k-sign-box { margin-top: 18px; }
+        .k-ttd-container { width: 36%; text-align: center; font-size: 0.7rem; }
+        .k-sign-box { margin-top: 14px; }
         
-        /* DIPERBAIKI: Hapus underline ekstra dan kembalikan ke desain asli verify.html */
         .k-sign-name { 
             font-weight: 800; 
             font-size: 0.8rem; 
@@ -127,11 +125,11 @@
             letter-spacing: 0.5px;
         }
 
-        /* PENGATURAN CETAK */
+        /* SETELAN CETAK UNTUK A4 PORTRAIT (3 KUITANSI/HALAMAN) */
         @media print {
             @page {
-                size: 21cm 10.5cm;
-                margin: 0;
+                size: A4 portrait;
+                margin: 5mm 10mm; /* Margin atas-bawah 5mm, kiri-kanan 10mm */
             }
             body { 
                 background: #ffffff !important; 
@@ -142,12 +140,12 @@
             }
             .no-print { display: none !important; }
             .kwitansi-box { 
-                border: 1px solid #000 !important; 
+                border: 1.5px solid #000 !important; 
                 box-shadow: none !important; 
-                margin: 0 !important; 
-                width: 21cm !important; 
-                height: 10.5cm !important; 
-                page-break-after: always;
+                margin: 0 auto 6mm auto !important; /* Jarak 6mm antar kuitansi agar rapi saat digunting */
+                width: 19cm !important; 
+                height: 9.2cm !important; 
+                page-break-inside: avoid; /* Memaksa browser melempar kuitansi ke-4 ke halaman berikutnya */
             }
             .receipt-header { 
                 -webkit-print-color-adjust: exact; 
@@ -164,7 +162,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 no-print bg-white p-4 rounded shadow-sm">
         <div>
             <h4 class="fw-bold mb-1 text-dark"><i class="bi bi-printer-fill text-primary me-2"></i>Cetak Massal E-Kwitansi Resmi</h4>
-            <p class="text-muted small mb-0">Menampilkan seluruh kuitansi lunas dengan format eksklusif ukuran 10.5cm x 21cm.</p>
+            <p class="text-muted small mb-0">Disusun rapi untuk pencetakan 3 kuitansi per halaman A4 (Portrait).</p>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary fw-bold px-3 rounded-pill" onclick="window.close()">Tutup</button>
@@ -270,7 +268,6 @@
                     </div>
                     
                     <div class="receipt-body">
-                        <!-- DIPERBAIKI: Menggunakan nama sekolah langsung -->
                         <div class="k-row"><div class="k-label">Telah Terima Dari</div><div class="k-value">${item.namaSekolah}</div></div>
                         <div class="k-row"><div class="k-label">Asal Sekolah</div><div class="k-value"><span>${item.namaSekolah}</span> <span class="text-muted fw-normal">(NPSN: <span>${item.npsn}</span>)</span></div></div>
                         <div class="k-row"><div class="k-label">Metode Pembayaran</div><div class="k-value">${item.metode}</div></div>
@@ -286,8 +283,8 @@
                     <div class="receipt-body pt-0 pb-2">
                         <div class="k-footer">
                             <div class="d-flex align-items-center gap-2">
-                                <div class="k-qr-box"><img src="${qrUrl}" width="65" height="65"></div>
-                                <div class="text-muted" style="font-size: 0.58rem; max-width: 150px; line-height: 1.1;">
+                                <div class="k-qr-box"><img src="${qrUrl}" width="55" height="55"></div>
+                                <div class="text-muted" style="font-size: 0.55rem; max-width: 140px; line-height: 1.1;">
                                     <i class="bi bi-info-circle text-primary"></i> Scan QR untuk verifikasi keaslian dokumen.
                                 </div>
                             </div>
@@ -296,7 +293,6 @@
                                 <div class="text-muted">Kupang, <span>${tglFormattedPendek}</span></div>
                                 <div class="fw-bold text-dark mb-0">Bendahara Panitia,</div>
                                 <div class="k-sign-box">
-                                    <!-- DIPERBAIKI: Kelas CSS text-uppercase memastikan desainnya bersih tanpa garis bawah ganda -->
                                     <div class="k-sign-name text-uppercase">${namaBendahara}</div>
                                     <div class="k-sign-nip">NIP. <span>${nipBendahara || '-'}</span></div>
                                 </div>
