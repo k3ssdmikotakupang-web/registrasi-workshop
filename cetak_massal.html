@@ -22,15 +22,15 @@
         .page-wrapper {
             display: flex;
             flex-direction: column;
-            gap: 15px; /* Jarak di tampilan web */
+            gap: 15px; 
             margin-bottom: 25px;
         }
 
-        /* UKURAN KEMBALI LEGA: 19.5cm x 10.2cm (Proporsi Asli verify.html) */
+        /* UKURAN DIRAMPINGKAN SEDIKIT AGAR AMAN DARI POTONGAN PRINTER */
         .kwitansi-box { 
             background: #ffffff; 
             border: 1.5px solid #0f172a; 
-            width: 19.5cm; 
+            width: 19cm; /* Diperkecil dari 19.5cm menjadi 19cm agar lebih aman di sisi kanan */
             height: 10.2cm; 
             margin: 0 auto; 
             padding: 0; 
@@ -77,8 +77,8 @@
         }
 
         .k-row { display: flex; margin-bottom: 4px; align-items: baseline; font-size: 0.78rem; }
-        .k-label { width: 27%; font-weight: 600; color: #64748b; }
-        .k-value { width: 73%; font-weight: 700; color: #0f172a; border-bottom: 1px dotted #cbd5e1; padding-bottom: 1px; }
+        .k-label { width: 28%; font-weight: 600; color: #64748b; }
+        .k-value { width: 72%; font-weight: 700; color: #0f172a; border-bottom: 1px dotted #cbd5e1; padding-bottom: 1px; }
 
         .k-nominal-box { 
             background: #f8fafc;
@@ -128,12 +128,11 @@
             letter-spacing: 0.5px;
         }
 
-        /* 🖨️ SETELAN CETAK KERTAS F4 / LEGAL (Tinggi Maks 33cm) */
+        /* 🖨️ SETELAN CETAK KERTAS F4 / LEGAL DENGAN MARGIN 0.3 */
         @media print {
             @page {
-                /* Mengatur ukuran kertas spesifik F4 (8.5 x 13 inch / 21.59cm x 33cm) */
                 size: 21.59cm 33cm; 
-                margin: 5mm; 
+                margin: 5mm 3mm; /* Margin Atas/Bawah 0.5cm | Margin Kiri/Kanan 0.3cm */
             }
             body { 
                 background: #ffffff !important; 
@@ -144,10 +143,9 @@
             }
             .no-print { display: none !important; }
             
-            /* Tiap bungkus dipaksa putus halaman */
             .page-wrapper {
                 page-break-after: always;
-                gap: 5mm !important; /* Jarak antar kuitansi di kertas cetak */
+                gap: 5mm !important; 
                 margin-bottom: 0 !important;
             }
             
@@ -155,8 +153,8 @@
                 border: 1.5px solid #000 !important; 
                 box-shadow: none !important; 
                 margin: 0 auto !important; 
-                width: 19.5cm !important; 
-                height: 10.2cm !important; /* 3 kuitansi x 10.2cm = 30.6cm (Aman masuk di F4 33cm) */
+                width: 19cm !important; /* Disesuaikan ke 19cm */
+                height: 10.2cm !important; 
                 page-break-inside: avoid !important;
             }
             
@@ -175,7 +173,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 no-print bg-white p-4 rounded shadow-sm">
         <div>
             <h4 class="fw-bold mb-1 text-dark"><i class="bi bi-printer-fill text-primary me-2"></i>Cetak Massal E-Kwitansi Resmi</h4>
-            <p class="text-muted small mb-0">Disusun otomatis untuk pencetakan 3 kuitansi per halaman <strong>Kertas F4 / Legal (33cm)</strong>.</p>
+            <p class="text-muted small mb-0">Disusun otomatis untuk pencetakan 3 kuitansi per halaman <strong>Kertas F4/Legal (Margin Kiri/Kanan 0.3cm)</strong>.</p>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary fw-bold px-3 rounded-pill" onclick="window.close()">Tutup</button>
