@@ -45,12 +45,20 @@
 </nav>
 
 <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div>
             <h5 class="fw-bold mb-0">Loket Bendahara</h5>
             <p class="small text-white-50 mb-0" id="infoPetugas">Memuat data petugas...</p>
         </div>
-        <button class="btn btn-sm btn-info" onclick="muatAntrean()"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+        <!-- KELOMPOK TOMBOL AKSI ATAS -->
+        <div class="d-flex gap-2">
+            <button class="btn btn-sm btn-warning fw-bold shadow" onclick="bukaCetakMassal()">
+                <i class="bi bi-printer-fill me-1"></i> Cetak Massal Kuitansi
+            </button>
+            <button class="btn btn-sm btn-info shadow" onclick="muatAntrean()">
+                <i class="bi bi-arrow-clockwise"></i> Refresh
+            </button>
+        </div>
     </div>
 
     <!-- Sistem Tab (Pills) -->
@@ -126,6 +134,13 @@
         }
         // Langsung arahkan ke halaman e-kwitansi VIP Kapten
         window.open(`verify.html?trx=${idTrx}`, '_blank');
+    }
+
+    // FUNGSI UTAMA PEMBUKA CETAK MASSAL
+    function bukaCetakMassal() {
+        // Membuka halaman cetak massal di tab baru dengan membawa parameter ?page=cetak_massal
+        const targetUrl = API_URL + "?page=cetak_massal";
+        window.open(targetUrl, '_blank');
     }
 
     async function muatAntrean() {
