@@ -34,7 +34,7 @@
             box-sizing: border-box;
         }
 
-        /* HEADER BERWARNA EKSKLUSIF (Dipadatkan) */
+        /* HEADER BERWARNA EKSKLUSIF */
         .receipt-header {
             background: #0f172a;
             color: #ffffff;
@@ -98,7 +98,7 @@
             padding-top: 6px; 
         }
 
-        .k-qr-box { padding: 2px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; display: inline-block; }
+        .k-qr-box { padding: 3px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; display: inline-block; }
         
         .k-ttd-container { width: 36%; text-align: center; font-size: 0.72rem; }
         .k-sign-box { margin-top: 18px; }
@@ -218,7 +218,8 @@
             <div class="receipt-body pt-0 pb-2">
                 <div class="k-footer">
                     <div class="d-flex align-items-center gap-2">
-                        <div class="k-qr-box"><img id="v-qr" src="" width="50" height="50"></div>
+                        <!-- QR Code diperbesar sedikit menjadi 65x65 px -->
+                        <div class="k-qr-box"><img id="v-qr" src="" width="65" height="65"></div>
                         <div class="text-muted" style="font-size: 0.58rem; max-width: 150px; line-height: 1.1;">
                             <i class="bi bi-info-circle text-primary"></i> Scan QR untuk verifikasi keaslian dokumen.
                         </div>
