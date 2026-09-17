@@ -18,47 +18,51 @@
             min-height: 100vh;
         }
 
-        /* UKURAN STANDAR KUITANSI A4 PORTRAIT (3 PER HALAMAN) */
+        /* BUNGKUS HALAMAN KHUSUS F4 / LEGAL */
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* Jarak di tampilan web */
+            margin-bottom: 25px;
+        }
+
+        /* UKURAN KEMBALI LEGA: 19.5cm x 10.2cm (Proporsi Asli verify.html) */
         .kwitansi-box { 
             background: #ffffff; 
             border: 1.5px solid #0f172a; 
-            width: 19cm; /* Disesuaikan agar pas di lebar A4 */
-            height: 9.2cm; /* Disesuaikan agar pas 3 tumpuk di tinggi A4 */
-            margin: 0 auto 15px auto; 
+            width: 19.5cm; 
+            height: 10.2cm; 
+            margin: 0 auto; 
             padding: 0; 
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             position: relative; 
             overflow: hidden; 
             box-sizing: border-box;
-            page-break-inside: avoid; /* Mencegah kuitansi terpotong di tengah halaman */
         }
 
-        /* HEADER BERWARNA EKSKLUSIF */
         .receipt-header {
             background: #0f172a;
             color: #ffffff;
-            padding: 8px 18px;
+            padding: 10px 18px;
             border-bottom: 3px solid #00f2fe;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .receipt-body {
-            padding: 6px 18px;
-        }
+        .receipt-body { padding: 8px 18px; }
 
         .k-title { 
             font-weight: 800; 
-            font-size: 1.05rem; 
+            font-size: 1.1rem; 
             letter-spacing: 0.5px; 
             color: #ffffff;
             text-transform: uppercase; 
             margin-bottom: 0px; 
         }
         
-        .k-subtitle { font-size: 0.6rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+        .k-subtitle { font-size: 0.65rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .k-no { 
             display: inline-block; 
@@ -72,36 +76,35 @@
             border-radius: 4px;
         }
 
-        .k-row { display: flex; margin-bottom: 3px; align-items: baseline; font-size: 0.75rem; }
-        .k-label { width: 28%; font-weight: 600; color: #64748b; }
-        .k-value { width: 72%; font-weight: 700; color: #0f172a; border-bottom: 1px dotted #cbd5e1; padding-bottom: 1px; }
+        .k-row { display: flex; margin-bottom: 4px; align-items: baseline; font-size: 0.78rem; }
+        .k-label { width: 27%; font-weight: 600; color: #64748b; }
+        .k-value { width: 73%; font-weight: 700; color: #0f172a; border-bottom: 1px dotted #cbd5e1; padding-bottom: 1px; }
 
-        /* KOTAK NOMINAL COMPACT */
         .k-nominal-box { 
             background: #f8fafc;
             border: 1.5px solid #0f172a; 
             padding: 2px 12px; 
-            font-size: 1.1rem; 
+            font-size: 1.15rem; 
             font-weight: 800; 
             color: #0f172a;
             border-radius: 6px;
             display: inline-block; 
-            margin: 2px 0; 
+            margin: 1px 0; 
         }
 
         .k-footer { 
             display: flex; 
             justify-content: space-between; 
             align-items: flex-end; 
-            margin-top: 2px; 
+            margin-top: 4px; 
             border-top: 1px solid #e2e8f0; 
             padding-top: 6px; 
         }
 
         .k-qr-box { padding: 3px; border: 1px solid #cbd5e1; border-radius: 4px; background: #ffffff; display: inline-block; }
         
-        .k-ttd-container { width: 36%; text-align: center; font-size: 0.7rem; }
-        .k-sign-box { margin-top: 14px; }
+        .k-ttd-container { width: 36%; text-align: center; font-size: 0.72rem; }
+        .k-sign-box { margin-top: 15px; }
         
         .k-sign-name { 
             font-weight: 800; 
@@ -125,11 +128,12 @@
             letter-spacing: 0.5px;
         }
 
-        /* SETELAN CETAK UNTUK A4 PORTRAIT (3 KUITANSI/HALAMAN) */
+        /* 🖨️ SETELAN CETAK KERTAS F4 / LEGAL (Tinggi Maks 33cm) */
         @media print {
             @page {
-                size: A4 portrait;
-                margin: 5mm 10mm; /* Margin atas-bawah 5mm, kiri-kanan 10mm */
+                /* Mengatur ukuran kertas spesifik F4 (8.5 x 13 inch / 21.59cm x 33cm) */
+                size: 21.59cm 33cm; 
+                margin: 5mm; 
             }
             body { 
                 background: #ffffff !important; 
@@ -139,14 +143,23 @@
                 print-color-adjust: exact; 
             }
             .no-print { display: none !important; }
+            
+            /* Tiap bungkus dipaksa putus halaman */
+            .page-wrapper {
+                page-break-after: always;
+                gap: 5mm !important; /* Jarak antar kuitansi di kertas cetak */
+                margin-bottom: 0 !important;
+            }
+            
             .kwitansi-box { 
                 border: 1.5px solid #000 !important; 
                 box-shadow: none !important; 
-                margin: 0 auto 6mm auto !important; /* Jarak 6mm antar kuitansi agar rapi saat digunting */
-                width: 19cm !important; 
-                height: 9.2cm !important; 
-                page-break-inside: avoid; /* Memaksa browser melempar kuitansi ke-4 ke halaman berikutnya */
+                margin: 0 auto !important; 
+                width: 19.5cm !important; 
+                height: 10.2cm !important; /* 3 kuitansi x 10.2cm = 30.6cm (Aman masuk di F4 33cm) */
+                page-break-inside: avoid !important;
             }
+            
             .receipt-header { 
                 -webkit-print-color-adjust: exact; 
                 print-color-adjust: exact; 
@@ -162,7 +175,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 no-print bg-white p-4 rounded shadow-sm">
         <div>
             <h4 class="fw-bold mb-1 text-dark"><i class="bi bi-printer-fill text-primary me-2"></i>Cetak Massal E-Kwitansi Resmi</h4>
-            <p class="text-muted small mb-0">Disusun rapi untuk pencetakan 3 kuitansi per halaman A4 (Portrait).</p>
+            <p class="text-muted small mb-0">Disusun otomatis untuk pencetakan 3 kuitansi per halaman <strong>Kertas F4 / Legal (33cm)</strong>.</p>
         </div>
         <div class="d-flex gap-2">
             <button class="btn btn-outline-secondary fw-bold px-3 rounded-pill" onclick="window.close()">Tutup</button>
@@ -174,7 +187,7 @@
 
     <div id="loadingArea" class="text-center py-5">
         <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
-        <h6 class="mt-3 text-secondary">Menyiapkan format kuitansi massal dari server...</h6>
+        <h6 class="mt-3 text-secondary">Menyiapkan format kuitansi F4 dari server...</h6>
     </div>
 
     <div id="containerKwitansi"></div>
@@ -233,76 +246,87 @@
             return;
         }
 
-        let html = '';
-        listData.forEach((item) => {
-            let tglFormattedFull = '-';
-            let tglFormattedPendek = '-';
+        let fullHtml = '';
+        
+        // PENGELOMPOKAN 3 KUITANSI PER HALAMAN F4
+        for (let i = 0; i < listData.length; i += 3) {
+            let chunk = listData.slice(i, i + 3); 
+            
+            fullHtml += `<div class="page-wrapper">`; 
+            
+            chunk.forEach((item) => {
+                let tglFormattedFull = '-';
+                let tglFormattedPendek = '-';
 
-            if (item.tglBayar) {
-                let tgl = new Date(item.tglBayar);
-                if (!isNaN(tgl)) {
-                    let optionsDate = { day: '2-digit', month: 'long', year: 'numeric' };
-                    let optionsTime = { hour: '2-digit', minute:'2-digit' };
-                    tglFormattedFull = tgl.toLocaleDateString('id-ID', optionsDate) + ' | Pukul ' + tgl.toLocaleTimeString('id-ID', optionsTime) + ' WITA';
-                    tglFormattedPendek = tgl.toLocaleDateString('id-ID', optionsDate);
-                } else {
-                    tglFormattedFull = item.tglBayar;
-                    tglFormattedPendek = item.tglBayar.split(' ')[0];
+                if (item.tglBayar) {
+                    let tgl = new Date(item.tglBayar);
+                    if (!isNaN(tgl)) {
+                        let optionsDate = { day: '2-digit', month: 'long', year: 'numeric' };
+                        let optionsTime = { hour: '2-digit', minute:'2-digit' };
+                        tglFormattedFull = tgl.toLocaleDateString('id-ID', optionsDate) + ' | Pukul ' + tgl.toLocaleTimeString('id-ID', optionsTime) + ' WITA';
+                        tglFormattedPendek = tgl.toLocaleDateString('id-ID', optionsDate);
+                    } else {
+                        tglFormattedFull = item.tglBayar;
+                        tglFormattedPendek = item.tglBayar.split(' ')[0];
+                    }
                 }
-            }
 
-            let isiQR = "RESMI PANITIA - No. TRX: " + item.noKwitansi + " | Pembayar: " + item.namaSekolah + " | Total: Rp " + Number(item.nominal).toLocaleString('id-ID');
-            let qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
+                let isiQR = "RESMI PANITIA - No. TRX: " + item.noKwitansi + " | Pembayar: " + item.namaSekolah + " | Total: Rp " + Number(item.nominal).toLocaleString('id-ID');
+                let qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
 
-            html += `
-                <div class="kwitansi-box">
-                    <div class="receipt-header">
-                        <div>
-                            <div class="k-title"><i class="bi bi-patch-check-fill me-1" style="color: #00f2fe;"></i> E-Kwitansi Resmi Panitia</div>
-                            <div class="k-subtitle">Workshop Manajemen Kepala SD/MI Kota Kupang 2026</div>
+                fullHtml += `
+                    <div class="kwitansi-box">
+                        <div class="receipt-header">
+                            <div>
+                                <div class="k-title"><i class="bi bi-patch-check-fill me-1" style="color: #00f2fe;"></i> E-Kwitansi Resmi Panitia</div>
+                                <div class="k-subtitle">Workshop Manajemen Kepala SD/MI Kota Kupang 2026</div>
+                            </div>
+                            <div class="text-end">
+                                <div class="badge-status mb-1"><i class="bi bi-shield-check-fill"></i> LUNAS (${item.metode})</div>
+                                <div><span class="k-no">${item.noKwitansi}</span></div>
+                            </div>
                         </div>
-                        <div class="text-end">
-                            <div class="badge-status mb-1"><i class="bi bi-shield-check-fill"></i> LUNAS (${item.metode})</div>
-                            <div><span class="k-no">${item.noKwitansi}</span></div>
-                        </div>
-                    </div>
-                    
-                    <div class="receipt-body">
-                        <div class="k-row"><div class="k-label">Telah Terima Dari</div><div class="k-value">${item.namaSekolah}</div></div>
-                        <div class="k-row"><div class="k-label">Asal Sekolah</div><div class="k-value"><span>${item.namaSekolah}</span> <span class="text-muted fw-normal">(NPSN: <span>${item.npsn}</span>)</span></div></div>
-                        <div class="k-row"><div class="k-label">Metode Pembayaran</div><div class="k-value">${item.metode}</div></div>
-                        <div class="k-row"><div class="k-label">Waktu Transaksi</div><div class="k-value">${tglFormattedFull}</div></div>
-                        <div class="k-row"><div class="k-label">Tujuan Pembayaran</div><div class="k-value" style="border: none;">Kontribusi Keikutsertaan Workshop Manajemen Kepala SD/MI Kota Kupang Tahun 2026</div></div>
                         
-                        <div class="text-center">
-                            <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Jumlah Kontribusi Diterima:</div>
-                            <div class="k-nominal-box">${formatRp(item.nominal)}</div>
-                        </div>
-                    </div>
-                    
-                    <div class="receipt-body pt-0 pb-2">
-                        <div class="k-footer">
-                            <div class="d-flex align-items-center gap-2">
-                                <div class="k-qr-box"><img src="${qrUrl}" width="55" height="55"></div>
-                                <div class="text-muted" style="font-size: 0.55rem; max-width: 140px; line-height: 1.1;">
-                                    <i class="bi bi-info-circle text-primary"></i> Scan QR untuk verifikasi keaslian dokumen.
-                                </div>
-                            </div>
+                        <div class="receipt-body">
+                            <div class="k-row"><div class="k-label">Telah Terima Dari</div><div class="k-value">${item.namaSekolah}</div></div>
+                            <div class="k-row"><div class="k-label">Asal Sekolah</div><div class="k-value"><span>${item.namaSekolah}</span> <span class="text-muted fw-normal">(NPSN: <span>${item.npsn}</span>)</span></div></div>
+                            <div class="k-row"><div class="k-label">Metode Pembayaran</div><div class="k-value">${item.metode}</div></div>
+                            <div class="k-row"><div class="k-label">Waktu Transaksi</div><div class="k-value">${tglFormattedFull}</div></div>
+                            <div class="k-row"><div class="k-label">Tujuan Pembayaran</div><div class="k-value" style="border: none;">Kontribusi Keikutsertaan Workshop Manajemen Kepala SD/MI Kota Kupang Tahun 2026</div></div>
                             
-                            <div class="k-ttd-container">
-                                <div class="text-muted">Kupang, <span>${tglFormattedPendek}</span></div>
-                                <div class="fw-bold text-dark mb-0">Bendahara Panitia,</div>
-                                <div class="k-sign-box">
-                                    <div class="k-sign-name text-uppercase">${namaBendahara}</div>
-                                    <div class="k-sign-nip">NIP. <span>${nipBendahara || '-'}</span></div>
+                            <div class="text-center">
+                                <div class="small text-muted text-uppercase fw-bold" style="font-size: 0.6rem;">Jumlah Kontribusi Diterima:</div>
+                                <div class="k-nominal-box">${formatRp(item.nominal)}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="receipt-body pt-0 pb-2">
+                            <div class="k-footer">
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="k-qr-box"><img src="${qrUrl}" width="60" height="60"></div>
+                                    <div class="text-muted" style="font-size: 0.55rem; max-width: 140px; line-height: 1.1;">
+                                        <i class="bi bi-info-circle text-primary"></i> Scan QR untuk verifikasi keaslian dokumen.
+                                    </div>
+                                </div>
+                                
+                                <div class="k-ttd-container">
+                                    <div class="text-muted">Kupang, <span>${tglFormattedPendek}</span></div>
+                                    <div class="fw-bold text-dark mb-0">Bendahara Panitia,</div>
+                                    <div class="k-sign-box">
+                                        <div class="k-sign-name text-uppercase">${namaBendahara}</div>
+                                        <div class="k-sign-nip">NIP. <span>${nipBendahara || '-'}</span></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
-        });
-        wadah.innerHTML = html;
+                `;
+            });
+            
+            fullHtml += `</div>`; 
+        }
+        
+        wadah.innerHTML = fullHtml;
     }
 </script>
 </body>
