@@ -39,30 +39,37 @@
 
     <div id="loadingArea" class="text-center py-5">
         <div class="spinner-border text-primary" role="status"></div>
-        <p class="mt-2 text-muted">Menyiapkan data kuitansi massal...</p>
+        <p class="mt-2 text-muted">Menyiapkan data kuitansi massal dari server...</p>
     </div>
 
     <div id="containerKwitansi"></div>
 </div>
 
 <script>
+    // ⚠️ PASTE API URL KAPTEN DI SINI (Sama seperti file GitHub lainnya)
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    
     const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
 
-    window.onload = function() {
-        google.script.run
-            .withSuccessHandler(function(result) {
-                document.getElementById('loadingArea').style.display = 'none';
-                if (result.status === 'success') {
-                    renderKwitansi(result.data, result.bendahara);
-                } else {
-                    document.getElementById('containerKwitansi').innerHTML = `<div class="alert alert-danger">Gagal memuat data: ${result.message}</div>`;
-                }
-            })
-            .withFailureHandler(function(err) {
-                document.getElementById('loadingArea').style.display = 'none';
-                document.getElementById('containerKwitansi').innerHTML = `<div class="alert alert-danger">Error server: ${err.message}</div>`;
-            })
-            .getAllKwitansiMassal();
+    window.onload = async function() {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_kwitansi_massal' })
+            });
+            const result = await response.json();
+            
+            document.getElementById('loadingArea').style.display = 'none';
+            if (result.status === 'success') {
+                renderKwitansi(result.data, result.bendahara);
+            } else {
+                document.getElementById('containerKwitansi').innerHTML = `<div class="alert alert-danger">Gagal memuat data: ${result.message}</div>`;
+            }
+        } catch (err) {
+            document.getElementById('loadingArea').style.display = 'none';
+            document.getElementById('containerKwitansi').innerHTML = `<div class="alert alert-danger">Error koneksi server: ${err.message}</div>`;
+        }
     };
 
     function renderKwitansi(listData, bendahara) {
