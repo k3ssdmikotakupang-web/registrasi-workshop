@@ -6,6 +6,8 @@
     <title>Bukti Setoran Kontribusi - EMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Script html2canvas untuk fitur unduh gambar -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
@@ -37,12 +39,11 @@
         }
 
         .receipt-header::after {
-            content: '';
             position: absolute;
             bottom: -20px;
             right: 40px;
             font-family: "bootstrap-icons";
-            content: "\F28A"; /* Ikon check-circle */
+            content: "\F28A"; 
             font-size: 6rem;
             color: rgba(255, 255, 255, 0.05);
             line-height: 1;
@@ -80,11 +81,10 @@
         }
 
         .validator-area {
-            margin-top: 50px;
             text-align: right;
         }
 
-        /* Fix untuk nama validator yang panjang */
+        /* Nama validator anti terpotong */
         .validator-name {
             font-family: 'Courier Prime', monospace;
             font-weight: bold;
@@ -93,7 +93,15 @@
             color: #0f172a;
             display: inline-block;
             max-width: 100%;
-            word-wrap: break-word; /* Memaksa teks turun jika kepanjangan */
+            word-wrap: break-word; 
+        }
+
+        .qr-box-container {
+            padding: 6px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            background: #ffffff;
+            display: inline-block;
         }
 
         .disclaimer-box {
@@ -102,101 +110,134 @@
             border-left: 4px solid #f59e0b;
             padding: 15px 20px;
             border-radius: 8px;
-            margin-top: 40px;
+            margin-top: 30px;
             font-size: 0.85rem;
             color: #92400e;
         }
+
+        .btn-action {
+            background: #0f172a;
+            color: #fff;
+            font-weight: 700;
+            padding: 10px 25px;
+            border-radius: 30px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
+            transition: background 0.2s;
+        }
+        .btn-action:hover { background: #1e293b; }
 
         /* Mode Cetak (Print) */
         @media print {
             body { background: white; padding: 0; }
             .receipt-container { box-shadow: none; max-width: 100%; }
-            .btn-print { display: none !important; }
-            .receipt-header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .nominal-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .disclaimer-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            .btn-print-area { display: none !important; }
+            .receipt-header, .nominal-box, .disclaimer-box { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="text-center mb-3 btn-print">
-        <button class="btn btn-dark fw-bold px-4 rounded-pill shadow" onclick="window.print()">
-            <i class="bi bi-printer-fill me-2"></i> Cetak Dokumen
-        </button>
+<div class="container py-4">
+    <!-- Area Loading -->
+    <div id="box-loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status"></div>
+        <h5 class="mt-3 text-secondary">Memuat Bukti Setoran Kontribusi...</h5>
     </div>
 
-    <div class="receipt-container">
-        <!-- HEADER -->
-        <div class="receipt-header d-flex justify-content-between align-items-center">
-            <div>
-                <h3 class="fw-bold mb-1" style="letter-spacing: 1px;">BUKTI SETORAN KONTRIBUSI</h3>
-                <p class="mb-0 text-white-50 small">K3S SD/MI KOTA KUPANG - WORKSHOP MANAJEMEN</p>
-            </div>
-            <div class="text-end">
-                <span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 fs-6">
-                    <i class="bi bi-check-circle-fill me-1"></i> LUNAS
-                </span>
-            </div>
+    <!-- Area Konten Utama -->
+    <div id="box-valid" class="d-none">
+        <div class="text-center mb-3 btn-print-area d-flex justify-content-center gap-3">
+            <button class="btn btn-dark fw-bold px-4 rounded-pill shadow" onclick="window.print()">
+                <i class="bi bi-printer-fill me-2"></i> Cetak Dokumen PDF
+            </button>
+            <button class="btn btn-outline-info fw-bold px-4 rounded-pill shadow bg-dark text-white" onclick="downloadSebagaiGambar()">
+                <i class="bi bi-image me-2"></i> Simpan Sebagai Gambar
+            </button>
         </div>
 
-        <!-- BODY -->
-        <div class="receipt-body">
-            
-            <div class="row mb-4">
-                <div class="col-6">
-                    <p class="small text-muted mb-1">No. Referensi / TRX:</p>
-                    <h6 class="fw-bold font-monospace" id="txtIdTrx">Memuat...</h6>
-                </div>
-                <div class="col-6 text-end">
-                    <p class="small text-muted mb-1">Tanggal Transaksi:</p>
-                    <h6 class="fw-bold" id="txtTanggal">Memuat...</h6>
-                </div>
-            </div>
-
-            <hr class="border-secondary opacity-25 mb-4">
-
-            <table class="table table-custom">
-                <tr>
-                    <td>Telah Terima Dari</td>
-                    <td>:</td>
-                    <td>
-                        <h5 class="fw-bold text-dark mb-0" id="txtNamaSekolah">Memuat Data Sekolah...</h5>
-                        <p class="small text-muted mb-0" id="txtNpsn">NPSN: -</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Guna Membayar</td>
-                    <td>:</td>
-                    <td>
-                        <div class="fs-6 lh-base text-dark">
-                            Kontribusi Sekolah Peserta Workshop Manajemen Kepsek - Pembayaran <span id="txtMetode" class="fw-bold">...</span> sebesar:
-                        </div>
-                        <div class="nominal-box">
-                            <h2 class="fw-bold mb-0 text-dark" id="txtNominal">Rp 0</h2>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-
-            <!-- AREA VALIDATOR -->
-            <div class="validator-area">
-                <p class="mb-4 text-muted">Kupang, <span id="txtTanggalBawah">...</span><br>Penerima / Validator,</p>
-                <!-- Class 'validator-name' akan memastikan teks yang panjang akan turun (wrap) dengan rapi -->
-                <div class="validator-name" id="txtValidator">Memuat...</div>
-                <p class="small text-muted mt-1">Petugas EMS</p>
-            </div>
-
-            <!-- DISCLAIMER BARU SESUAI REQUEST KAPTEN -->
-            <div class="disclaimer-box d-flex align-items-start">
-                <i class="bi bi-info-circle-fill fs-5 me-3 mt-1"></i>
+        <div class="receipt-container" id="kwitansi-capture">
+            <!-- HEADER -->
+            <div class="receipt-header d-flex justify-content-between align-items-center">
                 <div>
-                    <strong>Perhatian:</strong><br>
-                    Dokumen ini merupakan bukti pengumpulan kontribusi sekolah yang sah dan terekam di dalam sistem (EMS). <strong>E-Kwitansi Resmi Panitia</strong> akan diserahkan secara terpisah oleh Bendahara Panitia Kegiatan.
+                    <h3 class="fw-bold mb-1" style="letter-spacing: 1px;">BUKTI SETORAN KONTRIBUSI</h3>
+                    <p class="mb-0 text-white-50 small">K3S SD/MI KOTA KUPANG - WORKSHOP MANAJEMEN</p>
+                </div>
+                <div class="text-end">
+                    <span class="badge bg-success bg-opacity-25 text-success border border-success px-3 py-2 fs-6">
+                        <i class="bi bi-check-circle-fill me-1"></i> LUNAS
+                    </span>
                 </div>
             </div>
 
+            <!-- BODY -->
+            <div class="receipt-body">
+                
+                <div class="row mb-4">
+                    <div class="col-6">
+                        <p class="small text-muted mb-1">No. Referensi / TRX:</p>
+                        <h6 class="fw-bold font-monospace" id="txtIdTrx">Memuat...</h6>
+                    </div>
+                    <div class="col-6 text-end">
+                        <p class="small text-muted mb-1">Tanggal Transaksi:</p>
+                        <h6 class="fw-bold" id="txtTanggal">Memuat...</h6>
+                    </div>
+                </div>
+
+                <hr class="border-secondary opacity-25 mb-4">
+
+                <table class="table table-custom">
+                    <tr>
+                        <td>Telah Terima Dari</td>
+                        <td>:</td>
+                        <td>
+                            <h5 class="fw-bold text-dark mb-0" id="txtNamaSekolah">Memuat Data Sekolah...</h5>
+                            <p class="small text-muted mb-0" id="txtNpsn">NPSN: -</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Guna Membayar</td>
+                        <td>:</td>
+                        <td>
+                            <div class="fs-6 lh-base text-dark">
+                                Kontribusi Sekolah Peserta Workshop Manajemen Kepsek - Pembayaran <span id="txtMetode" class="fw-bold">...</span> sebesar:
+                            </div>
+                            <div class="nominal-box">
+                                <h2 class="fw-bold mb-0 text-dark" id="txtNominal">Rp 0</h2>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- BARIS BAWAH: QR CODE VALIDASI & Tanda Tangan Validator -->
+                <div class="row align-items-end mt-4 pt-3 border-top border-light">
+                    <div class="col-5 d-flex align-items-center gap-3">
+                        <div class="qr-box-container">
+                            <img id="v-qr" src="" width="85" height="85" alt="QR Validasi">
+                        </div>
+                        <div class="text-muted" style="font-size: 0.7rem; line-height: 1.2;">
+                            <i class="bi bi-shield-lock-fill text-primary"></i> Scan untuk verifikasi sah setoran sistem.
+                        </div>
+                    </div>
+                    
+                    <div class="col-7 validator-area">
+                        <p class="mb-4 text-muted small">Kupang, <span id="txtTanggalBawah">...</span><br>Penerima / Validator,</p>
+                        <div class="validator-name" id="txtValidator">Memuat...</div>
+                        <p class="small text-muted mt-1 mb-0">Petugas EMS</p>
+                    </div>
+                </div>
+
+                <!-- DISCLAIMER -->
+                <div class="disclaimer-box d-flex align-items-start">
+                    <i class="bi bi-info-circle-fill fs-5 me-3 mt-1"></i>
+                    <div>
+                        <strong>Perhatian:</strong><br>
+                        Dokumen ini merupakan bukti pengumpulan kontribusi sekolah yang sah dan terekam di dalam sistem (EMS). <strong>E-Kwitansi Resmi Panitia</strong> akan diserahkan secara terpisah oleh Bendahara Panitia Kegiatan.
+                    </div>
+                </div>
+
+            </div>
         </div>
     </div>
 </div>
@@ -205,25 +246,22 @@
     // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
 
-    // Fungsi format rupiah
     function formatRp(angka) {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
     }
 
-    // Fungsi format tanggal cantik (Misal: 25 Oktober 2026)
     function formatTanggal(isoString) {
         if(!isoString) return '-';
         const date = new Date(isoString);
-        const options = { day: 'numeric', month: 'long', year: 'numeric' };
-        return date.toLocaleDateString('id-ID', options);
+        return date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
     async function muatDataKwitansi() {
         const urlParams = new URLSearchParams(window.location.search);
-        const idTrx = urlParams.get('trx') || urlParams.get('id');
+        const idTrx = urlParams.get('trx') || urlParams.get('kw') || urlParams.get('id');
 
         if (!idTrx) {
-            document.body.innerHTML = '<div class="container mt-5"><div class="alert alert-danger text-center">ID Transaksi tidak ditemukan di URL!</div></div>';
+            document.getElementById('box-loading').innerHTML = '<div class="alert alert-danger text-center">ID Transaksi tidak ditemukan di URL!</div>';
             return;
         }
 
@@ -237,8 +275,9 @@
 
             if (result.status === 'success') {
                 const data = result.data;
+                document.getElementById('box-loading').classList.add('d-none');
+                document.getElementById('box-valid').classList.remove('d-none');
                 
-                // Isi ke dalam HTML
                 document.getElementById('txtIdTrx').innerText = data.id_transaksi;
                 
                 let tglFormatted = formatTanggal(data.tanggal);
@@ -251,23 +290,34 @@
                 document.getElementById('txtMetode').innerText = data.metode;
                 document.getElementById('txtNominal').innerText = formatRp(data.nominal);
                 
-                // MENGATASI NAMA VALIDATOR TERPOTONG: 
-                // Jika mengandung kata "via", kita bersihkan agar hanya namanya saja yang muncul
-                let namaPetugas = data.validator;
+                let namaPetugas = data.validator || "Petugas EMS";
                 if(namaPetugas.toLowerCase().includes('via ')) {
                     namaPetugas = namaPetugas.split(/via /i)[1]; 
                 }
                 document.getElementById('txtValidator').innerText = namaPetugas;
 
+                // GENERATE QR CODE VALIDASI
+                let isiQR = "BUKTI SETORAN SAH - No. TRX: " + data.id_transaksi + " | Sekolah: " + data.nama_sekolah + " | Nominal: Rp " + Number(data.nominal).toLocaleString('id-ID');
+                document.getElementById('v-qr').src = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
+
             } else {
-                alert("Gagal memuat data: " + result.message);
+                document.getElementById('box-loading').innerHTML = `<div class="alert alert-danger text-center">Gagal memuat data: ${result.message}</div>`;
             }
         } catch (error) {
-            alert("Koneksi bermasalah. Gagal memuat data dari server.");
+            document.getElementById('box-loading').innerHTML = '<div class="alert alert-danger text-center">Koneksi bermasalah. Gagal memuat data dari server.</div>';
         }
     }
 
-    // Jalankan saat halaman dibuka
+    function downloadSebagaiGambar() {
+        const box = document.getElementById('kwitansi-capture');
+        html2canvas(box, { scale: 2 }).then(canvas => {
+            let link = document.createElement('a');
+            link.download = `Bukti_Setoran_${document.getElementById('txtIdTrx').innerText}.jpg`;
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+        });
+    }
+
     muatDataKwitansi();
 </script>
 
