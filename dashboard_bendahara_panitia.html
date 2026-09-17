@@ -148,6 +148,11 @@
             sakelar.checked = !sakelar.checked; // Balikkan ke semula jika error
         }
     }
+    function bukaCetakMassal() {
+        // Membuka halaman cetak massal di tab baru dengan membawa parameter ?page=cetak_massal
+        const targetUrl = DEPLOY_URL + "?page=cetak_massal";
+        window.open(targetUrl, '_blank');
+    }
 
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
     muatData();
