@@ -31,7 +31,7 @@
             position: relative; 
             overflow: hidden; 
             box-sizing: border-box;
-            page-break-after: always; /* Tiap kuitansi pas terpotong 1 halaman saat print */
+            page-break-after: always;
             page-break-inside: avoid;
         }
 
@@ -103,6 +103,8 @@
         
         .k-ttd-container { width: 36%; text-align: center; font-size: 0.72rem; }
         .k-sign-box { margin-top: 18px; }
+        
+        /* DIPERBAIKI: Hapus underline ekstra dan kembalikan ke desain asli verify.html */
         .k-sign-name { 
             font-weight: 800; 
             font-size: 0.8rem; 
@@ -111,8 +113,6 @@
             display: inline-block; 
             width: 100%; 
             color: #0f172a; 
-            font-family: 'Courier Prime', monospace;
-            text-decoration: underline;
         }
         .k-sign-nip { font-size: 0.6rem; color: #64748b; margin-top: 1px; }
         
@@ -127,7 +127,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* PENGATURAN CETAK (FORCE 10.5 x 21 CM PER HALAMAN) */
+        /* PENGATURAN CETAK */
         @media print {
             @page {
                 size: 21cm 10.5cm;
@@ -161,7 +161,6 @@
 <body>
 
 <div class="container">
-    <!-- Tombol Kontrol Atas (Hilang saat diprint) -->
     <div class="d-flex justify-content-between align-items-center mb-4 no-print bg-white p-4 rounded shadow-sm">
         <div>
             <h4 class="fw-bold mb-1 text-dark"><i class="bi bi-printer-fill text-primary me-2"></i>Cetak Massal E-Kwitansi Resmi</h4>
@@ -175,13 +174,11 @@
         </div>
     </div>
 
-    <!-- Area Loading -->
     <div id="loadingArea" class="text-center py-5">
         <div class="spinner-border text-primary" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
         <h6 class="mt-3 text-secondary">Menyiapkan format kuitansi massal dari server...</h6>
     </div>
 
-    <!-- Wadah Kuitansi Berderet -->
     <div id="containerKwitansi"></div>
 </div>
 
@@ -195,7 +192,6 @@
 
     window.onload = async function() {
         try {
-            // Tarik data kwitansi massal dan data pejabat secara paralel
             const [resKwitansi, resPejabat] = await Promise.all([
                 fetch(API_URL, {
                     method: 'POST',
@@ -257,18 +253,11 @@
                 }
             }
 
-            let namaPetugas = item.operator || "Petugas EMS";
-            if (namaPetugas.toLowerCase().includes('via ')) {
-                namaPetugas = namaPetugas.split(/via /i)[1]; 
-            }
-
-            // String QR Identik dengan verify.html
             let isiQR = "RESMI PANITIA - No. TRX: " + item.noKwitansi + " | Pembayar: " + item.namaSekolah + " | Total: Rp " + Number(item.nominal).toLocaleString('id-ID');
             let qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(isiQR);
 
             html += `
                 <div class="kwitansi-box">
-                    <!-- HEADER BERWARNA -->
                     <div class="receipt-header">
                         <div>
                             <div class="k-title"><i class="bi bi-patch-check-fill me-1" style="color: #00f2fe;"></i> E-Kwitansi Resmi Panitia</div>
@@ -280,9 +269,9 @@
                         </div>
                     </div>
                     
-                    <!-- BODY KERTAS PUTIH BERSIH -->
                     <div class="receipt-body">
-                        <div class="k-row"><div class="k-label">Telah Terima Dari</div><div class="k-value">${namaPetugas} (Petugas/Validator)</div></div>
+                        <!-- DIPERBAIKI: Menggunakan nama sekolah langsung -->
+                        <div class="k-row"><div class="k-label">Telah Terima Dari</div><div class="k-value">${item.namaSekolah}</div></div>
                         <div class="k-row"><div class="k-label">Asal Sekolah</div><div class="k-value"><span>${item.namaSekolah}</span> <span class="text-muted fw-normal">(NPSN: <span>${item.npsn}</span>)</span></div></div>
                         <div class="k-row"><div class="k-label">Metode Pembayaran</div><div class="k-value">${item.metode}</div></div>
                         <div class="k-row"><div class="k-label">Waktu Transaksi</div><div class="k-value">${tglFormattedFull}</div></div>
@@ -294,7 +283,6 @@
                         </div>
                     </div>
                     
-                    <!-- FOOTER -->
                     <div class="receipt-body pt-0 pb-2">
                         <div class="k-footer">
                             <div class="d-flex align-items-center gap-2">
@@ -308,6 +296,7 @@
                                 <div class="text-muted">Kupang, <span>${tglFormattedPendek}</span></div>
                                 <div class="fw-bold text-dark mb-0">Bendahara Panitia,</div>
                                 <div class="k-sign-box">
+                                    <!-- DIPERBAIKI: Kelas CSS text-uppercase memastikan desainnya bersih tanpa garis bawah ganda -->
                                     <div class="k-sign-name text-uppercase">${namaBendahara}</div>
                                     <div class="k-sign-nip">NIP. <span>${nipBendahara || '-'}</span></div>
                                 </div>
