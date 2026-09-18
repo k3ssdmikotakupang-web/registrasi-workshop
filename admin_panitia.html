@@ -165,7 +165,12 @@
 
     async function muatDataMaster() {
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_master_kepanitiaan' }) });
+            // Mualim tambahkan headers pengaman di sini
+            const res = await fetch(API_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_master_kepanitiaan' }) 
+            });
             const result = await res.json();
             
             if(result.status === 'success') {
@@ -201,8 +206,10 @@
         Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
         try {
+            // Mualim tambahkan headers pengaman di sini
             const res = await fetch(API_URL, { 
                 method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'tambah_master_kepanitiaan', tipe: tipe, nama_master: nilai }) 
             });
             const result = await res.json();
@@ -285,7 +292,12 @@
             const payload = { action: 'upload_sk_panitia_kolektif', anggota: arrayAnggota, fileName: fileInput.name, mimeType: fileInput.type, fileData: base64Data };
 
             try {
-                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+                // Mualim tambahkan headers pengaman di sini
+                const res = await fetch(API_URL, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload) 
+                });
                 const result = await res.json();
                 if(result.status === 'success') {
                     Swal.fire('Berhasil!', result.message, 'success');
@@ -304,14 +316,17 @@
         tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Memperbarui data... <div class="spinner-border spinner-border-sm text-info ms-2"></div></td></tr>`;
         
         try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_all_panitia' }) });
+            // Mualim tambahkan headers pengaman di sini
+            const res = await fetch(API_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_all_panitia' }) 
+            });
             const result = await res.json();
             
             if(result.status === 'success' && result.data.length > 0) {
                 let html = '';
                 result.data.forEach((p, index) => {
-                    // Penyesuaian karena get_all_panitia di code.gs mungkin belum mengirim semua detail,
-                    // Tapi setidaknya kita tampilkan apa yang ada.
                     let teksDivisi = p.divisi || p.jabatan || '-'; 
                     html += `
                         <tr>
