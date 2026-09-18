@@ -151,13 +151,12 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI!
+    // ⚠️ KAPTEN, PASTIKAN URL INI ADALAH URL TERBARU DARI DEPLOYMENT KAPTEN!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
     let cacheDivisi = [];
     let cacheJabatan = [];
 
-    // 1. MUAT DATA MASTER SAAT HALAMAN DIBUKA
     document.addEventListener('DOMContentLoaded', () => {
         muatDataMaster();
         muatTabelPanitia();
@@ -165,7 +164,6 @@
 
     async function muatDataMaster() {
         try {
-            // Mualim tambahkan headers pengaman di sini
             const res = await fetch(API_URL, { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -177,14 +175,18 @@
                 cacheDivisi = result.data.divisi;
                 cacheJabatan = result.data.jabatan;
                 
-                // Render List di Panel Atas
                 renderListMaster('listDivisi', cacheDivisi, "Belum ada divisi.");
                 renderListMaster('listJabatan', cacheJabatan, "Belum ada jabatan.");
-                
-                // Update dropdown yang sudah ada di layar
                 updateSemuaDropdown();
+            } else {
+                // FITUR BARU: Tampilkan error langsung di layar jika ditolak server!
+                document.getElementById('listDivisi').innerHTML = `<div class="text-danger small fw-bold"><i class="bi bi-exclamation-triangle"></i> Gagal: ${result.message}</div>`;
+                document.getElementById('listJabatan').innerHTML = `<div class="text-danger small fw-bold"><i class="bi bi-exclamation-triangle"></i> Gagal: ${result.message}</div>`;
             }
-        } catch(e) { console.log(e); }
+        } catch(e) { 
+            document.getElementById('listDivisi').innerHTML = `<div class="text-danger small fw-bold"><i class="bi bi-wifi-off"></i> Error Koneksi ke API</div>`;
+            document.getElementById('listJabatan').innerHTML = `<div class="text-danger small fw-bold"><i class="bi bi-wifi-off"></i> Error Koneksi ke API</div>`;
+        }
     }
 
     function renderListMaster(elementId, dataArray, emptyMsg) {
@@ -197,7 +199,6 @@
         document.getElementById(elementId).innerHTML = html;
     }
 
-    // 2. FUNGSI TAMBAH MASTER DATA
     async function tambahMaster(tipe) {
         const inputId = tipe === 'Divisi' ? 'inputMasterDivisi' : 'inputMasterJabatan';
         const nilai = document.getElementById(inputId).value.trim();
@@ -206,7 +207,6 @@
         Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
         try {
-            // Mualim tambahkan headers pengaman di sini
             const res = await fetch(API_URL, { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -222,7 +222,6 @@
         } catch(e) { Swal.fire('Error', 'Gagal terhubung ke server', 'error'); }
     }
 
-    // 3. FUNGSI RENDER DROPDOWN DINAMIS
     function updateSemuaDropdown() {
         let optDivisi = '<option value="">-- Pilih Divisi --</option>';
         cacheDivisi.forEach(d => optDivisi += `<option value="${d}">${d}</option>`);
@@ -234,7 +233,6 @@
         document.querySelectorAll('.i-jabatan').forEach(el => el.innerHTML = optJabatan);
     }
 
-    // 4. FUNGSI TAMBAH BARIS ANGGOTA BARU
     function tambahBaris() {
         let optDivisi = '<option value="">-- Pilih Divisi --</option>';
         cacheDivisi.forEach(d => optDivisi += `<option value="${d}">${d}</option>`);
@@ -263,7 +261,6 @@
         wadah.appendChild(barisBaru);
     }
 
-    // 5. UPLOAD DATA KOLEKTIF
     async function uploadPanitiaKolektif(event) {
         event.preventDefault();
         
@@ -292,7 +289,6 @@
             const payload = { action: 'upload_sk_panitia_kolektif', anggota: arrayAnggota, fileName: fileInput.name, mimeType: fileInput.type, fileData: base64Data };
 
             try {
-                // Mualim tambahkan headers pengaman di sini
                 const res = await fetch(API_URL, { 
                     method: 'POST', 
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -310,13 +306,11 @@
         reader.readAsDataURL(fileInput);
     }
 
-    // 6. MUAT TABEL PANITIA (Diperbarui untuk memunculkan Kolom Divisi)
     async function muatTabelPanitia() {
         const tbody = document.getElementById('tbodyPanitia');
         tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Memperbarui data... <div class="spinner-border spinner-border-sm text-info ms-2"></div></td></tr>`;
         
         try {
-            // Mualim tambahkan headers pengaman di sini
             const res = await fetch(API_URL, { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
@@ -342,6 +336,6 @@
             } else { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-white-50 py-4">Belum ada data panitia.</td></tr>'; }
         } catch(e) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Gagal menarik data dari server.</td></tr>'; }
     }
-</script>    
+</script>  
 </body>
 </html>
