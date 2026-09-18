@@ -60,6 +60,7 @@
             <div id="barPersentase" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;"></div>
         </div>
 
+        <!-- 4 BARIS PROGRES PER TAHAPAN -->
         <div class="row g-3 border-top pt-3 mb-2">
             <div class="col-6 col-md-3">
                 <div class="mini-progress-title text-info"><i class="bi bi-1-circle-fill me-1"></i> Perencanaan</div>
@@ -94,7 +95,6 @@
                     <label class="btn btn-outline-primary fw-bold" for="filterSemua"><i class="bi bi-globe me-1"></i> Semua Pekerjaan</label>
 
                     <input type="radio" class="btn-check" name="filterTugas" id="filterSaya" autocomplete="off" onchange="terapkanFilter()">
-                    <!-- Label Filter Berubah Jadi 'Tugas Divisi Saya' -->
                     <label class="btn btn-outline-primary fw-bold" for="filterSaya"><i class="bi bi-people-fill me-1"></i> Tugas Divisi Saya</label>
                 </div>
             </div>
@@ -140,7 +140,6 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label fw-bold">Divisi / Penanggung Jawab <span class="text-danger">*</span></label>
-                            <!-- Input Divisi berubah jadi Dropdown Otomatis -->
                             <select class="form-select border-info" id="inputDivisi" required>
                                 <option value="">Memuat daftar divisi...</option>
                             </select>
@@ -180,6 +179,8 @@
     
     const isAdmin = (userData.role === 'Admin_Pusat');
     let dataGlobal = [];
+    let listPanitiaGlobal = [];
+    let myDivisiUtama = ""; // Menyimpan Divisi asli panitia berdasarkan database
 
     function kembaliKeDasbor() {
         if(isAdmin) window.location.href = "dashboard_admin.html";
@@ -195,10 +196,15 @@
     };
 
     window.onload = function() {
-        if(isAdmin) { document.getElementById('filterSemua').checked = true; } 
-        else { document.getElementById('btnTambahTugas').style.display = 'none'; document.getElementById('filterSaya').checked = true; }
-        muatDataPapan();
-        if(isAdmin) tarikDaftarPanitia(); 
+        if(isAdmin) { 
+            document.getElementById('filterSemua').checked = true; 
+        } else { 
+            document.getElementById('btnTambahTugas').style.display = 'none'; 
+            document.getElementById('filterSaya').checked = true; 
+        }
+        
+        // Panggil penarik data panitia DULU agar Divisi Saya bisa terdeteksi
+        tarikDaftarPanitia(); 
     };
 
     async function tarikDaftarPanitia() {
@@ -210,21 +216,31 @@
             let setDivisi = new Set();
 
             if(hasil.status === 'success') {
+                listPanitiaGlobal = hasil.data;
+                
+                // MENCARI DIVISI ASLI PANITIA (Mengabaikan memori localStorage yang salah)
+                let panitiaMe = listPanitiaGlobal.find(p => p.nama === userData.nama);
+                if(panitiaMe && panitiaMe.jabatan) {
+                    myDivisiUtama = panitiaMe.jabatan.trim();
+                }
+
                 hasil.data.forEach(p => { 
                     htmlPic += `<option value="${p.nama}">${p.nama} (${p.jabatan})</option>`; 
-                    if(p.jabatan && p.jabatan !== '-') setDivisi.add(p.jabatan); // Mengumpulkan Jabatan/Divisi unik
+                    if(p.jabatan && p.jabatan !== '-') setDivisi.add(p.jabatan.trim()); 
                 });
                 
                 let htmlDivisi = '<option value="">-- Pilih Divisi / Jabatan --</option>';
                 setDivisi.forEach(div => { htmlDivisi += `<option value="${div}">${div}</option>`; });
                 document.getElementById('inputDivisi').innerHTML = htmlDivisi;
-                
-            } else { 
-                htmlPic = '<option value="">Gagal memuat</option>'; 
-                document.getElementById('inputDivisi').innerHTML = '<option value="">Gagal memuat divisi</option>'; 
             }
             document.getElementById('inputPic').innerHTML = htmlPic;
-        } catch(e) { console.log(e); }
+            
+            // Lanjut muat papan tugas setelah data panitia selesai
+            muatDataPapan();
+        } catch(e) { 
+            console.log(e); 
+            muatDataPapan(); // Tetap jalankan papan jika gagal tarik panitia
+        }
     }
 
     async function muatDataPapan() {
@@ -263,7 +279,8 @@
             else if(item.status === 'Terkendala') jmlTotal.kendala++;
             else if(item.status === 'Selesai') jmlTotal.selesai++;
 
-            let t = item.tahapan; 
+            // Mencegah error spasi pada tahapan
+            let t = item.tahapan ? item.tahapan.toString().trim() : ''; 
             if(statsTahapan[t] !== undefined) {
                 statsTahapan[t].total++;
                 if(item.status === 'Selesai') statsTahapan[t].selesai++;
@@ -280,8 +297,14 @@
         updateProgressBar('barPelaksanaan', 'txtPelaksanaan', statsTahapan['Pelaksanaan']);
         updateProgressBar('barPasca', 'txtPasca', statsTahapan['Pasca-Acara']);
 
-        // LOGIKA PENYARINGAN BERDASARKAN JABATAN/DIVISI PANITIA
-        let dataTampil = filterMode === 'saya' ? semuaData.filter(item => item.divisi === userData.jabatan) : semuaData;
+        // LOGIKA PENYARINGAN MENGGUNAKAN DIVISI ASLI (myDivisiUtama)
+        let dataTampil = semuaData;
+        if(filterMode === 'saya') {
+            dataTampil = semuaData.filter(item => {
+                let divItem = item.divisi ? item.divisi.trim() : '';
+                return divItem === myDivisiUtama;
+            });
+        }
         
         let jmlTampil = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
         let htmlBelum = '', htmlProses = '', htmlKendala = '', htmlSelesai = '';
@@ -300,8 +323,9 @@
                 }
             }
 
-            // HAK AKSES SEKARANG BERBASIS DIVISI
-            let isDivisiSaya = (item.divisi === userData.jabatan);
+            // HAK AKSES JUGA MENGGUNAKAN DIVISI ASLI
+            let divItem = item.divisi ? item.divisi.trim() : '';
+            let isDivisiSaya = (divItem === myDivisiUtama && myDivisiUtama !== "");
             let bisaUbahStatus = isAdmin || isDivisiSaya;
             
             let aksiHTML = bisaUbahStatus ? `
