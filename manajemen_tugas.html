@@ -60,7 +60,6 @@
             <div id="barPersentase" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;"></div>
         </div>
 
-        <!-- 4 BARIS PROGRES PER TAHAPAN -->
         <div class="row g-3 border-top pt-3 mb-2">
             <div class="col-6 col-md-3">
                 <div class="mini-progress-title text-info"><i class="bi bi-1-circle-fill me-1"></i> Perencanaan</div>
@@ -95,7 +94,8 @@
                     <label class="btn btn-outline-primary fw-bold" for="filterSemua"><i class="bi bi-globe me-1"></i> Semua Pekerjaan</label>
 
                     <input type="radio" class="btn-check" name="filterTugas" id="filterSaya" autocomplete="off" onchange="terapkanFilter()">
-                    <label class="btn btn-outline-primary fw-bold" for="filterSaya"><i class="bi bi-person-workspace me-1"></i> Tugas Saya</label>
+                    <!-- Label Filter Berubah Jadi 'Tugas Divisi Saya' -->
+                    <label class="btn btn-outline-primary fw-bold" for="filterSaya"><i class="bi bi-people-fill me-1"></i> Tugas Divisi Saya</label>
                 </div>
             </div>
             <button class="btn btn-outline-secondary fw-bold bg-white shadow-sm" onclick="muatDataPapan()">
@@ -104,36 +104,11 @@
         </div>
     </div>
 
-    <!-- Papan Kanban 4 Kolom -->
     <div class="row g-4">
-        <!-- Kolom Belum Mulai -->
-        <div class="col-md-3">
-            <div class="papan-kolom kolom-belum">
-                <div class="judul-kolom text-secondary"><i class="bi bi-list-task me-2"></i>Belum Mulai <span class="badge bg-secondary float-end" id="jmlBelum">0</span></div>
-                <div id="wadahBelum"></div>
-            </div>
-        </div>
-        <!-- Kolom Sedang Dikerjakan -->
-        <div class="col-md-3">
-            <div class="papan-kolom kolom-proses">
-                <div class="judul-kolom text-warning"><i class="bi bi-gear-fill me-2"></i>Dikerjakan <span class="badge bg-warning text-dark float-end" id="jmlProses">0</span></div>
-                <div id="wadahProses"></div>
-            </div>
-        </div>
-        <!-- Kolom Terkendala -->
-        <div class="col-md-3">
-            <div class="papan-kolom kolom-kendala">
-                <div class="judul-kolom text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Terkendala <span class="badge bg-danger float-end" id="jmlKendala">0</span></div>
-                <div id="wadahKendala"></div>
-            </div>
-        </div>
-        <!-- Kolom Selesai -->
-        <div class="col-md-3">
-            <div class="papan-kolom kolom-selesai">
-                <div class="judul-kolom text-success"><i class="bi bi-check-circle-fill me-2"></i>Selesai <span class="badge bg-success float-end" id="jmlSelesai">0</span></div>
-                <div id="wadahSelesai"></div>
-            </div>
-        </div>
+        <div class="col-md-3"><div class="papan-kolom kolom-belum"><div class="judul-kolom text-secondary"><i class="bi bi-list-task me-2"></i>Belum Mulai <span class="badge bg-secondary float-end" id="jmlBelum">0</span></div><div id="wadahBelum"></div></div></div>
+        <div class="col-md-3"><div class="papan-kolom kolom-proses"><div class="judul-kolom text-warning"><i class="bi bi-gear-fill me-2"></i>Dikerjakan <span class="badge bg-warning text-dark float-end" id="jmlProses">0</span></div><div id="wadahProses"></div></div></div>
+        <div class="col-md-3"><div class="papan-kolom kolom-kendala"><div class="judul-kolom text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Terkendala <span class="badge bg-danger float-end" id="jmlKendala">0</span></div><div id="wadahKendala"></div></div></div>
+        <div class="col-md-3"><div class="papan-kolom kolom-selesai"><div class="judul-kolom text-success"><i class="bi bi-check-circle-fill me-2"></i>Selesai <span class="badge bg-success float-end" id="jmlSelesai">0</span></div><div id="wadahSelesai"></div></div></div>
     </div>
 </div>
 
@@ -164,8 +139,11 @@
                             </select>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Divisi/Seksi</label>
-                            <input type="text" class="form-control" id="inputDivisi" placeholder="Contoh: Perlengkapan" required>
+                            <label class="form-label fw-bold">Divisi / Penanggung Jawab <span class="text-danger">*</span></label>
+                            <!-- Input Divisi berubah jadi Dropdown Otomatis -->
+                            <select class="form-select border-info" id="inputDivisi" required>
+                                <option value="">Memuat daftar divisi...</option>
+                            </select>
                         </div>
                     </div>
 
@@ -175,9 +153,9 @@
                             <input type="datetime-local" class="form-control" id="inputWaktu" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold">Penanggung Jawab (PIC)</label>
-                            <select class="form-select" id="inputPic" required>
-                                <option value="">Memuat daftar panitia...</option>
+                            <label class="form-label fw-bold">PIC Individu (Opsional)</label>
+                            <select class="form-select" id="inputPic">
+                                <option value="">-- Bebas / Tim --</option>
                             </select>
                         </div>
                     </div>
@@ -228,12 +206,25 @@
             const respon = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'get_all_panitia' }) });
             const hasil = await respon.json();
             
-            let htmlPilihan = '<option value="">-- Pilih Penanggung Jawab --</option>';
+            let htmlPic = '<option value="">-- Bebas / Tim --</option>';
+            let setDivisi = new Set();
+
             if(hasil.status === 'success') {
-                hasil.data.forEach(p => { htmlPilihan += `<option value="${p.nama}">${p.nama} (${p.jabatan})</option>`; });
-            } else { htmlPilihan = '<option value="">Gagal memuat panitia</option>'; }
-            document.getElementById('inputPic').innerHTML = htmlPilihan;
-        } catch(e) { document.getElementById('inputPic').innerHTML = '<option value="">Koneksi bermasalah</option>'; }
+                hasil.data.forEach(p => { 
+                    htmlPic += `<option value="${p.nama}">${p.nama} (${p.jabatan})</option>`; 
+                    if(p.jabatan && p.jabatan !== '-') setDivisi.add(p.jabatan); // Mengumpulkan Jabatan/Divisi unik
+                });
+                
+                let htmlDivisi = '<option value="">-- Pilih Divisi / Jabatan --</option>';
+                setDivisi.forEach(div => { htmlDivisi += `<option value="${div}">${div}</option>`; });
+                document.getElementById('inputDivisi').innerHTML = htmlDivisi;
+                
+            } else { 
+                htmlPic = '<option value="">Gagal memuat</option>'; 
+                document.getElementById('inputDivisi').innerHTML = '<option value="">Gagal memuat divisi</option>'; 
+            }
+            document.getElementById('inputPic').innerHTML = htmlPic;
+        } catch(e) { console.log(e); }
     }
 
     async function muatDataPapan() {
@@ -266,34 +257,32 @@
             'Pasca-Acara': { total: 0, selesai: 0 }
         };
         
-        // Kalkulasi Progres Keseluruhan & Per Tahapan
         semuaData.forEach(item => {
             if(item.status === 'Belum Mulai') jmlTotal.belum++;
             else if(item.status === 'Sedang Dikerjakan') jmlTotal.proses++;
             else if(item.status === 'Terkendala') jmlTotal.kendala++;
             else if(item.status === 'Selesai') jmlTotal.selesai++;
 
-            let t = item.tahapan; // Cocokkan string tahapan
+            let t = item.tahapan; 
             if(statsTahapan[t] !== undefined) {
                 statsTahapan[t].total++;
                 if(item.status === 'Selesai') statsTahapan[t].selesai++;
             }
         });
         
-        // Render Progress Bar Utama
         let totalPekerjaan = jmlTotal.belum + jmlTotal.proses + jmlTotal.kendala + jmlTotal.selesai;
         let persentase = totalPekerjaan === 0 ? 0 : Math.round((jmlTotal.selesai / totalPekerjaan) * 100);
         document.getElementById('teksPersentase').innerText = persentase + '%';
         document.getElementById('barPersentase').style.width = persentase + '%';
 
-        // Render 4 Progress Bar Tahapan
         updateProgressBar('barPerencanaan', 'txtPerencanaan', statsTahapan['Perencanaan']);
         updateProgressBar('barPersiapan', 'txtPersiapan', statsTahapan['Persiapan']);
         updateProgressBar('barPelaksanaan', 'txtPelaksanaan', statsTahapan['Pelaksanaan']);
         updateProgressBar('barPasca', 'txtPasca', statsTahapan['Pasca-Acara']);
 
-        // Persiapan Render Kartu
-        let dataTampil = filterMode === 'saya' ? semuaData.filter(item => item.pic === userData.nama_pic) : semuaData;
+        // LOGIKA PENYARINGAN BERDASARKAN JABATAN/DIVISI PANITIA
+        let dataTampil = filterMode === 'saya' ? semuaData.filter(item => item.divisi === userData.jabatan) : semuaData;
+        
         let jmlTampil = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
         let htmlBelum = '', htmlProses = '', htmlKendala = '', htmlSelesai = '';
         let tugasMendesak = [];
@@ -304,15 +293,16 @@
                 let sisaJam = (new Date(item.batas_waktu) - new Date()) / (1000 * 60 * 60);
                 if(sisaJam < 0) {
                     warnaWaktu = "text-danger fw-bold";
-                    tugasMendesak.push(`<span class="badge bg-danger text-white me-2">Lewat Waktu</span> <b>${item.nama_pekerjaan}</b> (${item.pic})`);
+                    tugasMendesak.push(`<span class="badge bg-danger text-white me-2">Lewat Waktu</span> <b>${item.nama_pekerjaan}</b> (Divisi: ${item.divisi})`);
                 } else if(sisaJam <= 72) {
                     warnaWaktu = "text-warning fw-bold";
-                    tugasMendesak.push(`<span class="badge bg-warning text-dark me-2">Hampir Deadline</span> <b>${item.nama_pekerjaan}</b> (${item.pic})`);
+                    tugasMendesak.push(`<span class="badge bg-warning text-dark me-2">Hampir Deadline</span> <b>${item.nama_pekerjaan}</b> (Divisi: ${item.divisi})`);
                 }
             }
 
-            let isMilikSaya = (item.pic === userData.nama_pic);
-            let bisaUbahStatus = isAdmin || isMilikSaya;
+            // HAK AKSES SEKARANG BERBASIS DIVISI
+            let isDivisiSaya = (item.divisi === userData.jabatan);
+            let bisaUbahStatus = isAdmin || isDivisiSaya;
             
             let aksiHTML = bisaUbahStatus ? `
                 <div class="kartu-aksi d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
@@ -330,16 +320,16 @@
                 </div>
             ` : `<div class="mt-2 pt-2 border-top text-end"><span class="badge bg-light text-muted border"><i class="bi bi-eye-fill"></i> Hanya Lihat</span></div>`;
 
-            // Label Tahapan pada kartu
             let badgeTahapan = item.tahapan ? `<span class="badge bg-dark text-white border border-secondary mb-1" style="font-size: 0.65rem;">${item.tahapan}</span>` : '';
+            let teksPic = item.pic ? item.pic : 'Tim Divisi';
 
             let kartu = `
                 <div class="kartu-tugas ${ item.status === 'Belum Mulai' ? 'kartu-belum' : item.status === 'Sedang Dikerjakan' ? 'kartu-proses' : item.status === 'Terkendala' ? 'kartu-kendala' : 'kartu-selesai' }">
                     ${badgeTahapan}
                     <div class="kartu-judul">${item.nama_pekerjaan}</div>
-                    <div class="kartu-info"><i class="bi bi-tags-fill me-1"></i>${item.divisi}</div>
-                    <div class="kartu-info"><i class="bi bi-person-fill me-1"></i>${item.pic}</div>
-                    <div class="kartu-info ${warnaWaktu}"><i class="bi bi-calendar-event me-1"></i>Batas: ${formatTgl(item.batas_waktu)}</div>
+                    <div class="kartu-info"><i class="bi bi-diagram-3-fill me-1"></i><b>Divisi:</b> ${item.divisi}</div>
+                    <div class="kartu-info"><i class="bi bi-person-fill me-1"></i><b>PIC:</b> ${teksPic}</div>
+                    <div class="kartu-info ${warnaWaktu}"><i class="bi bi-calendar-event me-1"></i><b>Batas:</b> ${formatTgl(item.batas_waktu)}</div>
                     ${aksiHTML}
                 </div>
             `;
