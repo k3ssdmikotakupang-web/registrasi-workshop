@@ -80,7 +80,14 @@
     <!-- Menu Kesekretariatan & Pantauan -->
     <h5 class="fw-bold mb-3 mt-4">Menu Operasional & Pantauan</h5>
     <div class="row g-3">
-        <!-- TOMBOL BARU: REKAP PENERIMAAN KAS -->
+        
+        <!-- PINTU MASUK BARU: Papan Kanban Manajemen Tugas -->
+        <div class="col-12">
+            <button onclick="window.location.href='manajemen_tugas.html'" class="btn btn-primary w-100 py-3 text-start fw-bold shadow-sm" style="background: linear-gradient(45deg, #0f172a, #0284c7); border: 1px solid #00f2fe;">
+                <i class="bi bi-kanban-fill me-2 text-info"></i> Papan Kanban Manajemen Tugas Panitia
+            </button>
+        </div>
+
         <div class="col-12">
             <button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-info w-100 py-3 text-start fw-bold" style="background: rgba(0, 242, 254, 0.05); border-width: 2px;">
                 <i class="bi bi-file-earmark-spreadsheet-fill me-2 text-info"></i> Rekap Daftar Sekolah & Penerimaan Kas
@@ -279,7 +286,7 @@
         btn.disabled = true;
 
         let nominalKotor = document.getElementById('setNominalKontribusi').value;
-        let nominalBersih = nominalKotor.replace(/\./g, ''); // Membersihkan semua titik sebelum dikirim
+        let nominalBersih = nominalKotor.replace(/\./g, '');
 
         let payload = {
             action: 'update_pengaturan',
