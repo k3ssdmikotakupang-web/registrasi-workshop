@@ -11,12 +11,7 @@
         body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; padding-bottom: 50px; }
         .nav-app { background: #0f172a; border-bottom: 4px solid #00f2fe; }
         
-        .papan-kolom {
-            background: #e2e8f0;
-            border-radius: 10px;
-            padding: 15px;
-            min-height: 70vh;
-        }
+        .papan-kolom { background: #e2e8f0; border-radius: 10px; padding: 15px; min-height: 70vh; }
         .judul-kolom { font-weight: 700; text-transform: uppercase; font-size: 0.9rem; padding-bottom: 10px; border-bottom: 2px solid #cbd5e1; margin-bottom: 15px; }
         
         /* Tema Warna Kolom */
@@ -25,15 +20,7 @@
         .kolom-kendala { border-top: 4px solid #ef4444; }
         .kolom-selesai { border-top: 4px solid #10b981; }
 
-        .kartu-tugas {
-            background: #ffffff;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid transparent;
-            transition: transform 0.2s;
-        }
+        .kartu-tugas { background: #ffffff; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-left: 4px solid transparent; transition: transform 0.2s; }
         .kartu-tugas:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
         
         /* Warna Garis Kiri Kartu */
@@ -44,7 +31,6 @@
 
         .kartu-judul { font-weight: 700; font-size: 1rem; color: #0f172a; margin-bottom: 5px; line-height: 1.3; }
         .kartu-info { font-size: 0.8rem; color: #64748b; margin-bottom: 3px; }
-        .kartu-aksi { margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
         
         .progress-container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 30px; }
     </style>
@@ -54,7 +40,7 @@
 <nav class="navbar navbar-dark nav-app sticky-top mb-4 py-3">
     <div class="container-fluid px-4">
         <span class="navbar-brand fw-bold"><i class="bi bi-kanban me-2 text-info"></i> Ruang Kendali Kepanitiaan</span>
-        <button class="btn btn-outline-light btn-sm fw-bold" onclick="window.location.href='index.html'">Kembali ke Beranda</button>
+        <button class="btn btn-outline-light btn-sm fw-bold" onclick="kembaliKeDasbor()"><i class="bi bi-arrow-left"></i> Kembali ke Beranda</button>
     </div>
 </nav>
 
@@ -71,11 +57,24 @@
         <div class="progress" style="height: 25px; border-radius: 20px; background-color: #e2e8f0;">
             <div id="barPersentase" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;"></div>
         </div>
-        <div class="d-flex justify-content-between mt-3">
-            <button class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahTugas">
-                <i class="bi bi-plus-lg me-2"></i> Tambah Pekerjaan Baru
-            </button>
-            <button class="btn btn-outline-secondary fw-bold bg-white" onclick="muatDataPapan()">
+        
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
+            <div class="d-flex flex-wrap gap-2">
+                <!-- Tombol ini hanya muncul untuk Admin -->
+                <button class="btn btn-primary fw-bold shadow-sm" id="btnTambahTugas" data-bs-toggle="modal" data-bs-target="#modalTambahTugas">
+                    <i class="bi bi-plus-lg me-2"></i> Tambah Pekerjaan Baru
+                </button>
+                
+                <!-- Filter Mode Pantauan -->
+                <div class="btn-group shadow-sm" id="filterTugasContainer">
+                    <input type="radio" class="btn-check" name="filterTugas" id="filterSemua" autocomplete="off" onchange="terapkanFilter()">
+                    <label class="btn btn-outline-primary fw-bold" for="filterSemua"><i class="bi bi-globe me-1"></i> Semua Pekerjaan</label>
+
+                    <input type="radio" class="btn-check" name="filterTugas" id="filterSaya" autocomplete="off" onchange="terapkanFilter()">
+                    <label class="btn btn-outline-primary fw-bold" for="filterSaya"><i class="bi bi-person-workspace me-1"></i> Tugas Saya</label>
+                </div>
+            </div>
+            <button class="btn btn-outline-secondary fw-bold bg-white shadow-sm" onclick="muatDataPapan()">
                 <i class="bi bi-arrow-clockwise me-1"></i> Segarkan Data
             </button>
         </div>
@@ -160,7 +159,20 @@
     // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
 
-    // Format Tanggal jadi rapi
+    // 1. SISTEM DETEKSI HAK AKSES & NAVIGASI PINTAR
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+    if(!userData) window.location.href = "index.html"; // Jika tidak ada data login, usir ke depan
+    
+    const isAdmin = (userData.role === 'Admin_Pusat');
+    let dataGlobal = [];
+
+    // Fungsi Kembali Sesuai Jabatan
+    function kembaliKeDasbor() {
+        if(isAdmin) window.location.href = "dashboard_admin.html";
+        else if(userData.role === 'Bendahara_Panitia') window.location.href = "dashboard_bendahara_panitia.html";
+        else window.location.href = "dashboard_panitia.html";
+    }
+
     const formatTgl = (tglSting) => {
         if(!tglSting) return '-';
         let d = new Date(tglSting);
@@ -169,86 +181,103 @@
     };
 
     window.onload = function() {
+        // Logika Tampilan Berdasarkan Akses
+        if(isAdmin) {
+            document.getElementById('filterSemua').checked = true;
+        } else {
+            document.getElementById('btnTambahTugas').style.display = 'none';
+            document.getElementById('filterSaya').checked = true;
+        }
+
         muatDataPapan();
-        tarikDaftarPanitia(); // Fungsi otomatis narik nama panitia
+        if(isAdmin) tarikDaftarPanitia(); // Panitia biasa tidak butuh menarik dropdown ini
     };
 
-    // FUNGSI 1: MENGAMBIL NAMA PANITIA OTOMATIS
+    // MENGAMBIL NAMA PANITIA UNTUK DROPDOWN TAMBAH TUGAS (KHUSUS ADMIN)
     async function tarikDaftarPanitia() {
         try {
             const respon = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'get_all_panitia' })
             });
             const hasil = await respon.json();
             
             let htmlPilihan = '<option value="">-- Pilih Penanggung Jawab --</option>';
             if(hasil.status === 'success') {
-                hasil.data.forEach(p => {
-                    htmlPilihan += `<option value="${p.nama}">${p.nama} (${p.jabatan})</option>`;
-                });
-            } else {
-                htmlPilihan = '<option value="">Gagal memuat panitia</option>';
-            }
+                hasil.data.forEach(p => { htmlPilihan += `<option value="${p.nama}">${p.nama} (${p.jabatan})</option>`; });
+            } else { htmlPilihan = '<option value="">Gagal memuat panitia</option>'; }
             document.getElementById('inputPic').innerHTML = htmlPilihan;
-        } catch(e) {
-            document.getElementById('inputPic').innerHTML = '<option value="">Koneksi bermasalah</option>';
-        }
+        } catch(e) { document.getElementById('inputPic').innerHTML = '<option value="">Koneksi bermasalah</option>'; }
     }
 
-    // FUNGSI 2: MEMUAT TUGAS KE PAPAN KANBAN
+    // MEMUAT TUGAS DARI DATABASE
     async function muatDataPapan() {
         document.getElementById('wadahBelum').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-secondary spinner-border-sm"></div></div>';
-        document.getElementById('wadahProses').innerHTML = '';
-        document.getElementById('wadahKendala').innerHTML = '';
-        document.getElementById('wadahSelesai').innerHTML = '';
-
+        
         try {
             const respon = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'get_tugas' })
             });
             const hasil = await respon.json();
 
             if(hasil.status === 'success') {
-                renderPapan(hasil.data);
-            } else {
-                Swal.fire('Gagal!', hasil.message, 'error');
-            }
-        } catch (e) {
-            Swal.fire('Error', 'Gagal terhubung ke server.', 'error');
-        }
+                dataGlobal = hasil.data;
+                terapkanFilter();
+            } else { Swal.fire('Gagal!', hasil.message, 'error'); }
+        } catch (e) { Swal.fire('Error', 'Gagal terhubung ke server.', 'error'); }
     }
 
-    function renderPapan(data) {
-        let jml = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
+    // SISTEM FILTER CERDAS
+    function terapkanFilter() {
+        let filterMode = document.getElementById('filterSaya').checked ? 'saya' : 'semua';
+        renderPapan(dataGlobal, filterMode);
+    }
+
+    // MENYUSUN TAMPILAN PAPAN
+    function renderPapan(semuaData, filterMode) {
+        let jmlTotal = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
+        
+        // 1. Hitung Bar Persentase Keseluruhan Acara (Bukan cuma tugas sendiri)
+        semuaData.forEach(item => {
+            if(item.status === 'Belum Mulai') jmlTotal.belum++;
+            else if(item.status === 'Sedang Dikerjakan') jmlTotal.proses++;
+            else if(item.status === 'Terkendala') jmlTotal.kendala++;
+            else if(item.status === 'Selesai') jmlTotal.selesai++;
+        });
+        
+        let totalPekerjaan = jmlTotal.belum + jmlTotal.proses + jmlTotal.kendala + jmlTotal.selesai;
+        let persentase = totalPekerjaan === 0 ? 0 : Math.round((jmlTotal.selesai / totalPekerjaan) * 100);
+        document.getElementById('teksPersentase').innerText = persentase + '%';
+        document.getElementById('barPersentase').style.width = persentase + '%';
+
+        // 2. Filter Data untuk Ditampilkan
+        let dataTampil = semuaData;
+        if(filterMode === 'saya') {
+            dataTampil = semuaData.filter(item => item.pic === userData.nama_pic);
+        }
+
+        let jmlTampil = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
         let htmlBelum = '', htmlProses = '', htmlKendala = '', htmlSelesai = '';
 
-        data.forEach(item => {
-            // Tentukan peringatan batas waktu jika status belum selesai
+        dataTampil.forEach(item => {
+            // Logika Warna Batas Waktu
             let warnaWaktu = "text-muted";
             if(item.status !== 'Selesai' && item.batas_waktu) {
                 let sisaHari = (new Date(item.batas_waktu) - new Date()) / (1000 * 60 * 60 * 24);
                 if(sisaHari < 0) warnaWaktu = "text-danger fw-bold"; // Telat
-                else if(sisaHari <= 3) warnaWaktu = "text-warning fw-bold"; // Hampir telat
+                else if(sisaHari <= 3) warnaWaktu = "text-warning fw-bold"; // Kritis
             }
 
-            let formatBatas = formatTgl(item.batas_waktu);
-
-            let kartu = `
-                <div class="kartu-tugas ${
-                    item.status === 'Belum Mulai' ? 'kartu-belum' : 
-                    item.status === 'Sedang Dikerjakan' ? 'kartu-proses' : 
-                    item.status === 'Terkendala' ? 'kartu-kendala' : 'kartu-selesai'
-                }">
-                    <div class="kartu-judul">${item.nama_pekerjaan}</div>
-                    <div class="kartu-info"><i class="bi bi-tags-fill me-1"></i>${item.divisi}</div>
-                    <div class="kartu-info"><i class="bi bi-person-fill me-1"></i>${item.pic}</div>
-                    <div class="kartu-info ${warnaWaktu}"><i class="bi bi-calendar-event me-1"></i>Batas: ${formatBatas}</div>
-                    
-                    <div class="kartu-aksi d-flex justify-content-between align-items-center">
+            // LOGIKA HAK AKSES KARTU
+            let isMilikSaya = (item.pic === userData.nama_pic);
+            let bisaUbahStatus = isAdmin || isMilikSaya; // Admin bisa ubah semua, Panitia cuma bisa ubah miliknya
+            
+            let aksiHTML = '';
+            if(bisaUbahStatus) {
+                let btnHapus = isAdmin ? `<button class="btn btn-sm text-danger" onclick="hapusPekerjaan('${item.id_tugas}', '${item.nama_pekerjaan}')" title="Hapus Tugas"><i class="bi bi-trash3-fill"></i></button>` : '';
+                aksiHTML = `
+                    <div class="kartu-aksi d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
                         <div class="dropdown">
                             <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                 Ubah Status
@@ -261,15 +290,36 @@
                                 <li><a class="dropdown-item" href="#" onclick="ubahStatus('${item.id_tugas}', 'Selesai')"><i class="bi bi-check-circle-fill me-2 text-success"></i>Tandai Selesai</a></li>
                             </ul>
                         </div>
-                        <button class="btn btn-sm text-danger" onclick="hapusPekerjaan('${item.id_tugas}', '${item.nama_pekerjaan}')" title="Hapus Tugas"><i class="bi bi-trash3-fill"></i></button>
+                        ${btnHapus}
                     </div>
+                `;
+            } else {
+                // Tampilan untuk Panitia yang melihat tugas orang lain (Read Only)
+                aksiHTML = `
+                    <div class="mt-2 pt-2 border-top text-end">
+                        <span class="badge bg-light text-muted border"><i class="bi bi-eye-fill"></i> Hanya Lihat</span>
+                    </div>
+                `;
+            }
+
+            let kartu = `
+                <div class="kartu-tugas ${
+                    item.status === 'Belum Mulai' ? 'kartu-belum' : 
+                    item.status === 'Sedang Dikerjakan' ? 'kartu-proses' : 
+                    item.status === 'Terkendala' ? 'kartu-kendala' : 'kartu-selesai'
+                }">
+                    <div class="kartu-judul">${item.nama_pekerjaan}</div>
+                    <div class="kartu-info"><i class="bi bi-tags-fill me-1"></i>${item.divisi}</div>
+                    <div class="kartu-info"><i class="bi bi-person-fill me-1"></i>${item.pic}</div>
+                    <div class="kartu-info ${warnaWaktu}"><i class="bi bi-calendar-event me-1"></i>Batas: ${formatTgl(item.batas_waktu)}</div>
+                    ${aksiHTML}
                 </div>
             `;
 
-            if(item.status === 'Belum Mulai') { htmlBelum += kartu; jml.belum++; }
-            else if(item.status === 'Sedang Dikerjakan') { htmlProses += kartu; jml.proses++; }
-            else if(item.status === 'Terkendala') { htmlKendala += kartu; jml.kendala++; }
-            else if(item.status === 'Selesai') { htmlSelesai += kartu; jml.selesai++; }
+            if(item.status === 'Belum Mulai') { htmlBelum += kartu; jmlTampil.belum++; }
+            else if(item.status === 'Sedang Dikerjakan') { htmlProses += kartu; jmlTampil.proses++; }
+            else if(item.status === 'Terkendala') { htmlKendala += kartu; jmlTampil.kendala++; }
+            else if(item.status === 'Selesai') { htmlSelesai += kartu; jmlTampil.selesai++; }
         });
 
         document.getElementById('wadahBelum').innerHTML = htmlBelum || '<div class="text-center text-muted small py-3">Kosong</div>';
@@ -277,20 +327,13 @@
         document.getElementById('wadahKendala').innerHTML = htmlKendala || '<div class="text-center text-muted small py-3">Aman</div>';
         document.getElementById('wadahSelesai').innerHTML = htmlSelesai || '<div class="text-center text-muted small py-3">Kosong</div>';
 
-        document.getElementById('jmlBelum').innerText = jml.belum;
-        document.getElementById('jmlProses').innerText = jml.proses;
-        document.getElementById('jmlKendala').innerText = jml.kendala;
-        document.getElementById('jmlSelesai').innerText = jml.selesai;
-
-        // Hitung Kesiapan
-        let totalPekerjaan = jml.belum + jml.proses + jml.kendala + jml.selesai;
-        let persentase = totalPekerjaan === 0 ? 0 : Math.round((jml.selesai / totalPekerjaan) * 100);
-        
-        document.getElementById('teksPersentase').innerText = persentase + '%';
-        document.getElementById('barPersentase').style.width = persentase + '%';
+        document.getElementById('jmlBelum').innerText = jmlTampil.belum;
+        document.getElementById('jmlProses').innerText = jmlTampil.proses;
+        document.getElementById('jmlKendala').innerText = jmlTampil.kendala;
+        document.getElementById('jmlSelesai').innerText = jmlTampil.selesai;
     }
 
-    // FUNGSI 3: SIMPAN TUGAS BARU
+    // SIMPAN TUGAS BARU (HANYA ADMIN)
     async function simpanTugas(e) {
         e.preventDefault();
         const tombol = document.getElementById('btnSimpan');
@@ -305,78 +348,45 @@
         };
 
         try {
-            const respon = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(dataKirim)
-            });
+            const respon = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(dataKirim) });
             const hasil = await respon.json();
-
             if(hasil.status === 'success') {
                 Swal.fire({icon: 'success', title: 'Berhasil', text: hasil.message, timer: 1500, showConfirmButton: false});
                 document.getElementById('formTugas').reset();
                 bootstrap.Modal.getInstance(document.getElementById('modalTambahTugas')).hide();
-                muatDataPapan(); // Segarkan papan otomatis
-            } else {
-                Swal.fire('Gagal!', hasil.message, 'error');
-            }
-        } catch (err) {
-            Swal.fire('Error', 'Gagal mengirim data.', 'error');
-        } finally {
-            tombol.innerText = 'Simpan Penugasan'; tombol.disabled = false;
-        }
+                muatDataPapan(); 
+            } else { Swal.fire('Gagal!', hasil.message, 'error'); }
+        } catch (err) { Swal.fire('Error', 'Gagal mengirim data.', 'error'); } 
+        finally { tombol.innerText = 'Simpan Penugasan'; tombol.disabled = false; }
     }
 
-    // FUNGSI 4: UBAH STATUS (GESER KARTU)
+    // UBAH STATUS TUGAS
     async function ubahStatus(id, statusBaru) {
-        // Tampilkan loading sebentar dengan SweetAlert
         Swal.fire({ title: 'Memindahkan Tugas...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-
         try {
             const respon = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'update_status_tugas', id_tugas: id, status_baru: statusBaru })
             });
             const hasil = await respon.json();
-            
-            if(hasil.status === 'success') {
-                Swal.close();
-                muatDataPapan(); // Segarkan papan otomatis
-            } else {
-                Swal.fire('Gagal!', hasil.message, 'error');
-            }
-        } catch (err) {
-            Swal.fire('Error', 'Gagal memindahkan tugas.', 'error');
-        }
+            if(hasil.status === 'success') { Swal.close(); muatDataPapan(); } 
+            else { Swal.fire('Gagal!', hasil.message, 'error'); }
+        } catch (err) { Swal.fire('Error', 'Gagal memindahkan tugas.', 'error'); }
     }
 
-    // FUNGSI 5: HAPUS TUGAS
+    // HAPUS TUGAS (HANYA ADMIN)
     function hapusPekerjaan(id, nama) {
         Swal.fire({
-            title: 'Hapus Pekerjaan?',
-            text: `Yakin ingin menghapus "${nama}" dari papan kendali?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#64748b',
-            confirmButtonText: 'Ya, Hapus!'
+            title: 'Hapus Pekerjaan?', text: `Yakin ingin menghapus "${nama}"?`, icon: 'warning',
+            showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b', confirmButtonText: 'Ya, Hapus!'
         }).then(async (result) => {
             if (result.isConfirmed) {
                 Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
                 try {
-                    const respon = await fetch(API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                        body: JSON.stringify({ action: 'hapus_tugas', id_tugas: id })
-                    });
+                    const respon = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'hapus_tugas', id_tugas: id }) });
                     const hasil = await respon.json();
-                    if(hasil.status === 'success') {
-                        Swal.close();
-                        muatDataPapan();
-                    } else {
-                        Swal.fire('Gagal!', hasil.message, 'error');
-                    }
+                    if(hasil.status === 'success') { Swal.close(); muatDataPapan(); } 
+                    else { Swal.fire('Gagal!', hasil.message, 'error'); }
                 } catch (err) { Swal.fire('Error', 'Gagal terhubung.', 'error'); }
             }
         });
