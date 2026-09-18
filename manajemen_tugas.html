@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Papan Manajemen Tugas - EMS K3S Kupang</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; padding-bottom: 50px; }
+        .nav-app { background: #0f172a; border-bottom: 4px solid #00f2fe; }
+        
+        .papan-kolom {
+            background: #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            min-height: 70vh;
+        }
+        .judul-kolom { font-weight: 700; text-transform: uppercase; font-size: 0.9rem; padding-bottom: 10px; border-bottom: 2px solid #cbd5e1; margin-bottom: 15px; }
+        
+        /* Tema Warna Kolom */
+        .kolom-belum { border-top: 4px solid #64748b; }
+        .kolom-proses { border-top: 4px solid #f59e0b; }
+        .kolom-kendala { border-top: 4px solid #ef4444; }
+        .kolom-selesai { border-top: 4px solid #10b981; }
+
+        .kartu-tugas {
+            background: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid transparent;
+            transition: transform 0.2s;
+        }
+        .kartu-tugas:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+        
+        /* Warna Garis Kiri Kartu */
+        .kartu-belum { border-left-color: #64748b; }
+        .kartu-proses { border-left-color: #f59e0b; }
+        .kartu-kendala { border-left-color: #ef4444; }
+        .kartu-selesai { border-left-color: #10b981; opacity: 0.8; }
+
+        .kartu-judul { font-weight: 700; font-size: 1rem; color: #0f172a; margin-bottom: 5px; line-height: 1.3; }
+        .kartu-info { font-size: 0.8rem; color: #64748b; margin-bottom: 3px; }
+        .kartu-aksi { margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
+        
+        .progress-container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark nav-app sticky-top mb-4 py-3">
+    <div class="container-fluid px-4">
+        <span class="navbar-brand fw-bold"><i class="bi bi-kanban me-2 text-info"></i> Ruang Kendali Kepanitiaan</span>
+        <button class="btn btn-outline-light btn-sm fw-bold" onclick="window.location.href='index.html'">Kembali ke Beranda</button>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    <!-- Indikator Kesiapan Acara -->
+    <div class="progress-container">
+        <div class="d-flex justify-content-between align-items-end mb-2">
+            <div>
+                <h5 class="fw-bold mb-0">Indikator Kesiapan Acara</h5>
+                <small class="text-muted">K3S SD/MI Kota Kupang</small>
+            </div>
+            <h3 class="fw-bold text-success mb-0" id="teksPersentase">0%</h3>
+        </div>
+        <div class="progress" style="height: 25px; border-radius: 20px; background-color: #e2e8f0;">
+            <div id="barPersentase" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;"></div>
+        </div>
+        <div class="d-flex justify-content-between mt-3">
+            <button class="btn btn-primary fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalTambahTugas">
+                <i class="bi bi-plus-lg me-2"></i> Tambah Pekerjaan Baru
+            </button>
+            <button class="btn btn-outline-secondary fw-bold bg-white" onclick="muatDataPapan()">
+                <i class="bi bi-arrow-clockwise me-1"></i> Segarkan Data
+            </button>
+        </div>
+    </div>
+
+    <!-- Papan Kanban 4 Kolom -->
+    <div class="row g-4">
+        <!-- Kolom Belum Mulai -->
+        <div class="col-md-3">
+            <div class="papan-kolom kolom-belum">
+                <div class="judul-kolom text-secondary"><i class="bi bi-list-task me-2"></i>Belum Mulai <span class="badge bg-secondary float-end" id="jmlBelum">0</span></div>
+                <div id="wadahBelum"></div>
+            </div>
+        </div>
+        <!-- Kolom Sedang Dikerjakan -->
+        <div class="col-md-3">
+            <div class="papan-kolom kolom-proses">
+                <div class="judul-kolom text-warning"><i class="bi bi-gear-fill me-2"></i>Dikerjakan <span class="badge bg-warning text-dark float-end" id="jmlProses">0</span></div>
+                <div id="wadahProses"></div>
+            </div>
+        </div>
+        <!-- Kolom Terkendala -->
+        <div class="col-md-3">
+            <div class="papan-kolom kolom-kendala">
+                <div class="judul-kolom text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Terkendala <span class="badge bg-danger float-end" id="jmlKendala">0</span></div>
+                <div id="wadahKendala"></div>
+            </div>
+        </div>
+        <!-- Kolom Selesai -->
+        <div class="col-md-3">
+            <div class="papan-kolom kolom-selesai">
+                <div class="judul-kolom text-success"><i class="bi bi-check-circle-fill me-2"></i>Selesai <span class="badge bg-success float-end" id="jmlSelesai">0</span></div>
+                <div id="wadahSelesai"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tambah Pekerjaan -->
+<div class="modal fade" id="modalTambahTugas" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title fw-bold">Penugasan Baru</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <form id="formTugas" onsubmit="simpanTugas(event)">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nama Pekerjaan</label>
+                        <input type="text" class="form-control" id="inputPekerjaan" placeholder="Contoh: Menyiapkan Spanduk Utama" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold">Divisi/Seksi</label>
+                            <input type="text" class="form-control" id="inputDivisi" placeholder="Contoh: Perlengkapan" required>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <label class="form-label fw-bold">Batas Waktu (Deadline)</label>
+                            <input type="date" class="form-control" id="inputWaktu" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Penanggung Jawab (Diambil Otomatis)</label>
+                        <select class="form-select" id="inputPic" required>
+                            <option value="">Memuat daftar panitia...</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary fw-bold" id="btnSimpan">Simpan Penugasan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+
+    // Format Tanggal jadi rapi
+    const formatTgl = (tglSting) => {
+        if(!tglSting) return '-';
+        let d = new Date(tglSting);
+        if(isNaN(d)) return tglSting;
+        return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    };
+
+    window.onload = function() {
+        muatDataPapan();
+        tarikDaftarPanitia(); // Fungsi otomatis narik nama panitia
+    };
+
+    // FUNGSI 1: MENGAMBIL NAMA PANITIA OTOMATIS
+    async function tarikDaftarPanitia() {
+        try {
+            const respon = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_all_panitia' })
+            });
+            const hasil = await respon.json();
+            
+            let htmlPilihan = '<option value="">-- Pilih Penanggung Jawab --</option>';
+            if(hasil.status === 'success') {
+                hasil.data.forEach(p => {
+                    htmlPilihan += `<option value="${p.nama}">${p.nama} (${p.jabatan})</option>`;
+                });
+            } else {
+                htmlPilihan = '<option value="">Gagal memuat panitia</option>';
+            }
+            document.getElementById('inputPic').innerHTML = htmlPilihan;
+        } catch(e) {
+            document.getElementById('inputPic').innerHTML = '<option value="">Koneksi bermasalah</option>';
+        }
+    }
+
+    // FUNGSI 2: MEMUAT TUGAS KE PAPAN KANBAN
+    async function muatDataPapan() {
+        document.getElementById('wadahBelum').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-secondary spinner-border-sm"></div></div>';
+        document.getElementById('wadahProses').innerHTML = '';
+        document.getElementById('wadahKendala').innerHTML = '';
+        document.getElementById('wadahSelesai').innerHTML = '';
+
+        try {
+            const respon = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_tugas' })
+            });
+            const hasil = await respon.json();
+
+            if(hasil.status === 'success') {
+                renderPapan(hasil.data);
+            } else {
+                Swal.fire('Gagal!', hasil.message, 'error');
+            }
+        } catch (e) {
+            Swal.fire('Error', 'Gagal terhubung ke server.', 'error');
+        }
+    }
+
+    function renderPapan(data) {
+        let jml = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
+        let htmlBelum = '', htmlProses = '', htmlKendala = '', htmlSelesai = '';
+
+        data.forEach(item => {
+            // Tentukan peringatan batas waktu jika status belum selesai
+            let warnaWaktu = "text-muted";
+            if(item.status !== 'Selesai' && item.batas_waktu) {
+                let sisaHari = (new Date(item.batas_waktu) - new Date()) / (1000 * 60 * 60 * 24);
+                if(sisaHari < 0) warnaWaktu = "text-danger fw-bold"; // Telat
+                else if(sisaHari <= 3) warnaWaktu = "text-warning fw-bold"; // Hampir telat
+            }
+
+            let formatBatas = formatTgl(item.batas_waktu);
+
+            let kartu = `
+                <div class="kartu-tugas ${
+                    item.status === 'Belum Mulai' ? 'kartu-belum' : 
+                    item.status === 'Sedang Dikerjakan' ? 'kartu-proses' : 
+                    item.status === 'Terkendala' ? 'kartu-kendala' : 'kartu-selesai'
+                }">
+                    <div class="kartu-judul">${item.nama_pekerjaan}</div>
+                    <div class="kartu-info"><i class="bi bi-tags-fill me-1"></i>${item.divisi}</div>
+                    <div class="kartu-info"><i class="bi bi-person-fill me-1"></i>${item.pic}</div>
+                    <div class="kartu-info ${warnaWaktu}"><i class="bi bi-calendar-event me-1"></i>Batas: ${formatBatas}</div>
+                    
+                    <div class="kartu-aksi d-flex justify-content-between align-items-center">
+                        <div class="dropdown">
+                            <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Ubah Status
+                            </button>
+                            <ul class="dropdown-menu shadow-sm">
+                                <li><a class="dropdown-item" href="#" onclick="ubahStatus('${item.id_tugas}', 'Belum Mulai')"><i class="bi bi-list-task me-2 text-secondary"></i>Belum Mulai</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="ubahStatus('${item.id_tugas}', 'Sedang Dikerjakan')"><i class="bi bi-gear-fill me-2 text-warning"></i>Kerjakan</a></li>
+                                <li><a class="dropdown-item" href="#" onclick="ubahStatus('${item.id_tugas}', 'Terkendala')"><i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>Ada Kendala</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#" onclick="ubahStatus('${item.id_tugas}', 'Selesai')"><i class="bi bi-check-circle-fill me-2 text-success"></i>Tandai Selesai</a></li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-sm text-danger" onclick="hapusPekerjaan('${item.id_tugas}', '${item.nama_pekerjaan}')" title="Hapus Tugas"><i class="bi bi-trash3-fill"></i></button>
+                    </div>
+                </div>
+            `;
+
+            if(item.status === 'Belum Mulai') { htmlBelum += kartu; jml.belum++; }
+            else if(item.status === 'Sedang Dikerjakan') { htmlProses += kartu; jml.proses++; }
+            else if(item.status === 'Terkendala') { htmlKendala += kartu; jml.kendala++; }
+            else if(item.status === 'Selesai') { htmlSelesai += kartu; jml.selesai++; }
+        });
+
+        document.getElementById('wadahBelum').innerHTML = htmlBelum || '<div class="text-center text-muted small py-3">Kosong</div>';
+        document.getElementById('wadahProses').innerHTML = htmlProses || '<div class="text-center text-muted small py-3">Kosong</div>';
+        document.getElementById('wadahKendala').innerHTML = htmlKendala || '<div class="text-center text-muted small py-3">Aman</div>';
+        document.getElementById('wadahSelesai').innerHTML = htmlSelesai || '<div class="text-center text-muted small py-3">Kosong</div>';
+
+        document.getElementById('jmlBelum').innerText = jml.belum;
+        document.getElementById('jmlProses').innerText = jml.proses;
+        document.getElementById('jmlKendala').innerText = jml.kendala;
+        document.getElementById('jmlSelesai').innerText = jml.selesai;
+
+        // Hitung Kesiapan
+        let totalPekerjaan = jml.belum + jml.proses + jml.kendala + jml.selesai;
+        let persentase = totalPekerjaan === 0 ? 0 : Math.round((jml.selesai / totalPekerjaan) * 100);
+        
+        document.getElementById('teksPersentase').innerText = persentase + '%';
+        document.getElementById('barPersentase').style.width = persentase + '%';
+    }
+
+    // FUNGSI 3: SIMPAN TUGAS BARU
+    async function simpanTugas(e) {
+        e.preventDefault();
+        const tombol = document.getElementById('btnSimpan');
+        tombol.innerText = 'Menyimpan...'; tombol.disabled = true;
+
+        const dataKirim = {
+            action: 'tambah_tugas',
+            nama_pekerjaan: document.getElementById('inputPekerjaan').value,
+            divisi: document.getElementById('inputDivisi').value,
+            pic: document.getElementById('inputPic').value,
+            batas_waktu: document.getElementById('inputWaktu').value
+        };
+
+        try {
+            const respon = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify(dataKirim)
+            });
+            const hasil = await respon.json();
+
+            if(hasil.status === 'success') {
+                Swal.fire({icon: 'success', title: 'Berhasil', text: hasil.message, timer: 1500, showConfirmButton: false});
+                document.getElementById('formTugas').reset();
+                bootstrap.Modal.getInstance(document.getElementById('modalTambahTugas')).hide();
+                muatDataPapan(); // Segarkan papan otomatis
+            } else {
+                Swal.fire('Gagal!', hasil.message, 'error');
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Gagal mengirim data.', 'error');
+        } finally {
+            tombol.innerText = 'Simpan Penugasan'; tombol.disabled = false;
+        }
+    }
+
+    // FUNGSI 4: UBAH STATUS (GESER KARTU)
+    async function ubahStatus(id, statusBaru) {
+        // Tampilkan loading sebentar dengan SweetAlert
+        Swal.fire({ title: 'Memindahkan Tugas...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+
+        try {
+            const respon = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'update_status_tugas', id_tugas: id, status_baru: statusBaru })
+            });
+            const hasil = await respon.json();
+            
+            if(hasil.status === 'success') {
+                Swal.close();
+                muatDataPapan(); // Segarkan papan otomatis
+            } else {
+                Swal.fire('Gagal!', hasil.message, 'error');
+            }
+        } catch (err) {
+            Swal.fire('Error', 'Gagal memindahkan tugas.', 'error');
+        }
+    }
+
+    // FUNGSI 5: HAPUS TUGAS
+    function hapusPekerjaan(id, nama) {
+        Swal.fire({
+            title: 'Hapus Pekerjaan?',
+            text: `Yakin ingin menghapus "${nama}" dari papan kendali?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: 'Ya, Hapus!'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+                try {
+                    const respon = await fetch(API_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: 'hapus_tugas', id_tugas: id })
+                    });
+                    const hasil = await respon.json();
+                    if(hasil.status === 'success') {
+                        Swal.close();
+                        muatDataPapan();
+                    } else {
+                        Swal.fire('Gagal!', hasil.message, 'error');
+                    }
+                } catch (err) { Swal.fire('Error', 'Gagal terhubung.', 'error'); }
+            }
+        });
+    }
+</script>
+</body>
+</html>
