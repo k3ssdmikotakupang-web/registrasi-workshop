@@ -60,7 +60,6 @@
             <div id="barPersentase" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;"></div>
         </div>
 
-        <!-- 4 BARIS PROGRES PER TAHAPAN -->
         <div class="row g-3 border-top pt-3 mb-2">
             <div class="col-6 col-md-3">
                 <div class="mini-progress-title text-info"><i class="bi bi-1-circle-fill me-1"></i> Perencanaan</div>
@@ -179,8 +178,11 @@
     
     const isAdmin = (userData.role === 'Admin_Pusat');
     let dataGlobal = [];
-    let listPanitiaGlobal = [];
-    let myDivisiUtama = ""; // Menyimpan Divisi asli panitia berdasarkan database
+
+    // FUNGSI PEMBERSIH TEKS (Menghindari error spasi dan huruf besar/kecil)
+    const bersihkanTeks = (teks) => {
+        return teks ? teks.toString().trim().toLowerCase() : '';
+    };
 
     function kembaliKeDasbor() {
         if(isAdmin) window.location.href = "dashboard_admin.html";
@@ -196,15 +198,10 @@
     };
 
     window.onload = function() {
-        if(isAdmin) { 
-            document.getElementById('filterSemua').checked = true; 
-        } else { 
-            document.getElementById('btnTambahTugas').style.display = 'none'; 
-            document.getElementById('filterSaya').checked = true; 
-        }
-        
-        // Panggil penarik data panitia DULU agar Divisi Saya bisa terdeteksi
-        tarikDaftarPanitia(); 
+        if(isAdmin) { document.getElementById('filterSemua').checked = true; } 
+        else { document.getElementById('btnTambahTugas').style.display = 'none'; document.getElementById('filterSaya').checked = true; }
+        muatDataPapan();
+        if(isAdmin) tarikDaftarPanitia(); 
     };
 
     async function tarikDaftarPanitia() {
@@ -216,31 +213,21 @@
             let setDivisi = new Set();
 
             if(hasil.status === 'success') {
-                listPanitiaGlobal = hasil.data;
-                
-                // MENCARI DIVISI ASLI PANITIA (Mengabaikan memori localStorage yang salah)
-                let panitiaMe = listPanitiaGlobal.find(p => p.nama === userData.nama);
-                if(panitiaMe && panitiaMe.jabatan) {
-                    myDivisiUtama = panitiaMe.jabatan.trim();
-                }
-
                 hasil.data.forEach(p => { 
                     htmlPic += `<option value="${p.nama}">${p.nama} (${p.jabatan})</option>`; 
-                    if(p.jabatan && p.jabatan !== '-') setDivisi.add(p.jabatan.trim()); 
+                    if(p.jabatan && p.jabatan !== '-') setDivisi.add(p.jabatan.toString().trim()); 
                 });
                 
                 let htmlDivisi = '<option value="">-- Pilih Divisi / Jabatan --</option>';
-                setDivisi.forEach(div => { htmlDivisi += `<option value="${div}">${div}</option>`; });
+                // Ubah Set ke Array, lalu urutkan sesuai abjad
+                Array.from(setDivisi).sort().forEach(div => { htmlDivisi += `<option value="${div}">${div}</option>`; });
                 document.getElementById('inputDivisi').innerHTML = htmlDivisi;
+            } else { 
+                htmlPic = '<option value="">Gagal memuat</option>'; 
+                document.getElementById('inputDivisi').innerHTML = '<option value="">Gagal memuat divisi</option>'; 
             }
             document.getElementById('inputPic').innerHTML = htmlPic;
-            
-            // Lanjut muat papan tugas setelah data panitia selesai
-            muatDataPapan();
-        } catch(e) { 
-            console.log(e); 
-            muatDataPapan(); // Tetap jalankan papan jika gagal tarik panitia
-        }
+        } catch(e) { console.log(e); }
     }
 
     async function muatDataPapan() {
@@ -267,20 +254,23 @@
     function renderPapan(semuaData, filterMode) {
         let jmlTotal = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
         let statsTahapan = {
-            'Perencanaan': { total: 0, selesai: 0 },
-            'Persiapan': { total: 0, selesai: 0 },
-            'Pelaksanaan': { total: 0, selesai: 0 },
-            'Pasca-Acara': { total: 0, selesai: 0 }
+            'perencanaan': { total: 0, selesai: 0 },
+            'persiapan': { total: 0, selesai: 0 },
+            'pelaksanaan': { total: 0, selesai: 0 },
+            'pasca-acara': { total: 0, selesai: 0 }
         };
         
+        let jabatanSayaBersih = bersihkanTeks(userData.jabatan);
+
         semuaData.forEach(item => {
+            // Hitung total status
             if(item.status === 'Belum Mulai') jmlTotal.belum++;
             else if(item.status === 'Sedang Dikerjakan') jmlTotal.proses++;
             else if(item.status === 'Terkendala') jmlTotal.kendala++;
             else if(item.status === 'Selesai') jmlTotal.selesai++;
 
-            // Mencegah error spasi pada tahapan
-            let t = item.tahapan ? item.tahapan.toString().trim() : ''; 
+            // Hitung Progress Tahapan (Menggunakan Pembersih Teks)
+            let t = bersihkanTeks(item.tahapan); 
             if(statsTahapan[t] !== undefined) {
                 statsTahapan[t].total++;
                 if(item.status === 'Selesai') statsTahapan[t].selesai++;
@@ -292,18 +282,15 @@
         document.getElementById('teksPersentase').innerText = persentase + '%';
         document.getElementById('barPersentase').style.width = persentase + '%';
 
-        updateProgressBar('barPerencanaan', 'txtPerencanaan', statsTahapan['Perencanaan']);
-        updateProgressBar('barPersiapan', 'txtPersiapan', statsTahapan['Persiapan']);
-        updateProgressBar('barPelaksanaan', 'txtPelaksanaan', statsTahapan['Pelaksanaan']);
-        updateProgressBar('barPasca', 'txtPasca', statsTahapan['Pasca-Acara']);
+        updateProgressBar('barPerencanaan', 'txtPerencanaan', statsTahapan['perencanaan']);
+        updateProgressBar('barPersiapan', 'txtPersiapan', statsTahapan['persiapan']);
+        updateProgressBar('barPelaksanaan', 'txtPelaksanaan', statsTahapan['pelaksanaan']);
+        updateProgressBar('barPasca', 'txtPasca', statsTahapan['pasca-acara']);
 
-        // LOGIKA PENYARINGAN MENGGUNAKAN DIVISI ASLI (myDivisiUtama)
+        // FILTER DATA BERDASARKAN DIVISI (Pembersih Teks Aktif)
         let dataTampil = semuaData;
-        if(filterMode === 'saya') {
-            dataTampil = semuaData.filter(item => {
-                let divItem = item.divisi ? item.divisi.trim() : '';
-                return divItem === myDivisiUtama;
-            });
+        if (filterMode === 'saya') {
+            dataTampil = semuaData.filter(item => bersihkanTeks(item.divisi) === jabatanSayaBersih);
         }
         
         let jmlTampil = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
@@ -323,9 +310,8 @@
                 }
             }
 
-            // HAK AKSES JUGA MENGGUNAKAN DIVISI ASLI
-            let divItem = item.divisi ? item.divisi.trim() : '';
-            let isDivisiSaya = (divItem === myDivisiUtama && myDivisiUtama !== "");
+            // HAK AKSES KARTU (Pembersih Teks Aktif)
+            let isDivisiSaya = (bersihkanTeks(item.divisi) === jabatanSayaBersih);
             let bisaUbahStatus = isAdmin || isDivisiSaya;
             
             let aksiHTML = bisaUbahStatus ? `
