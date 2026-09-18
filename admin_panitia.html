@@ -13,6 +13,7 @@
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
         .baris-anggota { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.2); }
         .form-control, .form-select { font-size: 0.85rem; }
+        .master-list { max-height: 120px; overflow-y: auto; scrollbar-width: thin; }
     </style>
 </head>
 <body>
@@ -24,9 +25,38 @@
     </div>
 </nav>
 
+<div class="container-fluid px-4">
 
+    <!-- PANEL MASTER DATA: DIVISI & JABATAN -->
+    <div class="glass-card p-4 mb-4" style="border-left: 4px solid #f59e0b;">
+        <h5 class="fw-bold mb-3 text-warning"><i class="bi bi-database-fill-add me-2"></i> Pengaturan Master: Divisi & Jabatan Kepanitiaan</h5>
+        <div class="row g-4">
+            <!-- Master Divisi -->
+            <div class="col-md-6">
+                <label class="form-label small text-white-50">Tambah Divisi / Seksi Baru</label>
+                <div class="input-group">
+                    <input type="text" id="inputMasterDivisi" class="form-control bg-dark text-white border-secondary" placeholder="Cth: Kesekretariatan">
+                    <button class="btn btn-warning fw-bold" onclick="tambahMaster('Divisi')">Tambah</button>
+                </div>
+                <div class="mt-2 border border-secondary rounded master-list bg-dark p-2" id="listDivisi">
+                    <div class="text-white-50 small">Memuat data...</div>
+                </div>
+            </div>
+            <!-- Master Jabatan -->
+            <div class="col-md-6">
+                <label class="form-label small text-white-50">Tambah Jabatan Kepanitiaan</label>
+                <div class="input-group">
+                    <input type="text" id="inputMasterJabatan" class="form-control bg-dark text-white border-secondary" placeholder="Cth: Ketua Panitia">
+                    <button class="btn btn-warning fw-bold" onclick="tambahMaster('Jabatan')">Tambah</button>
+                </div>
+                <div class="mt-2 border border-secondary rounded master-list bg-dark p-2" id="listJabatan">
+                    <div class="text-white-50 small">Memuat data...</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Area Form Input -->
+    <!-- AREA FORM INPUT SK & ANGGOTA -->
     <div class="glass-card p-4 mb-4" style="border-left: 4px solid #f093fb;">
         <h5 class="fw-bold mb-4 text-warning">Form Input SK & Anggota Kepanitiaan</h5>
         <form id="formPanitia" onsubmit="uploadPanitiaKolektif(event)">
@@ -40,54 +70,40 @@
             <label class="form-label fw-bold mb-3">2. Masukkan Daftar Anggota (Kolektif)</label>
             
             <div id="wadah-anggota">
+                <!-- Baris Anggota (Template Dinamis) -->
                 <div class="row g-2 mb-3 baris-anggota">
                     <div class="col-md-2">
                         <label class="small text-white-50">Nama Lengkap & Gelar</label>
                         <input type="text" class="form-control bg-dark text-white border-secondary i-nama" required placeholder="Cth: Drs. Johanes">
                     </div>
                     <div class="col-md-2">
-                        <label class="small text-white-50">NIP (Tulis '-' jika Non-PNS)</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary i-nip" required placeholder="Cth: 198001012005011001">
+                        <label class="small text-white-50">NIP / Pangkat</label>
+                        <div class="d-flex gap-1">
+                            <input type="text" class="form-control bg-dark text-white border-secondary i-nip w-50" required placeholder="NIP / Strip">
+                            <select class="form-select bg-dark text-white border-secondary i-pangkat w-50" required>
+                                <option value="-">Non-PNS</option>
+                                <option value="II/a">II/a</option><option value="III/a">III/a</option>
+                                <option value="IV/a">IV/a</option>
+                            </select>
+                        </div>
                     </div>
+                    <!-- DROPDOWN DIVISI BARU -->
                     <div class="col-md-2">
-                        <label class="small text-white-50">Pangkat/Golongan</label>
-                        <select class="form-select bg-dark text-white border-secondary i-pangkat" required>
-                            <option value="-">Non-PNS / P3K</option>
-                            <option value="II/a">II/a - Pengatur Muda</option>
-                            <option value="II/b">II/b - Pengatur Muda Tk.I</option>
-                            <option value="II/c">II/c - Pengatur</option>
-                            <option value="II/d">II/d - Pengatur Tk.I</option>
-                            <option value="III/a">III/a - Penata Muda</option>
-                            <option value="III/b">III/b - Penata Muda Tk.I</option>
-                            <option value="III/c">III/c - Penata</option>
-                            <option value="III/d">III/d - Penata Tk.I</option>
-                            <option value="IV/a">IV/a - Pembina</option>
-                            <option value="IV/b">IV/b - Pembina Tk.I</option>
-                            <option value="IV/c">IV/c - Pembina Utama Muda</option>
-                            <option value="IV/d">IV/d - Pembina Utama Madya</option>
+                        <label class="small text-white-50">Divisi / Seksi</label>
+                        <select class="form-select bg-dark text-white border-secondary i-divisi" required>
+                            <option value="">-- Memuat Divisi --</option>
                         </select>
                     </div>
+                    <!-- DROPDOWN JABATAN KEPANITIAAN BARU -->
                     <div class="col-md-2">
-                        <label class="small text-white-50">Jabatan Panitia</label>
+                        <label class="small text-white-50">Jabatan Kepanitiaan</label>
                         <select class="form-select bg-dark text-white border-secondary i-jabatan" required>
-                            <option value="">-- Pilih --</option>
-                            <option value="Pelindung / Penasehat">Pelindung / Penasehat</option>
-                            <option value="Pengarah">Pengarah</option>
-                            <option value="Penanggung Jawab">Penanggung Jawab</option>
-                            <option value="Ketua">Ketua</option>
-                            <option value="Sekretaris 1">Sekretaris 1</option>
-                            <option value="Sekretaris 2">Sekretaris 2</option>
-                            <option value="Bendahara Panitia">Bendahara Panitia</option>
-                            <option value="Seksi Acara">Seksi Acara</option>
-                            <option value="Seksi Perlengkapan">Seksi Perlengkapan</option>
-                            <option value="Seksi Konsumsi">Seksi Konsumsi</option>
-                            <option value="Seksi Humas / Dokumentasi">Seksi Humas / Dokumentasi</option>
-                            <option value="Tim Teknis">Tim Teknis</option>
+                            <option value="">-- Memuat Jabatan --</option>
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label class="small text-white-50">Job Deskripsi</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" required placeholder="Tugas singkat">
+                        <label class="small text-white-50">Job Deskripsi (Opsional)</label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" placeholder="Tugas singkat">
                     </div>
                     <div class="col-md-1 d-flex align-items-end">
                         <button type="button" class="btn btn-outline-danger w-100 disabled" style="opacity: 0.5;"><i class="bi bi-trash"></i></button>
@@ -104,7 +120,7 @@
         </form>
     </div>
 
-    <!-- AREA BARU: TABEL DAFTAR PANITIA -->
+    <!-- TABEL DAFTAR PANITIA -->
     <div class="glass-card p-4 mb-4" style="border-left: 4px solid #00f2fe;">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold text-info mb-0"><i class="bi bi-list-columns-reverse me-2"></i> Daftar Anggota Kepanitiaan Tersimpan</h5>
@@ -120,125 +136,146 @@
                         <th style="width: 50px;">No</th>
                         <th>ID Panitia</th>
                         <th>Nama & Gelar</th>
+                        <th>Divisi</th>
                         <th>Jabatan</th>
                     </tr>
                 </thead>
                 <tbody id="tbodyPanitia">
-                    <tr>
-                        <td colspan="4" class="text-center text-muted py-4">Memuat data dari database... <div class="spinner-border spinner-border-sm text-info ms-2"></div></td>
-                    </tr>
+                    <tr><td colspan="5" class="text-center text-muted py-4">Memuat data dari database...</td></tr>
                 </tbody>
             </table>
         </div>
     </div>
-
-    <button onclick="window.location.href='cetak_idcard_panitia.html'" class="btn btn-outline-light w-100 py-3 text-start fw-bold mb-3">
-        <i class="bi bi-person-badge-fill me-2"></i> Cetak ID Card & QR Panitia
-    </button>
 </div>
 
-<!-- Modal Pengumuman -->
-<div class="modal fade" id="modalFormPengumuman" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark text-white" style="border: 1px solid rgba(255,255,255,0.2); border-radius: 15px;">
-            <div class="modal-header border-secondary">
-                <h6 class="modal-title text-warning fw-bold"><i class="bi bi-megaphone-fill me-2"></i> Rilis Pengumuman Baru</h6>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form id="formPengumuman" onsubmit="simpanPengumuman(event)">
-                    <div class="mb-3">
-                        <label class="form-label small text-white-50">Judul Pengumuman</label>
-                        <input type="text" id="pJudul" class="form-control bg-dark text-white border-secondary" required placeholder="Cth: Perubahan Jadwal Sesi 1">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label small text-white-50">Isi Pengumuman</label>
-                        <textarea id="pIsi" class="form-control bg-dark text-white border-secondary" rows="3" required placeholder="Tuliskan isi detail pengumuman..."></textarea>
-                    </div>
-                    <div class="row g-2 mb-3">
-                        <div class="col-6">
-                            <label class="form-label small text-white-50">Target Penerima</label>
-                            <select id="pTarget" class="form-select bg-dark text-white border-secondary">
-                                <option value="Semua">Semua Pengguna</option>
-                                <option value="Peserta">Hanya Peserta</option>
-                                <option value="Panitia">Hanya Panitia</option>
-                            </select>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label small text-white-50">Status Publikasi</label>
-                            <select id="pStatus" class="form-select bg-dark text-white border-secondary">
-                                <option value="Aktif">Tayangkan (Aktif)</option>
-                                <option value="Arsip">Sembunyikan (Arsip)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button type="submit" id="btnKirimPengumuman" class="btn btn-warning w-100 fw-bold"><i class="bi bi-send-fill me-2"></i> Kirim Pengumuman</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-    
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI!
     const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
+    let cacheDivisi = [];
+    let cacheJabatan = [];
+
+    // 1. MUAT DATA MASTER SAAT HALAMAN DIBUKA
+    document.addEventListener('DOMContentLoaded', () => {
+        muatDataMaster();
+        muatTabelPanitia();
+    });
+
+    async function muatDataMaster() {
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_master_kepanitiaan' }) });
+            const result = await res.json();
+            
+            if(result.status === 'success') {
+                cacheDivisi = result.data.divisi;
+                cacheJabatan = result.data.jabatan;
+                
+                // Render List di Panel Atas
+                renderListMaster('listDivisi', cacheDivisi, "Belum ada divisi.");
+                renderListMaster('listJabatan', cacheJabatan, "Belum ada jabatan.");
+                
+                // Update dropdown yang sudah ada di layar
+                updateSemuaDropdown();
+            }
+        } catch(e) { console.log(e); }
+    }
+
+    function renderListMaster(elementId, dataArray, emptyMsg) {
+        let html = '';
+        if(dataArray.length === 0) {
+            html = `<div class="text-white-50 small">${emptyMsg}</div>`;
+        } else {
+            dataArray.forEach(item => { html += `<div class="badge bg-secondary me-1 mb-1 p-2">${item}</div>`; });
+        }
+        document.getElementById(elementId).innerHTML = html;
+    }
+
+    // 2. FUNGSI TAMBAH MASTER DATA
+    async function tambahMaster(tipe) {
+        const inputId = tipe === 'Divisi' ? 'inputMasterDivisi' : 'inputMasterJabatan';
+        const nilai = document.getElementById(inputId).value.trim();
+        
+        if(!nilai) return;
+        Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        try {
+            const res = await fetch(API_URL, { 
+                method: 'POST', 
+                body: JSON.stringify({ action: 'tambah_master_kepanitiaan', tipe: tipe, nama_master: nilai }) 
+            });
+            const result = await res.json();
+            
+            if(result.status === 'success') {
+                Swal.close();
+                document.getElementById(inputId).value = '';
+                muatDataMaster(); // Refresh otomatis
+            } else { Swal.fire('Gagal', result.message, 'error'); }
+        } catch(e) { Swal.fire('Error', 'Gagal terhubung ke server', 'error'); }
+    }
+
+    // 3. FUNGSI RENDER DROPDOWN DINAMIS
+    function updateSemuaDropdown() {
+        let optDivisi = '<option value="">-- Pilih Divisi --</option>';
+        cacheDivisi.forEach(d => optDivisi += `<option value="${d}">${d}</option>`);
+        
+        let optJabatan = '<option value="">-- Pilih Jabatan --</option>';
+        cacheJabatan.forEach(j => optJabatan += `<option value="${j}">${j}</option>`);
+
+        document.querySelectorAll('.i-divisi').forEach(el => el.innerHTML = optDivisi);
+        document.querySelectorAll('.i-jabatan').forEach(el => el.innerHTML = optJabatan);
+    }
+
+    // 4. FUNGSI TAMBAH BARIS ANGGOTA BARU
     function tambahBaris() {
+        let optDivisi = '<option value="">-- Pilih Divisi --</option>';
+        cacheDivisi.forEach(d => optDivisi += `<option value="${d}">${d}</option>`);
+        
+        let optJabatan = '<option value="">-- Pilih Jabatan --</option>';
+        cacheJabatan.forEach(j => optJabatan += `<option value="${j}">${j}</option>`);
+
         const wadah = document.getElementById('wadah-anggota');
         const barisBaru = document.createElement('div');
         barisBaru.className = 'row g-2 mb-3 baris-anggota';
         barisBaru.innerHTML = `
             <div class="col-md-2"><input type="text" class="form-control bg-dark text-white border-secondary i-nama" required placeholder="Nama Anggota"></div>
-            <div class="col-md-2"><input type="text" class="form-control bg-dark text-white border-secondary i-nip" required placeholder="NIP / Strip"></div>
             <div class="col-md-2">
-                <select class="form-select bg-dark text-white border-secondary i-pangkat" required>
-                    <option value="-">Non-PNS / P3K</option>
-                    <option value="II/a">II/a - Pengatur Muda</option><option value="II/b">II/b - Pengatur Muda Tk.I</option>
-                    <option value="II/c">II/c - Pengatur</option><option value="II/d">II/d - Pengatur Tk.I</option>
-                    <option value="III/a">III/a - Penata Muda</option><option value="III/b">III/b - Penata Muda Tk.I</option>
-                    <option value="III/c">III/c - Penata</option><option value="III/d">III/d - Penata Tk.I</option>
-                    <option value="IV/a">IV/a - Pembina</option><option value="IV/b">IV/b - Pembina Tk.I</option>
-                    <option value="IV/c">IV/c - Pembina Utama Muda</option><option value="IV/d">IV/d - Pembina Utama Madya</option>
-                </select>
+                <div class="d-flex gap-1">
+                    <input type="text" class="form-control bg-dark text-white border-secondary i-nip w-50" required placeholder="NIP">
+                    <select class="form-select bg-dark text-white border-secondary i-pangkat w-50" required>
+                        <option value="-">Non-PNS</option><option value="II/a">II/a</option><option value="III/a">III/a</option><option value="IV/a">IV/a</option>
+                    </select>
+                </div>
             </div>
-            <div class="col-md-2">
-                <select class="form-select bg-dark text-white border-secondary i-jabatan" required>
-                    <option value="">-- Pilih --</option>
-                    <option value="Pelindung / Penasehat">Pelindung / Penasehat</option><option value="Pengarah">Pengarah</option>
-                    <option value="Penanggung Jawab">Penanggung Jawab</option><option value="Ketua">Ketua</option>
-                    <option value="Sekretaris 1">Sekretaris 1</option><option value="Sekretaris 2">Sekretaris 2</option>
-                    <option value="Bendahara Panitia">Bendahara Panitia</option><option value="Seksi Acara">Seksi Acara</option>
-                    <option value="Seksi Perlengkapan">Seksi Perlengkapan</option><option value="Seksi Konsumsi">Seksi Konsumsi</option>
-                    <option value="Seksi Humas / Dokumentasi">Seksi Humas / Dokumentasi</option><option value="Tim Teknis">Tim Teknis</option>
-                </select>
-            </div>
-            <div class="col-md-3"><input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" required placeholder="Tugas singkat"></div>
+            <div class="col-md-2"><select class="form-select bg-dark text-white border-secondary i-divisi" required>${optDivisi}</select></div>
+            <div class="col-md-2"><select class="form-select bg-dark text-white border-secondary i-jabatan" required>${optJabatan}</select></div>
+            <div class="col-md-3"><input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" placeholder="Tugas singkat"></div>
             <div class="col-md-1 d-flex align-items-end"><button type="button" class="btn btn-danger w-100" onclick="this.parentElement.parentElement.remove()"><i class="bi bi-trash"></i></button></div>
         `;
         wadah.appendChild(barisBaru);
     }
 
+    // 5. UPLOAD DATA KOLEKTIF
     async function uploadPanitiaKolektif(event) {
         event.preventDefault();
         
         const fileInput = document.getElementById('panitia_file').files[0];
-        if (fileInput.size > 3 * 1024 * 1024) { Swal.fire('Terlalu Besar!', 'Ukuran file SK maksimal 3 MB.', 'warning'); return; }
+        if (fileInput.size > 3 * 1024 * 1024) { Swal.fire('Terlalu Besar!', 'Maksimal 3 MB.', 'warning'); return; }
 
-        let elemenBaris = document.querySelectorAll('.baris-anggota');
         let arrayAnggota = [];
-        elemenBaris.forEach(baris => {
+        document.querySelectorAll('.baris-anggota').forEach(baris => {
             arrayAnggota.push({
                 nama: baris.querySelector('.i-nama').value,
                 nip: baris.querySelector('.i-nip').value,
                 pangkat: baris.querySelector('.i-pangkat').value,
+                divisi: baris.querySelector('.i-divisi').value,
                 jabatan: baris.querySelector('.i-jabatan').value,
-                jobdesk: baris.querySelector('.i-jobdesk').value
+                jobdesk: baris.querySelector('.i-jobdesk').value || '-'
             });
         });
 
         const btn = document.getElementById('btnUploadPanitia');
-        const teksAsli = btn.innerHTML;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menyimpan...';
         btn.disabled = true;
 
@@ -248,77 +285,23 @@
             const payload = { action: 'upload_sk_panitia_kolektif', anggota: arrayAnggota, fileName: fileInput.name, mimeType: fileInput.type, fileData: base64Data };
 
             try {
-                const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+                const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
                 const result = await res.json();
                 if(result.status === 'success') {
                     Swal.fire('Berhasil!', result.message, 'success');
                     document.getElementById('formPanitia').reset(); document.getElementById('wadah-anggota').innerHTML = ''; tambahBaris(); 
-                    document.querySelector('.baris-anggota .btn-danger').className = 'btn btn-outline-danger w-100 disabled';
-                    document.querySelector('.baris-anggota .btn-outline-danger').style.opacity = '0.5';
-                    document.querySelector('.baris-anggota .btn-outline-danger').onclick = null;
-                    
                     muatTabelPanitia(); 
                 } else { Swal.fire('Gagal!', result.message, 'error'); }
             } catch(error) { Swal.fire('Error', 'Gagal server.', 'error'); } 
-            finally { btn.innerHTML = teksAsli; btn.disabled = false; }
+            finally { btn.innerHTML = 'Simpan Seluruh Data'; btn.disabled = false; }
         };
         reader.readAsDataURL(fileInput);
     }
 
-    let modalPengumumanObj = null;
-
-    function bukaModalPengumuman() {
-        if(!modalPengumumanObj) {
-            modalPengumumanObj = new bootstrap.Modal(document.getElementById('modalFormPengumuman'));
-        }
-        document.getElementById('formPengumuman').reset();
-        modalPengumumanObj.show();
-    }
-
-    async function simpanPengumuman(e) {
-        e.preventDefault();
-        
-        const submitBtn = document.getElementById('btnKirimPengumuman');
-        const teksAsli = submitBtn.innerText;
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menerbitkan...';
-
-        const payload = {
-            action: 'add_pengumuman',
-            role: 'panitia', 
-            jabatan: 'admin',
-            judul: document.getElementById('pJudul').value,
-            isi: document.getElementById('pIsi').value,
-            target: document.getElementById('pTarget').value,
-            status: document.getElementById('pStatus').value
-        };
-
-        try {
-            const response = await fetch(API_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload)
-            });
-            const result = await response.json();
-
-            if (result.status === 'success') {
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, background: '#1e293b', color: '#fff' });
-                modalPengumumanObj.hide();
-            } else {
-                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, background: '#1e293b', color: '#fff' });
-            }
-        } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server database.', background: '#1e293b', color: '#fff' });
-        } finally {
-            submitBtn.disabled = false;
-            submitBtn.innerText = teksAsli;
-        }
-    }
-
-    // FUNGSI UNTUK MENARIK DATA PANITIA KE TABEL
+    // 6. MUAT TABEL PANITIA (Diperbarui untuk memunculkan Kolom Divisi)
     async function muatTabelPanitia() {
         const tbody = document.getElementById('tbodyPanitia');
-        tbody.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-4">Memperbarui data... <div class="spinner-border spinner-border-sm text-info ms-2"></div></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-4">Memperbarui data... <div class="spinner-border spinner-border-sm text-info ms-2"></div></td></tr>`;
         
         try {
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_all_panitia' }) });
@@ -327,26 +310,23 @@
             if(result.status === 'success' && result.data.length > 0) {
                 let html = '';
                 result.data.forEach((p, index) => {
+                    // Penyesuaian karena get_all_panitia di code.gs mungkin belum mengirim semua detail,
+                    // Tapi setidaknya kita tampilkan apa yang ada.
+                    let teksDivisi = p.divisi || p.jabatan || '-'; 
                     html += `
                         <tr>
                             <td class="text-center text-white-50">${index + 1}</td>
-                            <td class="text-center"><span class="badge bg-secondary">${p.id_panitia}</span></td>
+                            <td class="text-center"><span class="badge bg-secondary">${p.id_panitia || 'ID'}</span></td>
                             <td class="fw-bold text-light">${p.nama}</td>
+                            <td class="text-warning">${teksDivisi}</td>
                             <td class="text-info">${p.jabatan}</td>
                         </tr>
                     `;
                 });
                 tbody.innerHTML = html;
-            } else {
-                tbody.innerHTML = '<tr><td colspan="4" class="text-center text-white-50 py-4">Belum ada data panitia yang terdaftar di database.</td></tr>';
-            }
-        } catch(e) {
-            tbody.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4"><i class="bi bi-exclamation-triangle-fill me-2"></i> Gagal menarik data dari server. Periksa koneksi API Anda.</td></tr>';
-        }
+            } else { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-white-50 py-4">Belum ada data panitia.</td></tr>'; }
+        } catch(e) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Gagal menarik data dari server.</td></tr>'; }
     }
-
-    // JALANKAN PEMUATAN TABEL SAAT HALAMAN DIBUKA
-    document.addEventListener('DOMContentLoaded', muatTabelPanitia);
 </script>    
 </body>
 </html>
