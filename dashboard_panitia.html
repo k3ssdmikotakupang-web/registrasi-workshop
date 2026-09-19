@@ -3,364 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Papan Manajemen Tugas - EMS K3S Kupang</title>
+    <title>Super Admin - Ruang Kendali Pusat</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <style>
-        body { background-color: #f1f5f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #1e293b; padding-bottom: 50px; }
-        .nav-app { background: #0f172a; border-bottom: 4px solid #00f2fe; }
-        
-        .papan-kolom { background: #e2e8f0; border-radius: 10px; padding: 15px; min-height: 70vh; }
-        .judul-kolom { font-weight: 700; text-transform: uppercase; font-size: 0.9rem; padding-bottom: 10px; border-bottom: 2px solid #cbd5e1; margin-bottom: 15px; }
-        
-        .kolom-belum { border-top: 4px solid #64748b; }
-        .kolom-proses { border-top: 4px solid #f59e0b; }
-        .kolom-kendala { border-top: 4px solid #ef4444; }
-        .kolom-selesai { border-top: 4px solid #10b981; }
-
-        .kartu-tugas { background: #ffffff; border-radius: 8px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); border-left: 4px solid transparent; transition: transform 0.2s; }
-        .kartu-tugas:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
-        
-        .kartu-belum { border-left-color: #64748b; }
-        .kartu-proses { border-left-color: #f59e0b; }
-        .kartu-kendala { border-left-color: #ef4444; }
-        .kartu-selesai { border-left-color: #10b981; opacity: 0.8; }
-
-        .kartu-judul { font-weight: 700; font-size: 1rem; color: #0f172a; margin-bottom: 5px; line-height: 1.3; }
-        .kartu-info { font-size: 0.8rem; color: #64748b; margin-bottom: 3px; }
-        
-        .progress-container { background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 30px; }
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+        .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+        .stat-box { border-left: 4px solid #00f2fe; background: linear-gradient(90deg, rgba(0,242,254,0.1) 0%, transparent 100%); }
+        .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px !important; }
+        .menu-btn { transition: all 0.2s ease; border-width: 1px; }
+        .menu-btn:hover { transform: translateX(5px); background-color: rgba(0, 242, 254, 0.1) !important; border-color: #00f2fe !important; }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-dark nav-app sticky-top mb-4 py-3">
-    <div class="container-fluid px-4">
-        <span class="navbar-brand fw-bold"><i class="bi bi-kanban me-2 text-info"></i> Ruang Kendali Kepanitiaan</span>
-        <button class="btn btn-outline-light btn-sm fw-bold" onclick="kembaliKeDasbor()"><i class="bi bi-arrow-left"></i> Kembali ke Beranda</button>
+<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
+    <div class="container">
+        <span class="navbar-brand text-neon"><i class="bi bi-shield-lock-fill"></i> Ruang Kendali Pusat</span>
+        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
     </div>
 </nav>
 
-<div class="container-fluid px-4">
+<div class="container">
+    <!-- Statistik Real-Time -->
+    <h5 class="fw-bold mb-3">Statistik Real-Time</h5>
+    <div class="row g-3 mb-4">
+        <div class="col-6"><div class="glass-card stat-box p-3"><p class="small text-white-50 mb-1">Sekolah Lunas</p><h3 class="fw-bold mb-0 text-info" id="s_lunas">0</h3></div></div>
+        <div class="col-6"><div class="glass-card stat-box p-3" style="border-left-color: #ffc107;"><p class="small text-white-50 mb-1">Sekolah Pending</p><h3 class="fw-bold mb-0 text-warning" id="s_pending">0</h3></div></div>
+        <div class="col-6"><div class="glass-card stat-box p-3" style="border-left-color: #f093fb;"><p class="small text-white-50 mb-1">Total Peserta</p><h3 class="fw-bold mb-0" style="color: #f093fb;" id="s_peserta">0</h3></div></div>
+        <div class="col-6"><div class="glass-card stat-box p-3" style="border-left-color: #20c997;"><p class="small text-white-50 mb-1">Peserta Hadir</p><h3 class="fw-bold mb-0 text-success" id="s_hadir">0</h3></div></div>
+    </div>
     
-    <!-- Wadah untuk Radar Peringatan Cerdas -->
-    <div id="alertMendesak"></div>
-
-    <!-- Indikator Kesiapan Acara -->
-    <div class="progress-container">
-        <div class="d-flex justify-content-between align-items-end mb-2">
-            <div>
-                <h5 class="fw-bold mb-0">Indikator Kesiapan Acara</h5>
-                <small class="text-muted">K3S SD/MI Kota Kupang</small>
+    <!-- Widget Pengumuman Panitia -->
+    <div class="row g-3 mb-4">
+      <div class="col-12">
+        <div class="card glass-card p-3 text-white" style="border-left: 5px solid #f59e0b; background: rgba(15, 23, 42, 0.8);">
+          <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center" onclick="bukaModalPengumuman()" style="cursor: pointer;">
+              <div class="rounded-circle bg-warning text-dark p-3 me-3 d-flex align-items-center justify-content-center" style="width: 48px; height: 48px;">
+                <i class="bi bi-megaphone-fill fs-4"></i>
+              </div>
+              <div>
+                <h6 class="fw-bold text-warning mb-1"><i class="bi bi-broadcast"></i> Rilis Pengumuman Panitia</h6>
+                <small class="text-white-50">Klik di sini untuk menerbitkan informasi/instruksi realtime</small>
+              </div>
             </div>
-            <h3 class="fw-bold text-success mb-0" id="teksPersentase">0%</h3>
-        </div>
-        <div class="progress" style="height: 25px; border-radius: 20px; background-color: #e2e8f0;">
-            <div id="barPersentase" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;"></div>
-        </div>
-        
-        <div class="d-flex flex-wrap justify-content-between align-items-center mt-3 gap-2">
-            <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-primary fw-bold shadow-sm" id="btnTambahTugas" data-bs-toggle="modal" data-bs-target="#modalTambahTugas">
-                    <i class="bi bi-plus-lg me-2"></i> Tambah Pekerjaan Baru
-                </button>
-                
-                <div class="btn-group shadow-sm" id="filterTugasContainer">
-                    <input type="radio" class="btn-check" name="filterTugas" id="filterSemua" autocomplete="off" onchange="terapkanFilter()">
-                    <label class="btn btn-outline-primary fw-bold" for="filterSemua"><i class="bi bi-globe me-1"></i> Semua Pekerjaan</label>
-
-                    <input type="radio" class="btn-check" name="filterTugas" id="filterSaya" autocomplete="off" onchange="terapkanFilter()">
-                    <label class="btn btn-outline-primary fw-bold" for="filterSaya"><i class="bi bi-person-workspace me-1"></i> Tugas Saya</label>
-                </div>
+            
+            <div class="d-flex gap-2 mt-2 mt-md-0">
+              <button class="btn btn-sm btn-outline-info fw-bold" onclick="bukaModalListPengumuman()"><i class="bi bi-card-list"></i> Kelola Data</button>
+              <button class="btn btn-sm btn-warning fw-bold" onclick="bukaModalPengumuman()"><i class="bi bi-plus-lg"></i> Buat Baru</button>
             </div>
-            <button class="btn btn-outline-secondary fw-bold bg-white shadow-sm" onclick="muatDataPapan()">
-                <i class="bi bi-arrow-clockwise me-1"></i> Segarkan Data
-            </button>
+          </div>
         </div>
+      </div>
     </div>
 
-    <!-- Papan Kanban 4 Kolom -->
-    <div class="row g-4">
-        <!-- Kolom Belum Mulai -->
-        <div class="col-md-3">
-            <div class="papan-kolom kolom-belum">
-                <div class="judul-kolom text-secondary"><i class="bi bi-list-task me-2"></i>Belum Mulai <span class="badge bg-secondary float-end" id="jmlBelum">0</span></div>
-                <div id="wadahBelum"></div>
-            </div>
+    <!-- Menu Operasional & Pantauan (Tampilan Standar Rapi & Paten) -->
+    <h5 class="fw-bold mb-3 mt-4">Menu Operasional & Pantauan</h5>
+    <div class="row g-3">
+        
+        <!-- Papan Kanban Manajemen Tugas -->
+        <div class="col-12">
+            <button onclick="window.location.href='manajemen_tugas.html'" class="btn btn-primary w-100 py-3 text-start fw-bold shadow-sm menu-btn" style="background: linear-gradient(45deg, #0f172a, #0284c7); border: 1px solid #00f2fe;">
+                <i class="bi bi-kanban-fill me-2 text-info"></i> Papan Kanban Manajemen Tugas Panitia
+            </button>
         </div>
-        <!-- Kolom Sedang Dikerjakan -->
-        <div class="col-md-3">
-            <div class="papan-kolom kolom-proses">
-                <div class="judul-kolom text-warning"><i class="bi bi-gear-fill me-2"></i>Dikerjakan <span class="badge bg-warning text-dark float-end" id="jmlProses">0</span></div>
-                <div id="wadahProses"></div>
-            </div>
+
+        <!-- Rekap Daftar Sekolah & Kas -->
+        <div class="col-12">
+            <button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-info w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(0, 242, 254, 0.05);">
+                <i class="bi bi-file-earmark-spreadsheet-fill me-2 text-info"></i> Rekap Daftar Sekolah & Penerimaan Kas
+            </button>
         </div>
-        <!-- Kolom Terkendala -->
-        <div class="col-md-3">
-            <div class="papan-kolom kolom-kendala">
-                <div class="judul-kolom text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Terkendala <span class="badge bg-danger float-end" id="jmlKendala">0</span></div>
-                <div id="wadahKendala"></div>
-            </div>
+
+        <!-- Input SK & Susunan Kepanitiaan -->
+        <div class="col-12">
+            <button onclick="window.location.href='admin_panitia.html'" class="btn btn-outline-primary w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(13, 110, 253, 0.05);">
+                <i class="bi bi-people-fill me-2 text-primary"></i> Input SK & Susunan Kepanitiaan
+            </button>
         </div>
-        <!-- Kolom Selesai -->
-        <div class="col-md-3">
-            <div class="papan-kolom kolom-selesai">
-                <div class="judul-kolom text-success"><i class="bi bi-check-circle-fill me-2"></i>Selesai <span class="badge bg-success float-end" id="jmlSelesai">0</span></div>
-                <div id="wadahSelesai"></div>
-            </div>
+
+        <!-- Input & Atur Jadwal Kegiatan -->
+        <div class="col-12">
+            <button onclick="window.location.href='admin_jadwal.html'" class="btn btn-outline-secondary w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(108, 117, 125, 0.05);">
+                <i class="bi bi-calendar-week me-2 text-secondary"></i> Input & Atur Jadwal Kegiatan
+            </button>
+        </div>
+
+        <!-- Manajemen Akun & Reset Data -->
+        <div class="col-12">
+            <button onclick="window.location.href='admin_manajemen.html'" class="btn btn-outline-info w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(13, 202, 240, 0.05);">
+                <i class="bi bi-person-lines-fill me-2 text-info"></i> Manajemen Akun & Reset Data
+            </button>
+        </div>
+
+        <!-- Cetak ID Card Massal -->
+        <div class="col-12">
+            <button onclick="window.location.href='cetak_idcard.html'" class="btn btn-outline-light w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(255, 255, 255, 0.05);">
+                <i class="bi bi-printer-fill me-2 text-light"></i> Cetak ID Card & Name Tag Massal
+            </button>
+        </div>
+
+        <!-- Scanner Absensi Multi-Sesi -->
+        <div class="col-12">
+            <button onclick="window.location.href='panitia_checkin.html'" class="btn btn-outline-warning w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(255, 193, 7, 0.05);">
+                <i class="bi bi-qr-code-scan me-2 text-warning"></i> Buka Scanner Absensi Multi-Sesi
+            </button>
+        </div>
+
+        <!-- Broadcast Materi & Undangan -->
+        <div class="col-12">
+            <button onclick="window.location.href='admin_broadcast.html'" class="btn btn-outline-success w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(25, 135, 84, 0.05);">
+                <i class="bi bi-cloud-arrow-up-fill me-2 text-success"></i> Broadcast Materi & Undangan
+            </button>
         </div>
     </div>
 </div>
 
-<!-- Modal Tambah Pekerjaan (Ditambah Input Jam) -->
-<div class="modal fade" id="modalTambahTugas" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title fw-bold">Penugasan Baru</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Tutup"></button>
+<!-- ============================================== -->
+<!-- AREA MODAL PENGUMUMAN -->
+<!-- ============================================== -->
+<div class="modal fade" id="modalFormPengumuman" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content glass-card text-white" style="background: #0f172a; border: 1px solid #f59e0b;">
+      <div class="modal-header border-bottom border-warning">
+        <h5 class="modal-title text-warning"><i class="bi bi-megaphone-fill"></i> Rilis Pengumuman Baru</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form id="formPengumuman" onsubmit="simpanPengumuman(event)">
+          <div class="mb-3">
+            <label class="form-label small">Judul Pengumuman</label>
+            <input type="text" id="pJudul" class="form-control bg-dark text-white border-secondary" placeholder="Contoh: Perubahan Ruangan Sesi 2" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small">Isi Pengumuman / Informasi</label>
+            <textarea id="pIsi" class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Tuliskan pesan lengkap..." required></textarea>
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label small">Target Penerima</label>
+              <select id="pTarget" class="form-select bg-dark text-white border-secondary">
+                <option value="Semua">Semua Peserta</option>
+                <option value="Guru">Khusus Guru</option>
+                <option value="Kepsek">Khusus Kepala Sekolah</option>
+              </select>
             </div>
-            <form id="formTugas" onsubmit="simpanTugas(event)">
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Nama Pekerjaan</label>
-                        <input type="text" class="form-control" id="inputPekerjaan" placeholder="Contoh: Menyiapkan Spanduk Utama" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Divisi/Seksi</label>
-                        <input type="text" class="form-control" id="inputDivisi" placeholder="Contoh: Perlengkapan" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Batas Waktu (Tanggal & Jam)</label>
-                        <!-- Menggunakan tipe datetime-local agar bisa input jam -->
-                        <input type="datetime-local" class="form-control" id="inputWaktu" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Penanggung Jawab (PIC)</label>
-                        <select class="form-select" id="inputPic" required>
-                            <option value="">Memuat daftar panitia...</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer bg-light">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-primary fw-bold" id="btnSimpan">Simpan Penugasan</button>
-                </div>
-            </form>
-        </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label small">Status Tayang</label>
+              <select id="pStatus" class="form-select bg-dark text-white border-secondary">
+                <option value="Aktif">Aktif (Langsung Tayang)</option>
+                <option value="Nonaktif">Nonaktif (Draf)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" id="btnKirimPengumuman" class="btn btn-warning w-100 fw-bold mt-2">Terbitkan Sekarang</button>
+        </form>
+      </div>
     </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalListPengumuman" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content glass-card text-white" style="background: #0f172a; border: 1px solid #0dcaf0;">
+      <div class="modal-header border-bottom border-info">
+        <h5 class="modal-title text-info"><i class="bi bi-list-task"></i> Kelola Pengumuman</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0">
+        <div class="table-responsive">
+          <table class="table table-dark table-striped table-hover mb-0 text-white" style="font-size: 0.85rem;">
+            <thead class="table-info text-dark">
+              <tr>
+                <th>Tanggal & Status</th>
+                <th>Judul & Isi</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="bodyTabelPengumuman"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
-
+    const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
     const userData = JSON.parse(localStorage.getItem('userLogin'));
-    if(!userData) window.location.href = "index.html"; 
     
-    const isAdmin = (userData.role === 'Admin_Pusat');
-    let dataGlobal = [];
+    if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
 
-    function kembaliKeDasbor() {
-        if(isAdmin) window.location.href = "dashboard_admin.html";
-        else if(userData.role === 'Bendahara_Panitia') window.location.href = "dashboard_bendahara_panitia.html";
-        else window.location.href = "dashboard_panitia.html";
-    }
+    function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
 
-    // Format Tanggal + Jam dengan rapi
-    const formatTgl = (tglSting) => {
-        if(!tglSting) return '-';
-        let d = new Date(tglSting);
-        if(isNaN(d)) return tglSting;
-        return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) + ' - ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute:'2-digit' });
-    };
-
-    window.onload = function() {
-        if(isAdmin) { document.getElementById('filterSemua').checked = true; } 
-        else { document.getElementById('btnTambahTugas').style.display = 'none'; document.getElementById('filterSaya').checked = true; }
-
-        muatDataPapan();
-        if(isAdmin) tarikDaftarPanitia(); 
-    };
-
-    async function tarikDaftarPanitia() {
+    async function muatStatistik() {
         try {
-            const respon = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'get_all_panitia' }) });
-            const hasil = await respon.json();
-            
-            let htmlPilihan = '<option value="">-- Pilih Penanggung Jawab --</option>';
-            if(hasil.status === 'success') {
-                hasil.data.forEach(p => { htmlPilihan += `<option value="${p.nama}">${p.nama} (${p.jabatan})</option>`; });
-            } else { htmlPilihan = '<option value="">Gagal memuat panitia</option>'; }
-            document.getElementById('inputPic').innerHTML = htmlPilihan;
-        } catch(e) { document.getElementById('inputPic').innerHTML = '<option value="">Koneksi bermasalah</option>'; }
-    }
-
-    async function muatDataPapan() {
-        document.getElementById('wadahBelum').innerHTML = '<div class="text-center py-4"><div class="spinner-border text-secondary spinner-border-sm"></div></div>';
-        
-        try {
-            const respon = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'get_tugas' }) });
-            const hasil = await respon.json();
-
-            if(hasil.status === 'success') { dataGlobal = hasil.data; terapkanFilter(); } 
-            else { Swal.fire('Gagal!', hasil.message, 'error'); }
-        } catch (e) { Swal.fire('Error', 'Gagal terhubung ke server.', 'error'); }
-    }
-
-    function terapkanFilter() {
-        let filterMode = document.getElementById('filterSaya').checked ? 'saya' : 'semua';
-        renderPapan(dataGlobal, filterMode);
-    }
-
-    function renderPapan(semuaData, filterMode) {
-        let jmlTotal = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
-        
-        semuaData.forEach(item => {
-            if(item.status === 'Belum Mulai') jmlTotal.belum++;
-            else if(item.status === 'Sedang Dikerjakan') jmlTotal.proses++;
-            else if(item.status === 'Terkendala') jmlTotal.kendala++;
-            else if(item.status === 'Selesai') jmlTotal.selesai++;
-        });
-        
-        let totalPekerjaan = jmlTotal.belum + jmlTotal.proses + jmlTotal.kendala + jmlTotal.selesai;
-        let persentase = totalPekerjaan === 0 ? 0 : Math.round((jmlTotal.selesai / totalPekerjaan) * 100);
-        document.getElementById('teksPersentase').innerText = persentase + '%';
-        document.getElementById('barPersentase').style.width = persentase + '%';
-
-        let dataTampil = filterMode === 'saya' ? semuaData.filter(item => item.pic === userData.nama_pic) : semuaData;
-
-        let jmlTampil = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
-        let htmlBelum = '', htmlProses = '', htmlKendala = '', htmlSelesai = '';
-        let tugasMendesak = []; // Wadah untuk Sistem Peringatan
-
-        dataTampil.forEach(item => {
-            // Kalkulasi Waktu & Peringatan Cerdas
-            let warnaWaktu = "text-muted";
-            if(item.status !== 'Selesai' && item.batas_waktu) {
-                let sisaJam = (new Date(item.batas_waktu) - new Date()) / (1000 * 60 * 60);
-                
-                if(sisaJam < 0) {
-                    warnaWaktu = "text-danger fw-bold"; // Telat
-                    tugasMendesak.push(`<span class="badge bg-danger text-white me-2" style="width: 120px;">Lewat Waktu</span> <b>${item.nama_pekerjaan}</b> (Divisi: ${item.divisi})`);
-                } else if(sisaJam <= 72) {
-                    warnaWaktu = "text-warning fw-bold"; // Kritis (Kurang dari 3 Hari / 72 Jam)
-                    tugasMendesak.push(`<span class="badge bg-warning text-dark me-2" style="width: 120px;">Hampir Deadline</span> <b>${item.nama_pekerjaan}</b> (Divisi: ${item.divisi})`);
-                }
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_stats_admin' })
+            });
+            const result = await response.json();
+            if(result.status === 'success') {
+                document.getElementById('s_lunas').innerText = result.data.lunas;
+                document.getElementById('s_pending').innerText = result.data.pending;
+                document.getElementById('s_peserta').innerText = result.data.peserta;
+                document.getElementById('s_hadir').innerText = result.data.hadir;
             }
+        } catch (error) {}
+    }
+    muatStatistik();
 
-            let isMilikSaya = (item.pic === userData.nama_pic);
-            let bisaUbahStatus = isAdmin || isMilikSaya;
-            
-            let aksiHTML = bisaUbahStatus ? `
-                <div class="kartu-aksi d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
-                    <div class="dropdown">
-                        <button class="btn btn-sm btn-light border dropdown-toggle" type="button" data-bs-toggle="dropdown">Ubah Status</button>
-                        <ul class="dropdown-menu shadow-sm">
-                            <li><a class="dropdown-item" href="#" onclick="ubahStatus('${item.id_tugas}', 'Belum Mulai')"><i class="bi bi-list-task me-2 text-secondary"></i>Belum Mulai</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="ubahStatus('${item.id_tugas}', 'Sedang Dikerjakan')"><i class="bi bi-gear-fill me-2 text-warning"></i>Kerjakan</a></li>
-                            <li><a class="dropdown-item" href="#" onclick="ubahStatus('${item.id_tugas}', 'Terkendala')"><i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>Ada Kendala</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#" onclick="ubahStatus('${item.id_tugas}', 'Selesai')"><i class="bi bi-check-circle-fill me-2 text-success"></i>Tandai Selesai</a></li>
-                        </ul>
-                    </div>
-                    ${isAdmin ? `<button class="btn btn-sm text-danger" onclick="hapusPekerjaan('${item.id_tugas}', '${item.nama_pekerjaan}')" title="Hapus Tugas"><i class="bi bi-trash3-fill"></i></button>` : ''}
-                </div>
-            ` : `<div class="mt-2 pt-2 border-top text-end"><span class="badge bg-light text-muted border"><i class="bi bi-eye-fill"></i> Hanya Lihat</span></div>`;
+    let modalPengumumanObj = null;
+    let modalListObj = null;
 
-            let kartu = `
-                <div class="kartu-tugas ${ item.status === 'Belum Mulai' ? 'kartu-belum' : item.status === 'Sedang Dikerjakan' ? 'kartu-proses' : item.status === 'Terkendala' ? 'kartu-kendala' : 'kartu-selesai' }">
-                    <div class="kartu-judul">${item.nama_pekerjaan}</div>
-                    <div class="kartu-info"><i class="bi bi-tags-fill me-1"></i>${item.divisi}</div>
-                    <div class="kartu-info"><i class="bi bi-person-fill me-1"></i>${item.pic}</div>
-                    <div class="kartu-info ${warnaWaktu}"><i class="bi bi-calendar-event me-1"></i>Batas: ${formatTgl(item.batas_waktu)}</div>
-                    ${aksiHTML}
-                </div>
-            `;
-
-            if(item.status === 'Belum Mulai') { htmlBelum += kartu; jmlTampil.belum++; }
-            else if(item.status === 'Sedang Dikerjakan') { htmlProses += kartu; jmlTampil.proses++; }
-            else if(item.status === 'Terkendala') { htmlKendala += kartu; jmlTampil.kendala++; }
-            else if(item.status === 'Selesai') { htmlSelesai += kartu; jmlTampil.selesai++; }
-        });
-
-        // Merender Spanduk Peringatan Jika Ada Tugas Mendesak
-        let alertArea = document.getElementById('alertMendesak');
-        if(tugasMendesak.length > 0) {
-            let listHtml = tugasMendesak.map(t => `<li class="mb-1">${t}</li>`).join('');
-            alertArea.innerHTML = `
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm border-danger" role="alert" style="background-color: #fef2f2;">
-                <h6 class="fw-bold text-danger mb-2"><i class="bi bi-exclamation-triangle-fill me-2"></i> PERHATIAN! ADA ${tugasMendesak.length} TUGAS MENDESAK:</h6>
-                <ul class="mb-0" style="font-size: 0.85rem; list-style-type: none; padding-left: 0;">${listHtml}</ul>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>`;
-        } else { alertArea.innerHTML = ''; }
-
-        document.getElementById('wadahBelum').innerHTML = htmlBelum || '<div class="text-center text-muted small py-3">Kosong</div>';
-        document.getElementById('wadahProses').innerHTML = htmlProses || '<div class="text-center text-muted small py-3">Kosong</div>';
-        document.getElementById('wadahKendala').innerHTML = htmlKendala || '<div class="text-center text-muted small py-3">Aman</div>';
-        document.getElementById('wadahSelesai').innerHTML = htmlSelesai || '<div class="text-center text-muted small py-3">Kosong</div>';
-
-        document.getElementById('jmlBelum').innerText = jmlTampil.belum;
-        document.getElementById('jmlProses').innerText = jmlTampil.proses;
-        document.getElementById('jmlKendala').innerText = jmlTampil.kendala;
-        document.getElementById('jmlSelesai').innerText = jmlTampil.selesai;
+    function bukaModalPengumuman() {
+        if(!modalPengumumanObj) modalPengumumanObj = new bootstrap.Modal(document.getElementById('modalFormPengumuman'));
+        document.getElementById('formPengumuman').reset();
+        modalPengumumanObj.show();
     }
 
-    async function simpanTugas(e) {
+    async function simpanPengumuman(e) {
         e.preventDefault();
-        const tombol = document.getElementById('btnSimpan');
-        tombol.innerText = 'Menyimpan...'; tombol.disabled = true;
+        const submitBtn = document.getElementById('btnKirimPengumuman');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Menerbitkan...';
 
-        const dataKirim = {
-            action: 'tambah_tugas',
-            nama_pekerjaan: document.getElementById('inputPekerjaan').value,
-            divisi: document.getElementById('inputDivisi').value,
-            pic: document.getElementById('inputPic').value,
-            batas_waktu: document.getElementById('inputWaktu').value
+        const payload = {
+            action: 'add_pengumuman',
+            role: 'admin', 
+            jabatan: 'panitia',
+            judul: document.getElementById('pJudul').value,
+            isi: document.getElementById('pIsi').value,
+            target: document.getElementById('pTarget').value,
+            status: document.getElementById('pStatus').value
         };
 
         try {
-            const respon = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(dataKirim) });
-            const hasil = await respon.json();
-            if(hasil.status === 'success') {
-                Swal.fire({icon: 'success', title: 'Berhasil', text: hasil.message, timer: 1500, showConfirmButton: false});
-                document.getElementById('formTugas').reset();
-                bootstrap.Modal.getInstance(document.getElementById('modalTambahTugas')).hide();
-                muatDataPapan(); 
-            } else { Swal.fire('Gagal!', hasil.message, 'error'); }
-        } catch (err) { Swal.fire('Error', 'Gagal mengirim data.', 'error'); } 
-        finally { tombol.innerText = 'Simpan Penugasan'; tombol.disabled = false; }
-    }
-
-    async function ubahStatus(id, statusBaru) {
-        Swal.fire({ title: 'Memindahkan Tugas...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-        try {
-            const respon = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'update_status_tugas', id_tugas: id, status_baru: statusBaru }) });
-            const hasil = await respon.json();
-            if(hasil.status === 'success') { Swal.close(); muatDataPapan(); } 
-            else { Swal.fire('Gagal!', hasil.message, 'error'); }
-        } catch (err) { Swal.fire('Error', 'Gagal memindahkan tugas.', 'error'); }
-    }
-
-    function hapusPekerjaan(id, nama) {
-        Swal.fire({
-            title: 'Hapus Pekerjaan?', text: `Yakin ingin menghapus "${nama}"?`, icon: 'warning',
-            showCancelButton: true, confirmButtonColor: '#ef4444', cancelButtonColor: '#64748b', confirmButtonText: 'Ya, Hapus!'
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                Swal.fire({ title: 'Menghapus...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
-                try {
-                    const respon = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'hapus_tugas', id_tugas: id }) });
-                    const hasil = await respon.json();
-                    if(hasil.status === 'success') { Swal.close(); muatDataPapan(); } 
-                    else { Swal.fire('Gagal!', hasil.message, 'error'); }
-                } catch (err) { Swal.fire('Error', 'Gagal terhubung.', 'error'); }
+            const response = await fetch(API_URL, {
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, customClass: { popup: 'swal-dark' } });
+                modalPengumumanObj.hide();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Gagal', text: result.message, customClass: { popup: 'swal-dark' } });
             }
-        });
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Gagal terhubung ke server.', customClass: { popup: 'swal-dark' } });
+        } finally {
+            submitBtn.disabled = false; submitBtn.innerText = 'Terbitkan Sekarang';
+        }
+    }
+
+    async function bukaModalListPengumuman() {
+        if (!modalListObj) modalListObj = new bootstrap.Modal(document.getElementById('modalListPengumuman'));
+        modalListObj.show();
+        
+        const tbody = document.getElementById('bodyTabelPengumuman');
+        tbody.innerHTML = '<tr><td colspan="3" class="text-center text-white-50 py-3">Memuat data... <span class="spinner-border spinner-border-sm"></span></td></tr>';
+        
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'get_all_pengumuman' })
+            });
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                tbody.innerHTML = '';
+                if (result.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-3">Belum ada pengumuman.</td></tr>';
+                    return;
+                }
+                result.data.forEach(item => {
+                    let badgeStatus = item.status.toLowerCase() === 'aktif' ? 'bg-success' : 'bg-secondary';
+                    tbody.innerHTML += `
+                        <tr>
+                            <td><small class="text-info d-block">${item.tanggal}</small><span class="badge ${badgeStatus}">${item.status}</span></td>
+                            <td><strong class="text-warning">${item.judul}</strong><div class="text-white-50 small">${item.isi}</div></td>
+                            <td><span class="badge bg-dark border text-white-50">${item.target}</span></td>
+                        </tr>
+                    `;
+                });
+            }
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-danger py-3">Gagal memuat data.</td></tr>';
+        }
     }
 </script>
 </body>
