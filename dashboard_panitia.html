@@ -197,6 +197,21 @@
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
     const userData = JSON.parse(localStorage.getItem('userLogin'));
+
+// Penjaga pintu yang lebih fleksibel (menerima variasi huruf besar/kecil atau ID PAN-)
+if (!userData) {
+    // Jika sama sekali belum login, lempar ke index
+    window.location.href = "index.html";
+} else {
+    // Cek apakah ID-nya berawalan PAN- atau rolenya mengandung unsur panitia
+    let idUser = userData.id_panitia || userData.id || '';
+    let roleUser = (userData.role || '').toLowerCase();
+
+    if (!idUser.startsWith('PAN-') && !roleUser.includes('panitia')) {
+        // Jika bukan panitia, lempar keluar
+        window.location.href = "index.html";
+    }
+}
     
     if(!userData || userData.role !== 'Admin_Pusat') window.location.href = "index.html";
 
