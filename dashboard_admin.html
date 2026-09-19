@@ -79,8 +79,38 @@
 
     <!-- Menu Kesekretariatan & Pantauan -->
     <h5 class="fw-bold mb-3 mt-4">Menu Operasional & Pantauan</h5>
-    <div class="row g-3">
+    
+    <!-- Mualim pasang Grid Kartu untuk Menu Cetak agar lebih modern -->
+    <div class="row g-3 mb-3">
+        <!-- KARTU MENU CETAK ID PANITIA -->
+        <div class="col-md-6 col-12">
+            <div class="card h-100 shadow-sm border-0 glass-card" style="cursor: pointer; transition: all 0.3s ease; border-bottom: 4px solid #f093fb !important;" onclick="window.location.href='cetak_id_panitia.html'" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="bi bi-person-badge-fill" style="font-size: 3rem; color: #f093fb; text-shadow: 0 0 15px rgba(240, 147, 251, 0.5);"></i>
+                    </div>
+                    <h5 class="fw-bold text-white mb-2">Cetak ID Panitia</h5>
+                    <p class="text-white-50 small mb-0">Hasilkan dan cetak ID Card resmi untuk seluruh anggota kepanitiaan EMS.</p>
+                </div>
+            </div>
+        </div>
         
+        <!-- KARTU MENU CETAK ID PESERTA -->
+        <div class="col-md-6 col-12">
+            <div class="card h-100 shadow-sm border-0 glass-card" style="cursor: pointer; transition: all 0.3s ease; border-bottom: 4px solid #00f2fe !important;" onclick="window.location.href='cetak_idcard.html'" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';">
+                <div class="card-body text-center py-4">
+                    <div class="mb-3">
+                        <i class="bi bi-printer-fill" style="font-size: 3rem; color: #00f2fe; text-shadow: 0 0 15px rgba(0, 242, 254, 0.5);"></i>
+                    </div>
+                    <h5 class="fw-bold text-white mb-2">Cetak ID Peserta</h5>
+                    <p class="text-white-50 small mb-0">Cetak ID Card & Name Tag Massal untuk sekolah/peserta yang terdaftar.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sisa Menu Berbentuk List Tombol -->
+    <div class="row g-3">
         <!-- PINTU MASUK BARU: Papan Kanban Manajemen Tugas -->
         <div class="col-12">
             <button onclick="window.location.href='manajemen_tugas.html'" class="btn btn-primary w-100 py-3 text-start fw-bold shadow-sm" style="background: linear-gradient(45deg, #0f172a, #0284c7); border: 1px solid #00f2fe;">
@@ -102,9 +132,7 @@
         <div class="col-12">
             <button onclick="window.location.href='admin_manajemen.html'" class="btn btn-outline-info w-100 py-3 text-start"><i class="bi bi-person-lines-fill me-2"></i> Manajemen Akun & Reset Data</button>
         </div>
-        <div class="col-12">
-            <button onclick="window.location.href='cetak_idcard.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-printer-fill me-2"></i> Cetak ID Card & Name Tag Massal</button>
-        </div>
+        
         <div class="col-12">
             <button onclick="window.location.href='panitia_checkin.html'" class="btn btn-outline-warning w-100 py-3 text-start"><i class="bi bi-qr-code-scan me-2"></i> Buka Scanner Absensi Multi-Sesi</button>
         </div>
@@ -196,6 +224,7 @@
         <h5 class="modal-title text-success"><i class="bi bi-pencil-square"></i> Edit Pengumuman</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
+        
       <div class="modal-body">
         <form id="formEditPengumuman" onsubmit="simpanEditPengumuman(event)">
           <input type="hidden" id="eId">
