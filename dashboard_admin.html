@@ -77,11 +77,9 @@
       </div>
     </div>
 
-    <!-- Menu Kesekretariatan & Pantauan -->
-    <h5 class="fw-bold mb-3 mt-4">Menu Operasional & Pantauan</h5>
-    
-    <!-- Mualim pasang Grid Kartu untuk Menu Cetak agar lebih modern -->
-    <div class="row g-3 mb-3">
+    <!-- BLOK BARU KHUSUS CETAK E-CARD -->
+    <h5 class="fw-bold mb-3 mt-4 text-warning"><i class="bi bi-printer me-2"></i> Cetak E-Card Peserta & Panitia</h5>
+    <div class="row g-3 mb-4">
         <!-- KARTU MENU CETAK ID PANITIA -->
         <div class="col-md-6 col-12">
             <div class="card h-100 shadow-sm border-0 glass-card" style="cursor: pointer; transition: all 0.3s ease; border-bottom: 4px solid #f093fb !important;" onclick="window.location.href='cetak_id_panitia.html'" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';">
@@ -89,8 +87,8 @@
                     <div class="mb-3">
                         <i class="bi bi-person-badge-fill" style="font-size: 3rem; color: #f093fb; text-shadow: 0 0 15px rgba(240, 147, 251, 0.5);"></i>
                     </div>
-                    <h5 class="fw-bold text-white mb-2">Cetak ID Panitia</h5>
-                    <p class="text-white-50 small mb-0">Hasilkan dan cetak ID Card resmi untuk seluruh anggota kepanitiaan EMS.</p>
+                    <h5 class="fw-bold text-white mb-2">Cetak E-Card Panitia</h5>
+                    <p class="text-white-50 small mb-0">Hasilkan dan cetak ID Card resmi untuk seluruh anggota kepanitiaan.</p>
                 </div>
             </div>
         </div>
@@ -102,14 +100,15 @@
                     <div class="mb-3">
                         <i class="bi bi-printer-fill" style="font-size: 3rem; color: #00f2fe; text-shadow: 0 0 15px rgba(0, 242, 254, 0.5);"></i>
                     </div>
-                    <h5 class="fw-bold text-white mb-2">Cetak ID Peserta</h5>
+                    <h5 class="fw-bold text-white mb-2">Cetak E-Card Peserta</h5>
                     <p class="text-white-50 small mb-0">Cetak ID Card & Name Tag Massal untuk sekolah/peserta yang terdaftar.</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Sisa Menu Berbentuk List Tombol -->
+    <!-- BLOK MENU KESEKRETARIATAN & PANTAUAN -->
+    <h5 class="fw-bold mb-3 mt-4">Menu Operasional & Pantauan</h5>
     <div class="row g-3">
         <!-- PINTU MASUK BARU: Papan Kanban Manajemen Tugas -->
         <div class="col-12">
@@ -132,7 +131,6 @@
         <div class="col-12">
             <button onclick="window.location.href='admin_manajemen.html'" class="btn btn-outline-info w-100 py-3 text-start"><i class="bi bi-person-lines-fill me-2"></i> Manajemen Akun & Reset Data</button>
         </div>
-        
         <div class="col-12">
             <button onclick="window.location.href='panitia_checkin.html'" class="btn btn-outline-warning w-100 py-3 text-start"><i class="bi bi-qr-code-scan me-2"></i> Buka Scanner Absensi Multi-Sesi</button>
         </div>
@@ -268,7 +266,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
-    const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     
     // Proteksi Halaman
