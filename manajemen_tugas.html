@@ -299,10 +299,17 @@
             else if(s === 'terkendala') jmlTotal.kendala++;
             else if(s === 'selesai') jmlTotal.selesai++;
 
+            // PENCOCOKAN TAHAPAN FLEKSIBEL (Kebal terhadap variasi teks di Sheet)
             let t = bersihkanTeks(item.tahapan);
-            if(statsTahapan[t] !== undefined) {
-                statsTahapan[t].total++;
-                if(s === 'selesai') statsTahapan[t].selesai++;
+            let kunciTahapan = '';
+            if (t.includes('rencana')) kunciTahapan = 'perencanaan';
+            else if (t.includes('persiapan')) kunciTahapan = 'persiapan';
+            else if (t.includes('pelaksana')) kunciTahapan = 'pelaksanaan';
+            else if (t.includes('pasca')) kunciTahapan = 'pasca-acara';
+
+            if(kunciTahapan && statsTahapan[kunciTahapan] !== undefined) {
+                statsTahapan[kunciTahapan].total++;
+                if(s === 'selesai') statsTahapan[kunciTahapan].selesai++;
             }
         });
         
