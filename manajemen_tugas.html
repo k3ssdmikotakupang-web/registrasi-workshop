@@ -38,8 +38,13 @@
 
 <nav class="navbar navbar-dark nav-app sticky-top mb-4 py-3">
     <div class="container-fluid px-4">
-        <span class="navbar-brand fw-bold"><i class="bi bi-kanban me-2 text-info"></i> Ruang Kendali Kepanitiaan</span>
-        <button class="btn btn-outline-light btn-sm fw-bold" onclick="kembaliKeDasbor()"><i class="bi bi-arrow-left"></i> Kembali ke Beranda</button>
+        <!-- Judul yang sudah bisa diklik untuk kembali ke Dasbor -->
+        <span class="navbar-brand fw-bold" style="cursor: pointer; transition: opacity 0.2s;" onclick="kembaliKeDasbor()" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+            <i class="bi bi-kanban me-2 text-info"></i> Ruang Kendali Kepanitiaan
+        </span>
+        <button class="btn btn-outline-light btn-sm fw-bold" onclick="kembaliKeDasbor()">
+            <i class="bi bi-arrow-left"></i> Kembali ke Beranda
+        </button>
     </div>
 </nav>
 
