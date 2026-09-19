@@ -67,7 +67,6 @@
     <div class="row g-3 mb-4">
         <div class="col-12"><button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-info w-100 py-3 text-start"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Rekap Daftar Sekolah & Penerimaan</button></div>
         <div class="col-12"><button onclick="window.location.href='validasi_v2.html'" class="btn btn-outline-warning w-100 py-3 text-start"><i class="bi bi-check-circle-fill me-2"></i> Validasi Transfer & Terima Tunai</button></div>
-        <!-- TOMBOL MANAJEMEN PENGELUARAN DINORMALKAN MENJADI OUTLINE-LIGHT AGAR SERAGAM -->
         <div class="col-12"><button onclick="window.location.href='dashboard_pengeluaran.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-cart-dash me-2"></i> Manajemen Pengeluaran & Transport</button></div>
         <div class="col-12"><button onclick="window.location.href='laporan_bku.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-journal-check me-2"></i> Laporan BKU / RKAS</button></div>
     </div>
@@ -75,13 +74,31 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // WAJIB PASTE API URL KAPTEN DI SINI!
+    // URL API TETAP AMAN
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
     
+    // --- PENGAMAN PINTAR BENDAHARA ---
     const userData = JSON.parse(localStorage.getItem('userLogin'));
-    if(!userData || userData.role !== 'Bendahara_Panitia') window.location.href = "index.html";
     
-    document.getElementById('namaPic').innerText = userData.nama_pic;
+    if (!userData) {
+        window.location.href = "index.html";
+    } else {
+        let roleUser = (userData.role || '').toLowerCase();
+        let jabatanUser = (userData.jabatan || '').toLowerCase();
+        
+        // Hanya lolos jika Role adalah Bendahara_Panitia ATAU Jabatan-nya mengandung kata 'bendahara'
+        let isBendahara = (roleUser === 'bendahara_panitia' || jabatanUser.includes('bendahara'));
+        
+        if (!isBendahara) {
+            // Jika bukan bendahara (mungkin admin atau panitia biasa), tendang!
+            window.location.href = "index.html"; 
+        } else {
+            // Berhasil lolos! Tampilkan nama (mendukung data lama maupun data baru dari DB_Panitia)
+            document.getElementById('namaPic').innerText = userData.nama || userData.nama_pic || "Bendahara";
+        }
+    }
+    // ---------------------------------
+
     const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
 
     async function muatData() {
