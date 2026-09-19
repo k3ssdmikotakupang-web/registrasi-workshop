@@ -58,36 +58,6 @@
       </div>
     </div>
 
-    <!-- BLOK CETAK E-CARD -->
-    <h5 class="fw-bold mb-3 mt-4 text-warning"><i class="bi bi-printer me-2"></i> Cetak E-Card Peserta & Panitia</h5>
-    <div class="row g-3 mb-4">
-        <!-- KARTU MENU CETAK ID PANITIA -->
-        <div class="col-md-6 col-12">
-            <div class="card h-100 shadow-sm border-0 glass-card" style="cursor: pointer; transition: all 0.3s ease; border-bottom: 4px solid #f093fb !important;" onclick="window.location.href='cetak_id_panitia.html'" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';">
-                <div class="card-body text-center py-4">
-                    <div class="mb-3">
-                        <i class="bi bi-person-badge-fill" style="font-size: 3rem; color: #f093fb; text-shadow: 0 0 15px rgba(240, 147, 251, 0.5);"></i>
-                    </div>
-                    <h5 class="fw-bold text-white mb-2">Cetak E-Card Panitia</h5>
-                    <p class="text-white-50 small mb-0">Hasilkan dan cetak ID Card resmi untuk seluruh anggota kepanitiaan.</p>
-                </div>
-            </div>
-        </div>
-        
-        <!-- KARTU MENU CETAK ID PESERTA -->
-        <div class="col-md-6 col-12">
-            <div class="card h-100 shadow-sm border-0 glass-card" style="cursor: pointer; transition: all 0.3s ease; border-bottom: 4px solid #00f2fe !important;" onclick="window.location.href='cetak_idcard.html'" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';">
-                <div class="card-body text-center py-4">
-                    <div class="mb-3">
-                        <i class="bi bi-printer-fill" style="font-size: 3rem; color: #00f2fe; text-shadow: 0 0 15px rgba(0, 242, 254, 0.5);"></i>
-                    </div>
-                    <h5 class="fw-bold text-white mb-2">Cetak E-Card Peserta</h5>
-                    <p class="text-white-50 small mb-0">Cetak ID Card & Name Tag Massal untuk sekolah/peserta yang terdaftar.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- BLOK MENU KESEKRETARIATAN & PANTAUAN -->
     <h5 class="fw-bold mb-3 mt-4">Menu Operasional & Pantauan</h5>
     <div class="row g-3">
@@ -95,6 +65,13 @@
         <div class="col-12">
             <button onclick="window.location.href='manajemen_tugas.html'" class="btn btn-primary w-100 py-3 text-start fw-bold shadow-sm" style="background: linear-gradient(45deg, #0f172a, #0284c7); border: 1px solid #00f2fe;">
                 <i class="bi bi-kanban-fill me-2 text-info"></i> Papan Kanban Manajemen Tugas Panitia
+            </button>
+        </div>
+
+        <!-- MENU BARU: PUSAT CETAK E-CARD (Membuka Modal) -->
+        <div class="col-12">
+            <button data-bs-toggle="modal" data-bs-target="#modalCetakCard" class="btn w-100 py-3 text-start fw-bold shadow-sm text-white" style="background: linear-gradient(45deg, #0f172a, #6b21a8); border: 1px solid #f093fb;">
+                <i class="bi bi-printer-fill me-2" style="color: #f093fb;"></i> Cetak E-Card Peserta & Panitia
             </button>
         </div>
         
@@ -131,6 +108,42 @@
 <!-- ============================================== -->
 <!-- AREA MODAL (POP-UP) -->
 <!-- ============================================== -->
+
+<!-- Modal Pusat Cetak E-Card -->
+<div class="modal fade" id="modalCetakCard" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content glass-card text-white" style="background: #0f172a; border: 1px solid #f093fb;">
+      <div class="modal-header border-bottom border-secondary">
+        <h5 class="modal-title" style="color: #f093fb;"><i class="bi bi-printer-fill"></i> Pusat Cetak E-Card</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="row g-4">
+            <!-- KARTU MENU CETAK ID PANITIA -->
+            <div class="col-md-6 col-12">
+                <div class="card h-100 shadow-sm border-0 glass-card" style="cursor: pointer; transition: all 0.3s ease; border-bottom: 4px solid #f093fb !important; background: rgba(255,255,255,0.02);" onclick="window.location.href='cetak_id_panitia.html'" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';">
+                    <div class="card-body text-center py-4">
+                        <div class="mb-3"><i class="bi bi-person-badge-fill" style="font-size: 3.5rem; color: #f093fb; text-shadow: 0 0 15px rgba(240, 147, 251, 0.4);"></i></div>
+                        <h5 class="fw-bold text-white mb-2">E-Card Panitia</h5>
+                        <p class="text-white-50 small mb-0">Hasilkan dan cetak ID Card resmi untuk seluruh anggota kepanitiaan.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- KARTU MENU CETAK ID PESERTA -->
+            <div class="col-md-6 col-12">
+                <div class="card h-100 shadow-sm border-0 glass-card" style="cursor: pointer; transition: all 0.3s ease; border-bottom: 4px solid #00f2fe !important; background: rgba(255,255,255,0.02);" onclick="window.location.href='cetak_idcard.html'" onmouseover="this.style.transform='translateY(-5px)';" onmouseout="this.style.transform='translateY(0)';">
+                    <div class="card-body text-center py-4">
+                        <div class="mb-3"><i class="bi bi-printer-fill" style="font-size: 3.5rem; color: #00f2fe; text-shadow: 0 0 15px rgba(0, 242, 254, 0.4);"></i></div>
+                        <h5 class="fw-bold text-white mb-2">E-Card Peserta</h5>
+                        <p class="text-white-50 small mb-0">Cetak ID Card & Name Tag Massal untuk sekolah/peserta terdaftar.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Modal Setting Kepesertaan & Biaya -->
 <div class="modal fade" id="modalSetting" tabindex="-1" aria-hidden="true">
@@ -279,7 +292,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // URL API TERBARU SESUAI PERMINTAAN KAPTEN 
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     
@@ -346,7 +358,6 @@
             if (result.status === 'success') {
                 Swal.fire({ icon: 'success', title: 'Berhasil!', text: result.message, customClass: { popup: 'swal-dark' }, confirmButtonColor: '#00f2fe' });
                 
-                // Otomatis menutup Modal jika sukses
                 const modalSettingEl = document.getElementById('modalSetting');
                 const modalInstance = bootstrap.Modal.getInstance(modalSettingEl);
                 if (modalInstance) { modalInstance.hide(); }
