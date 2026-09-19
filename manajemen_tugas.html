@@ -173,23 +173,22 @@
     // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI! ⚠️
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
 
-    // --- GANTI BAGIAN PENJAGA INI DI BAGIAN ATAS SCRIPT ---
+// --- BAGIAN YANG DISEMPURNAKAN ---
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     
-    // Penjaga yang ramah: mengizinkan Admin Pusat maupun Akun Panitia (berdasarkan ID PAN- atau role Panitia)
-    if(!userData) {
-        window.location.href = "index.html"; 
+    if (!userData) {
+        window.location.href = "index.html";
+        return; // Menghentikan eksekusi skrip agar tidak error
     } else {
         let idUser = userData.id_panitia || userData.id || '';
         let roleUser = (userData.role || '').toLowerCase();
         
-        // Jika bukan Admin dan bukan Panitia/Pengurus berawalan PAN-, baru ditendang ke index
+        // Meloloskan Admin Pusat, Admin, atau akun panitia berawalan PAN- / mengandung kata panitia
         if (roleUser !== 'admin_pusat' && roleUser !== 'admin' && !idUser.startsWith('PAN-') && !roleUser.includes('panitia')) {
             window.location.href = "index.html";
+            return; // Menghentikan eksekusi skrip
         }
     }
-    // -----------------------------------------------------
-    if(!userData) window.location.href = "index.html"; 
     
     const isAdmin = (userData.role === 'Admin_Pusat');
     let dataGlobal = [];
