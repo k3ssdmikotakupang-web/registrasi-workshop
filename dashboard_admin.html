@@ -270,20 +270,30 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
     const userData = JSON.parse(localStorage.getItem('userLogin'));
 
-    // --- PENGARAH PINTAR (SMART ROUTER) ADMIN PUSAT ---
+    // --- PENGARAH PINTAR ADMIN PUSAT & KETUA ---
     if (!userData) {
         window.location.href = "index.html";
     } else {
         let roleUser = (userData.role || '').toLowerCase();
+        let jabatanUser = (userData.jabatan || '').toLowerCase();
         let idUser = userData.id_panitia || userData.id || '';
 
-        // Jika ternyata Panitia, langsung amankan ke Posko Panitia
-        if (roleUser === 'panitia' || idUser.startsWith('PAN-') || roleUser.includes('panitia')) {
-            window.location.href = "dashboard_panitia.html";
-        } 
-        // Jika bukan Admin Pusat, usir ke halaman login
-        else if (roleUser !== 'admin_pusat' && roleUser !== 'admin') {
-            window.location.href = "index.html";
+        // Izinkan jika yang masuk adalah Admin Pusat ATAU Ketua Panitia
+        let isPimpinan = (roleUser === 'admin_pusat' || roleUser === 'admin' || jabatanUser.includes('ketua'));
+
+        if (!isPimpinan) {
+            // Jika Bendahara nyasar, kembalikan ke Ruang Kas
+            if (jabatanUser.includes('bendahara') || roleUser === 'bendahara_panitia') {
+                window.location.href = "dashboard_bendahara_panitia.html";
+            } 
+            // Jika Panitia Biasa nyasar, kembalikan ke Posko Panitia
+            else if (roleUser === 'panitia' || idUser.startsWith('PAN-') || roleUser.includes('panitia')) {
+                window.location.href = "dashboard_panitia.html";
+            } 
+            // Selain itu tendang keluar
+            else {
+                window.location.href = "index.html";
+            }
         }
     }
     // --------------------------------------------------
