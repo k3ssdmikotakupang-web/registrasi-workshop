@@ -11,9 +11,11 @@
         body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
         .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
-        .baris-anggota { background: rgba(0,0,0,0.2); padding: 15px; border-radius: 8px; border: 1px dashed rgba(255,255,255,0.2); }
+        .baris-anggota { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 12px; border: 1px dashed rgba(255,255,255,0.2); position: relative; transition: all 0.3s ease; }
+        .baris-anggota:hover { border-color: #00f2fe; background: rgba(0,0,0,0.4); }
         .form-control, .form-select { font-size: 0.85rem; }
         .master-list { max-height: 120px; overflow-y: auto; scrollbar-width: thin; }
+        .btn-hapus-kartu { position: absolute; top: 10px; right: 10px; z-index: 10; }
     </style>
 </head>
 <body>
@@ -70,48 +72,62 @@
             <label class="form-label fw-bold mb-3">2. Masukkan Daftar Anggota (Kolektif)</label>
             
             <div id="wadah-anggota">
-                <!-- Baris Anggota (Template Dinamis) -->
-                <div class="row g-2 mb-3 baris-anggota">
-                    <div class="col-md-2">
-                        <label class="small text-white-50">Nama Lengkap & Gelar</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary i-nama" required placeholder="Cth: Drs. Johanes">
-                    </div>
-                    <div class="col-md-2">
-                        <label class="small text-white-50">NIP / Pangkat</label>
-                        <div class="d-flex gap-1">
-                            <input type="text" class="form-control bg-dark text-white border-secondary i-nip w-50" required placeholder="NIP / Strip">
-                            <select class="form-select bg-dark text-white border-secondary i-pangkat w-50" required>
-                                <option value="-">Non-PNS</option>
-                                <option value="II/a">II/a</option><option value="III/a">III/a</option>
-                                <option value="IV/a">IV/a</option>
+                <!-- Baris Anggota (Desain Kartu Lebar & Lega) -->
+                <div class="baris-anggota mb-3">
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-hapus-kartu disabled" style="opacity: 0.5;" title="Baris pertama tidak bisa dihapus"><i class="bi bi-x-lg"></i></button>
+                    
+                    <div class="row g-3">
+                        <!-- Baris Atas -->
+                        <div class="col-md-4">
+                            <label class="small text-white-50 mb-1">Nama Lengkap & Gelar</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary i-nama" required placeholder="Cth: Drs. Johanes">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-white-50 mb-1">NIP (Tulis '-' jika Non-PNS)</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary i-nip" required placeholder="Cth: 198001012005011001">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-white-50 mb-1">Pangkat/Golongan</label>
+                            <select class="form-select bg-dark text-white border-secondary i-pangkat" required>
+                                <option value="-">Non-PNS / P3K</option>
+                                <option value="II/a">II/a - Pengatur Muda</option>
+                                <option value="II/b">II/b - Pengatur Muda Tk.I</option>
+                                <option value="II/c">II/c - Pengatur</option>
+                                <option value="II/d">II/d - Pengatur Tk.I</option>
+                                <option value="III/a">III/a - Penata Muda</option>
+                                <option value="III/b">III/b - Penata Muda Tk.I</option>
+                                <option value="III/c">III/c - Penata</option>
+                                <option value="III/d">III/d - Penata Tk.I</option>
+                                <option value="IV/a">IV/a - Pembina</option>
+                                <option value="IV/b">IV/b - Pembina Tk.I</option>
+                                <option value="IV/c">IV/c - Pembina Utama Muda</option>
+                                <option value="IV/d">IV/d - Pembina Utama Madya</option>
+                                <option value="IV/e">IV/e - Pembina Utama</option>
                             </select>
                         </div>
-                    </div>
-                    <!-- DROPDOWN DIVISI BARU -->
-                    <div class="col-md-2">
-                        <label class="small text-white-50">Divisi / Seksi</label>
-                        <select class="form-select bg-dark text-white border-secondary i-divisi" required>
-                            <option value="">-- Memuat Divisi --</option>
-                        </select>
-                    </div>
-                    <!-- DROPDOWN JABATAN KEPANITIAAN BARU -->
-                    <div class="col-md-2">
-                        <label class="small text-white-50">Jabatan Kepanitiaan</label>
-                        <select class="form-select bg-dark text-white border-secondary i-jabatan" required>
-                            <option value="">-- Memuat Jabatan --</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="small text-white-50">Job Deskripsi (Opsional)</label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" placeholder="Tugas singkat">
-                    </div>
-                    <div class="col-md-1 d-flex align-items-end">
-                        <button type="button" class="btn btn-outline-danger w-100 disabled" style="opacity: 0.5;"><i class="bi bi-trash"></i></button>
+                        
+                        <!-- Baris Bawah -->
+                        <div class="col-md-4">
+                            <label class="small text-white-50 mb-1">Divisi / Seksi</label>
+                            <select class="form-select bg-dark text-white border-secondary i-divisi" required>
+                                <option value="">-- Memuat Divisi --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-white-50 mb-1">Jabatan Kepanitiaan</label>
+                            <select class="form-select bg-dark text-white border-secondary i-jabatan" required>
+                                <option value="">-- Memuat Jabatan --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small text-white-50 mb-1">Job Deskripsi (Opsional)</label>
+                            <input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" placeholder="Tugas singkat...">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between mt-3">
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top border-secondary">
                 <button type="button" class="btn btn-outline-info" onclick="tambahBaris()"><i class="bi bi-plus-lg me-2"></i>Tambah Anggota Lain</button>
                 <button type="submit" id="btnUploadPanitia" class="btn btn-primary fw-bold px-4">
                     <i class="bi bi-cloud-arrow-up-fill me-2"></i> Simpan Seluruh Data
@@ -151,8 +167,8 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // ⚠️ KAPTEN, PASTIKAN URL INI ADALAH URL TERBARU DARI DEPLOYMENT KAPTEN!
-    const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
+    // ⚠️ WAJIB PASTE API URL KAPTEN DI SINI!
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
     
     let cacheDivisi = [];
     let cacheJabatan = [];
@@ -179,7 +195,6 @@
                 renderListMaster('listJabatan', cacheJabatan, "Belum ada jabatan.");
                 updateSemuaDropdown();
             } else {
-                // FITUR BARU: Tampilkan error langsung di layar jika ditolak server!
                 document.getElementById('listDivisi').innerHTML = `<div class="text-danger small fw-bold"><i class="bi bi-exclamation-triangle"></i> Gagal: ${result.message}</div>`;
                 document.getElementById('listJabatan').innerHTML = `<div class="text-danger small fw-bold"><i class="bi bi-exclamation-triangle"></i> Gagal: ${result.message}</div>`;
             }
@@ -239,24 +254,50 @@
         
         let optJabatan = '<option value="">-- Pilih Jabatan --</option>';
         cacheJabatan.forEach(j => optJabatan += `<option value="${j}">${j}</option>`);
+        
+        // Pilihan Pangkat Lengkap
+        const optPangkat = `
+            <option value="-">Non-PNS / P3K</option>
+            <option value="II/a">II/a - Pengatur Muda</option><option value="II/b">II/b - Pengatur Muda Tk.I</option>
+            <option value="II/c">II/c - Pengatur</option><option value="II/d">II/d - Pengatur Tk.I</option>
+            <option value="III/a">III/a - Penata Muda</option><option value="III/b">III/b - Penata Muda Tk.I</option>
+            <option value="III/c">III/c - Penata</option><option value="III/d">III/d - Penata Tk.I</option>
+            <option value="IV/a">IV/a - Pembina</option><option value="IV/b">IV/b - Pembina Tk.I</option>
+            <option value="IV/c">IV/c - Pembina Utama Muda</option><option value="IV/d">IV/d - Pembina Utama Madya</option>
+            <option value="IV/e">IV/e - Pembina Utama</option>
+        `;
 
         const wadah = document.getElementById('wadah-anggota');
         const barisBaru = document.createElement('div');
-        barisBaru.className = 'row g-2 mb-3 baris-anggota';
+        barisBaru.className = 'baris-anggota mb-3';
         barisBaru.innerHTML = `
-            <div class="col-md-2"><input type="text" class="form-control bg-dark text-white border-secondary i-nama" required placeholder="Nama Anggota"></div>
-            <div class="col-md-2">
-                <div class="d-flex gap-1">
-                    <input type="text" class="form-control bg-dark text-white border-secondary i-nip w-50" required placeholder="NIP">
-                    <select class="form-select bg-dark text-white border-secondary i-pangkat w-50" required>
-                        <option value="-">Non-PNS</option><option value="II/a">II/a</option><option value="III/a">III/a</option><option value="IV/a">IV/a</option>
-                    </select>
+            <button type="button" class="btn btn-sm btn-danger btn-hapus-kartu" onclick="this.parentElement.remove()" title="Hapus Anggota Ini"><i class="bi bi-x-lg"></i></button>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="small text-white-50 mb-1">Nama Lengkap & Gelar</label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary i-nama" required placeholder="Nama Anggota">
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-white-50 mb-1">NIP (Tulis '-' jika Non-PNS)</label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary i-nip" required placeholder="NIP Anggota">
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-white-50 mb-1">Pangkat/Golongan</label>
+                    <select class="form-select bg-dark text-white border-secondary i-pangkat" required>${optPangkat}</select>
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-white-50 mb-1">Divisi / Seksi</label>
+                    <select class="form-select bg-dark text-white border-secondary i-divisi" required>${optDivisi}</select>
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-white-50 mb-1">Jabatan Kepanitiaan</label>
+                    <select class="form-select bg-dark text-white border-secondary i-jabatan" required>${optJabatan}</select>
+                </div>
+                <div class="col-md-4">
+                    <label class="small text-white-50 mb-1">Job Deskripsi (Opsional)</label>
+                    <input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" placeholder="Tugas singkat...">
                 </div>
             </div>
-            <div class="col-md-2"><select class="form-select bg-dark text-white border-secondary i-divisi" required>${optDivisi}</select></div>
-            <div class="col-md-2"><select class="form-select bg-dark text-white border-secondary i-jabatan" required>${optJabatan}</select></div>
-            <div class="col-md-3"><input type="text" class="form-control bg-dark text-white border-secondary i-jobdesk" placeholder="Tugas singkat"></div>
-            <div class="col-md-1 d-flex align-items-end"><button type="button" class="btn btn-danger w-100" onclick="this.parentElement.parentElement.remove()"><i class="bi bi-trash"></i></button></div>
         `;
         wadah.appendChild(barisBaru);
     }
@@ -301,7 +342,7 @@
                     muatTabelPanitia(); 
                 } else { Swal.fire('Gagal!', result.message, 'error'); }
             } catch(error) { Swal.fire('Error', 'Gagal server.', 'error'); } 
-            finally { btn.innerHTML = 'Simpan Seluruh Data'; btn.disabled = false; }
+            finally { btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> Simpan Seluruh Data'; btn.disabled = false; }
         };
         reader.readAsDataURL(fileInput);
     }
@@ -336,6 +377,6 @@
             } else { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-white-50 py-4">Belum ada data panitia.</td></tr>'; }
         } catch(e) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Gagal menarik data dari server.</td></tr>'; }
     }
-</script>  
+</script>
 </body>
 </html>
