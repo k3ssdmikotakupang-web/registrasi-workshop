@@ -78,19 +78,25 @@
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     
     if (!userData) {
-        // Belum login, tendang ke index
         window.location.href = "index.html";
     } else {
         let idUser = userData.id_panitia || userData.id || '';
         let roleUser = (userData.role || '').toLowerCase();
-        
-        // Izinkan Admin Pusat atau Akun Panitia (berawalan PAN- atau rolenya mengandung kata panitia)
+        let jabatanUser = (userData.jabatan || '').toLowerCase();
+
+        // 1. Validasi fungsional: Mengizinkan Admin Pusat, Admin, atau Panitia
         let isAuthorized = (roleUser === 'admin_pusat' || roleUser === 'admin' || idUser.startsWith('PAN-') || roleUser.includes('panitia'));
         
         if (!isAuthorized) {
             window.location.href = "index.html";
         } else {
-            // Tampilkan Nama & Divisi Panitia yang sedang login secara dinamis
+            // 2. CEK JABATAN BENDAHARA (Jika Bendahara, arahkan ke kamarnya yang sebenarnya)
+            if (jabatanUser.includes('bendahara') || roleUser === 'bendahara_panitia') {
+                window.location.href = "dashboard_bendahara_panitia.html";
+                return; // Hentikan eksekusi skrip ini
+            }
+
+            // Tampilkan Nama & Jabatan/Divisi Panitia biasa
             document.getElementById('namaPanitia').innerText = userData.nama || userData.nama_pic || 'Panitia';
             
             let teksJabatan = '';
