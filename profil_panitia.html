@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Panitia - EMS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    
+    <style>
+        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
+        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
+        .form-control, .form-select { background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.2); color: white; }
+        .form-control:focus, .form-select:focus { background: rgba(0, 0, 0, 0.4); border-color: #00f2fe; color: white; box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); }
+        .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border-radius: 15px !important; }
+        
+        .profil-header { border-bottom: 2px dashed rgba(255, 255, 255, 0.2); padding-bottom: 15px; margin-bottom: 20px; }
+        .badge-divisi { font-size: 0.9rem; padding: 6px 12px; background: linear-gradient(45deg, #0f172a, #0284c7); border: 1px solid #00f2fe; }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
+    <div class="container">
+        <span class="navbar-brand fw-bold" style="cursor: pointer;" onclick="window.location.href='dashboard_panitia.html'">
+            <i class="bi bi-person-badge-fill me-2 text-info"></i> Profil Kepanitiaan
+        </span>
+        <button class="btn btn-sm btn-outline-light" onclick="window.location.href='dashboard_panitia.html'"><i class="bi bi-arrow-left"></i> Kembali</button>
+    </div>
+</nav>
+
+<div class="container" style="max-width: 600px;">
+    <div class="glass-card p-4 mb-4" style="border-top: 4px solid #00f2fe;">
+        <div class="profil-header text-center">
+            <h4 class="fw-bold mb-1 text-white" id="txtNama">Memuat Nama...</h4>
+            <span class="badge badge-divisi rounded-pill mb-2" id="txtDivisi">Divisi: -</span>
+            <p class="text-info small mb-0"><i class="bi bi-person-lines-fill"></i> ID: <span id="txtIdPanitia">-</span></p>
+            <p class="text-white-50 small mb-0" id="txtJabatan">Jabatan: -</p>
+        </div>
+
+        <form id="formProfil" onsubmit="simpanProfil(event)">
+            <h6 class="text-warning mb-3 fw-bold"><i class="bi bi-card-checklist me-2"></i> Lengkapi Data Pribadi</h6>
+            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label small text-info">Tempat Lahir</label>
+                    <input type="text" id="inputTempatLahir" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small text-info">Tanggal Lahir</label>
+                    <input type="date" id="inputTglLahir" class="form-control" required>
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="form-label small text-info">Jenis Kelamin</label>
+                    <select id="inputGender" class="form-select" required>
+                        <option value="" class="text-dark">-- Pilih --</option>
+                        <option value="Laki-laki" class="text-dark">Laki-laki</option>
+                        <option value="Perempuan" class="text-dark">Perempuan</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small text-info">No. WhatsApp Aktif</label>
+                    <input type="number" id="inputWA" class="form-control" placeholder="08..." required>
+                </div>
+
+                <div class="col-md-12">
+                    <label class="form-label small text-info">NIP (Jika Ada)</label>
+                    <input type="text" id="inputNIP" class="form-control" placeholder="Kosongkan jika tidak ada">
+                </div>
+                
+                <div class="col-md-6">
+                    <label class="form-label small text-info">Pangkat / Golongan</label>
+                    <input type="text" id="inputPangkat" class="form-control" placeholder="Contoh: III/a (opsional)">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label small text-info">Pendidikan Terakhir</label>
+                    <input type="text" id="inputPendidikan" class="form-control" placeholder="S1 / S2 / SMA..." required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 py-3 mt-4 fw-bold" id="btnSimpan">
+                <i class="bi bi-cloud-arrow-up-fill me-2"></i> Simpan / Perbarui Profil
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
+    const userData = JSON.parse(localStorage.getItem('userLogin'));
+
+    if (!userData || !userData.id_qr || !userData.id_qr.toString().startsWith('PAN-')) {
+        window.location.href = "index.html"; // Tendang jika bukan panitia
+    }
+
+    // Tampilkan data bawaan (Nama, Divisi, dll)
+    document.getElementById('txtNama').innerText = userData.nama || '-';
+    document.getElementById('txtDivisi').innerText = `Divisi: ${userData.divisi || '-'}`;
+    document.getElementById('txtJabatan').innerText = `Jabatan: ${userData.jabatan || '-'}`;
+    document.getElementById('txtIdPanitia').innerText = userData.id_qr;
+    
+    // NIP lama jika ada
+    if (userData.nip && userData.nip !== '-') {
+        document.getElementById('inputNIP').value = userData.nip;
+    }
+
+    // Fungsi Tarik Data Profil Lama (Jika sudah pernah isi)
+    async function muatProfil() {
+        try {
+            const res = await fetch(API_URL, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' }, 
+                body: JSON.stringify({ action: 'get_profil_panitia', id_qr: userData.id_qr }) 
+            });
+            const result = await res.json();
+            if(result.status === 'success' && result.data) {
+                let p = result.data;
+                document.getElementById('inputTempatLahir').value = p.tempat_lahir || '';
+                
+                // Konversi tanggal ke YYYY-MM-DD
+                if(p.tgl_lahir && p.tgl_lahir !== '-') {
+                    let d = new Date(p.tgl_lahir);
+                    if(!isNaN(d)) {
+                        document.getElementById('inputTglLahir').value = d.toISOString().split('T')[0];
+                    }
+                }
+                
+                document.getElementById('inputGender').value = p.gender || '';
+                document.getElementById('inputWA').value = p.no_wa || '';
+                document.getElementById('inputNIP').value = (p.nip === '-' ? '' : p.nip);
+                document.getElementById('inputPangkat').value = (p.pangkat === '-' ? '' : p.pangkat);
+                document.getElementById('inputPendidikan').value = p.pendidikan || '';
+            }
+        } catch(e) { console.error("Gagal muat profil:", e); }
+    }
+
+    async function simpanProfil(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSimpan');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...';
+        btn.disabled = true;
+
+        const tglLahir = document.getElementById('inputTglLahir').value;
+        const formatTgl = tglLahir ? tglLahir.split('-').reverse().join('/') : ''; // DD/MM/YYYY
+
+        const payload = {
+            action: 'update_profil_panitia',
+            id_qr: userData.id_qr,
+            tempat_lahir: document.getElementById('inputTempatLahir').value,
+            tgl_lahir: formatTgl,
+            gender: document.getElementById('inputGender').value,
+            nip: document.getElementById('inputNIP').value || '-',
+            pangkat: document.getElementById('inputPangkat').value || '-',
+            no_wa: document.getElementById('inputWA').value,
+            pendidikan: document.getElementById('inputPendidikan').value
+        };
+
+        try {
+            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+            const result = await res.json();
+            
+            if(result.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Profil panitia tersimpan.', customClass: { popup: 'swal-dark' }, background: '#1e293b' });
+            } else {
+                Swal.fire('Gagal', result.message, 'error');
+            }
+        } catch(e) { Swal.fire('Error', 'Gagal menghubungi server.', 'error'); }
+        
+        btn.innerHTML = '<i class="bi bi-cloud-arrow-up-fill me-2"></i> Simpan / Perbarui Profil';
+        btn.disabled = false;
+    }
+
+    muatProfil(); // Panggil saat halaman diload
+</script>
+</body>
+</html>
