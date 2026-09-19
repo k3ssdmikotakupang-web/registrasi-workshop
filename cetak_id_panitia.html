@@ -107,11 +107,11 @@
 </div>
 
 <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+    // ⚠️ API URL SUDAH DIPERBARUI KE VERSI TERAKHIR
+    const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
 
     async function muatDataPanitia() {
         try {
-            // FOKUS DI SINI: Action dipastikan menarik tabel panitia
             const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_all_panitia' }) });
             const result = await res.json();
             document.getElementById('loading').classList.add('d-none');
@@ -146,7 +146,7 @@
                 });
                 document.getElementById('containerCard').innerHTML = html;
             } else { document.getElementById('containerCard').innerHTML = '<div class="col-12 text-center text-muted fw-bold">Belum ada data panitia yang terdaftar.</div>'; }
-        } catch(e) { document.getElementById('loading').innerHTML = '<span class="text-danger fw-bold">Gagal memuat data dari server.</span>'; }
+        } catch(e) { document.getElementById('loading').innerHTML = '<span class="text-danger fw-bold">Gagal memuat data dari server. Pastikan API Web App sudah di-deploy ke versi terbaru.</span>'; }
     }
     muatDataPanitia();
 </script>
