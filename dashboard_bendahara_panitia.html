@@ -3,46 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ruang Kas Bendahara - EMS K3S Kupang</title>
+    <title>Bendahara Pusat - EMS</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <style>
         body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
         .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); transition: transform 0.3s ease, background 0.3s ease; }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); }
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
         
         .card-saldo { background: linear-gradient(135deg, rgba(0,242,254,0.1) 0%, rgba(79,172,254,0.1) 100%); border-left: 5px solid #00f2fe; }
         .card-masuk { border-left: 5px solid #198754; background: rgba(25,135,84,0.05); }
         .card-keluar { border-left: 5px solid #dc3545; background: rgba(220,53,69,0.05); }
         
+        /* Modifikasi ukuran Toggle Switch */
         .form-switch .form-check-input { width: 3em; height: 1.5em; cursor: pointer; }
-        .swal2-popup.swal-dark { background: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px !important; }
-        
-        /* Animasi Tombol Menu Paten */
-        .menu-btn { transition: all 0.2s ease; border-width: 1px; }
-        .menu-btn:hover { transform: translateX(5px); background-color: rgba(0, 242, 254, 0.1) !important; border-color: #00f2fe !important; }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-dark neon-nav sticky-top mb-4">
     <div class="container">
-        <span class="navbar-brand text-neon"><i class="bi bi-wallet2"></i> Ruang Kas Bendahara</span>
-        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
+        <span class="navbar-brand text-neon">Bendahara Pusat EMS</span>
+        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Logout</button>
     </div>
 </nav>
 
 <div class="container">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h4 class="fw-bold mb-0 text-white" id="namaPic">Memuat...</h4>
+            <h4 class="fw-bold mb-0" id="namaPic">Memuat...</h4>
             <p class="text-white-50 small mb-0">Buku Kas Umum (BKU) Panitia</p>
         </div>
     </div>
 
-    <!-- Panel Keuangan Real-Time -->
+    <!-- Panel Keuangan -->
     <div class="row g-3 mb-4">
         <div class="col-12"><div class="glass-card card-saldo p-4 text-center"><p class="text-info mb-1 small fw-bold">Saldo Kas Saat Ini</p><h2 class="fw-bold mb-0 text-white" id="txtSaldo">Rp 0</h2></div></div>
         <div class="col-6"><div class="glass-card card-masuk p-3 text-center h-100"><i class="bi bi-arrow-down-circle text-success fs-3"></i><p class="text-white-50 mb-1 small">Total Penerimaan</p><h5 class="text-success fw-bold" id="txtMasuk">Rp 0</h5></div></div>
@@ -52,7 +48,7 @@
     <!-- PANEL SAKELAR PENCAIRAN -->
     <div class="glass-card p-3 mb-4 d-flex justify-content-between align-items-center" style="border-left: 4px solid #ffc107; background: rgba(255, 193, 7, 0.05);">
         <div>
-            <h6 class="fw-bold mb-0 text-warning"><i class="bi bi-broadcast"></i> Akses Scanner Subrayon</h6>
+            <h6 class="fw-bold mb-0 text-warning">Akses Scanner Subrayon</h6>
             <small class="text-white-50" id="txtStatusSakelar">Memuat status...</small>
         </div>
         <div class="form-check form-switch mt-1">
@@ -60,48 +56,29 @@
         </div>
     </div>
 
-    <!-- Menu Operasional (Desain Paten Mewah) -->
-    <h5 class="fw-bold mb-3 mt-4">Menu Operasional Bendahara</h5>
+    <div class="mb-4">
+        <button onclick="window.location.href='rekap_transport_pusat.html'" class="btn btn-outline-info w-100 py-3 text-start fw-bold">
+            <i class="bi bi-pie-chart-fill me-2"></i> Rekap Master Transport & Honor Panitia
+        </button>
+    </div>
+
+    <!-- Tombol Navigasi Operasional -->
+    <h6 class="text-white-50 mb-3">Menu Operasional</h6>
     <div class="row g-3 mb-4">
-        
-        <div class="col-12">
-            <button onclick="window.location.href='rekap_transport_pusat.html'" class="btn btn-primary w-100 py-3 text-start fw-bold shadow-sm menu-btn" style="background: linear-gradient(45deg, #0f172a, #0284c7); border: 1px solid #00f2fe;">
-                <i class="bi bi-pie-chart-fill me-2 text-info"></i> Rekap Master Transport & Honor Panitia
-            </button>
-        </div>
-
-        <div class="col-12">
-            <button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-info w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(0, 242, 254, 0.05);">
-                <i class="bi bi-file-earmark-spreadsheet-fill me-2 text-info"></i> Rekap Daftar Sekolah & Penerimaan Kas
-            </button>
-        </div>
-
-        <div class="col-12">
-            <button onclick="window.location.href='validasi_v2.html'" class="btn btn-outline-warning w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(255, 193, 7, 0.05);">
-                <i class="bi bi-check-circle-fill me-2 text-warning"></i> Validasi Transfer & Terima Tunai
-            </button>
-        </div>
-        
-        <div class="col-12">
-            <button onclick="window.location.href='dashboard_pengeluaran.html'" class="btn btn-outline-danger w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(220, 53, 69, 0.05);">
-                <i class="bi bi-cart-dash-fill me-2 text-danger"></i> Manajemen Pengeluaran & Transport
-            </button>
-        </div>
-
-        <div class="col-12">
-            <button onclick="window.location.href='laporan_bku.html'" class="btn btn-outline-light w-100 py-3 text-start fw-bold menu-btn" style="background: rgba(255, 255, 255, 0.05);">
-                <i class="bi bi-journal-check me-2 text-light"></i> Laporan BKU / RKAS
-            </button>
-        </div>
-
+        <div class="col-12"><button onclick="window.location.href='rekap_sekolah.html'" class="btn btn-outline-info w-100 py-3 text-start"><i class="bi bi-file-earmark-spreadsheet me-2"></i> Rekap Daftar Sekolah & Penerimaan</button></div>
+        <div class="col-12"><button onclick="window.location.href='validasi_v2.html'" class="btn btn-outline-warning w-100 py-3 text-start"><i class="bi bi-check-circle-fill me-2"></i> Validasi Transfer & Terima Tunai</button></div>
+        <!-- TOMBOL MANAJEMEN PENGELUARAN DINORMALKAN MENJADI OUTLINE-LIGHT AGAR SERAGAM -->
+        <div class="col-12"><button onclick="window.location.href='dashboard_pengeluaran.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-cart-dash me-2"></i> Manajemen Pengeluaran & Transport</button></div>
+        <div class="col-12"><button onclick="window.location.href='laporan_bku.html'" class="btn btn-outline-light w-100 py-3 text-start"><i class="bi bi-journal-check me-2"></i> Laporan BKU / RKAS</button></div>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    // WAJIB PASTE API URL KAPTEN DI SINI!
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
     
-    // --- PENGARAH PINTAR BENDAHARA (SMART ROUTER) ---
+    // --- PENGAMAN PINTAR BENDAHARA ---
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     
     if (!userData) {
@@ -110,22 +87,23 @@
         let roleUser = (userData.role || '').toLowerCase();
         let jabatanUser = (userData.jabatan || '').toLowerCase();
         
-        // Hanya izinkan masuk jika Role atau Jabatannya adalah Bendahara
+        // Hanya lolos jika Role adalah Bendahara_Panitia ATAU Jabatan-nya mengandung kata 'bendahara'
         let isBendahara = (roleUser === 'bendahara_panitia' || jabatanUser.includes('bendahara'));
         
         if (!isBendahara) {
+            // Jika bukan bendahara (mungkin admin atau panitia biasa), tendang ke index!
             window.location.href = "index.html"; 
         } else {
-            // Tampilkan Nama Bendahara
+            // Berhasil lolos! Tampilkan nama Bendahara
             document.getElementById('namaPic').innerText = userData.nama || userData.nama_pic || "Bendahara";
         }
     }
-    // ------------------------------------------------
+    // ---------------------------------
 
     const formatRp = (angka) => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
 
     async function muatData() {
-        // Tarik Saldo Keuangan
+        // Tarik Saldo
         fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_keuangan_panitia' }) })
             .then(res => res.json()).then(result => {
                 if(result.status === 'success') {
@@ -171,22 +149,20 @@
                 if(statusBaru === 'Buka') {
                     sakelar.classList.replace('bg-secondary', 'bg-success');
                     teks.innerText = "Status: DIBUKA (Subrayon bisa mencairkan)";
-                    Swal.fire({icon: 'success', title: 'Akses Dibuka!', text: 'Bendahara Subrayon kini bisa melakukan pencairan via Scanner.', customClass: { popup: 'swal-dark' }, timer: 2500, showConfirmButton: false});
+                    Swal.fire({icon: 'success', title: 'Akses Dibuka!', text: 'Bendahara Subrayon kini bisa melakukan pencairan via Scanner.', timer: 2000, showConfirmButton: false});
                 } else {
                     sakelar.classList.replace('bg-success', 'bg-secondary');
                     teks.innerText = "Status: DITUTUP (Scanner terkunci)";
-                    Swal.fire({icon: 'warning', title: 'Akses Ditutup!', text: 'Menu pencairan Subrayon telah dikunci kembali.', customClass: { popup: 'swal-dark' }, timer: 2500, showConfirmButton: false});
+                    Swal.fire({icon: 'warning', title: 'Akses Ditutup!', text: 'Menu pencairan Subrayon telah dikunci kembali.', timer: 2000, showConfirmButton: false});
                 }
             }
         } catch (e) {
-            Swal.fire({icon: 'error', title: 'Error', text: 'Gagal menghubungi server.', customClass: { popup: 'swal-dark' }});
+            Swal.fire('Error', 'Gagal menghubungi server.', 'error');
             sakelar.checked = !sakelar.checked; // Balikkan ke semula jika error
         }
     }
 
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
-    
-    // Jalankan fungsi saat halaman dimuat
     muatData();
 </script>
 </body>
