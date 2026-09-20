@@ -62,7 +62,6 @@
     <h5 class="fw-bold mb-3 mt-4"><i class="bi bi-grid-fill me-2 text-info"></i> Menu Master (God Mode)</h5>
     
     <div class="row g-3 mb-5">
-        <!-- BARIS 1: Pengaturan Sistem & Master Data -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_manajemen.html'">
                 <i class="bi bi-person-fill-gear mb-2" style="font-size: 2.5rem; color: #fd7e14;"></i>
@@ -88,7 +87,6 @@
             </div>
         </div>
 
-        <!-- BARIS 2: Operasi & Tugas -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='manajemen_tugas.html'">
                 <i class="bi bi-kanban-fill mb-2" style="font-size: 2.5rem; color: #0dcaf0;"></i>
@@ -102,7 +100,6 @@
             </div>
         </div>
         
-        <!-- INI TOMBOL YANG SUDAH DIPERBAIKI JALURNYA -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_rekap_profil.html'">
                 <i class="bi bi-person-lines-fill mb-2" style="font-size: 2.5rem; color: #6f42c1;"></i>
@@ -117,7 +114,6 @@
             </div>
         </div>
 
-        <!-- BARIS 3: Keuangan Pemasukan & BKU -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='validasi_v2.html'">
                 <i class="bi bi-check-circle-fill mb-2" style="font-size: 2.5rem; color: #198754;"></i>
@@ -143,7 +139,6 @@
             </div>
         </div>
 
-        <!-- BARIS 4: Laporan Pajak & Percetakan -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='rekap_pajak.html'">
                 <i class="bi bi-bank mb-2" style="font-size: 2.5rem; color: #e83e8c;"></i>
@@ -169,7 +164,6 @@
             </div>
         </div>
 
-        <!-- BARIS 5: Eksternal Links & Materi -->
         <div class="col-6 col-md-4 mt-4">
             <button onclick="bukaEksternal('materi')" class="btn btn-outline-info w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-book mb-2 fs-3 d-block"></i> Materi Workshop</button>
         </div>
@@ -192,8 +186,8 @@
     let roleUser = (userData.role || '').toLowerCase();
     let jabatanUser = (userData.jabatan || '').toLowerCase();
     
-    // Cek Otoritas (Hanya Admin Pusat / Ketua yang boleh di sini)
-    let isSuperAdmin = (roleUser === 'admin_pusat' || roleUser === 'admin' || jabatanUser.includes('ketua') || jabatanUser.includes('jawab'));
+    // PERBAIKAN SATPAM: Mengecek apakah terdapat kata 'admin' di dalam string Role-nya
+    let isSuperAdmin = (roleUser.includes('admin') || jabatanUser.includes('ketua') || jabatanUser.includes('jawab'));
     
     if (!isSuperAdmin) {
         window.location.href = "dashboard_panitia.html";
@@ -241,14 +235,7 @@
         if (link && link.startsWith('http')) {
             window.open(link, '_blank');
         } else {
-            Swal.fire({
-                icon: 'info', 
-                title: 'Link Kosong', 
-                text: 'Silakan atur link melalui menu Broadcast & Pengaturan terlebih dahulu.', 
-                customClass: { popup: 'swal-dark' }, 
-                background: '#1e293b', 
-                color: '#fff'
-            });
+            Swal.fire({ icon: 'info', title: 'Link Kosong', text: 'Silakan atur link melalui menu Broadcast & Pengaturan terlebih dahulu.', customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
         }
     }
 
