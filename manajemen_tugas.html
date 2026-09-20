@@ -55,7 +55,8 @@
     <div class="progress-container">
         <div class="d-flex justify-content-between align-items-end mb-2">
             <div>
-                <h5 class="fw-bold mb-0">Indikator Kesiapan Acara Keseluruhan</h5>
+                <!-- ID labelProgress ditambahkan agar teks bisa diubah secara dinamis -->
+                <h5 class="fw-bold mb-0" id="labelProgress">Progress Keseluruhan Kegiatan</h5>
                 <small class="text-muted">K3S SD/MI Kota Kupang</small>
             </div>
             <h2 class="fw-bold text-success mb-0" id="teksPersentase">0%</h2>
@@ -176,7 +177,6 @@
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
 
-    // --- PENGAMAN LOGIN & ROUTING KECIL ---
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     
     if (!userData) {
@@ -197,7 +197,6 @@
     const isAdmin = (roleUser === 'admin_pusat' || roleUser === 'admin' || jabatanUser.includes('ketua'));
     let dataGlobal = [];
 
-    // FUNGSI KEMBALI KE DASBOR YANG CERDAS & AMAN
     function kembaliKeDasbor() {
         let r = (userData.role || '').toLowerCase();
         let j = (userData.jabatan || '').toLowerCase();
@@ -279,8 +278,26 @@
         document.getElementById(textId).innerText = `${persentase}% (${dataObj.selesai}/${dataObj.total})`;
     }
 
-    // --- FUNGSI RENDER PAPAN YANG SEBELUMNYA TERHAPUS KINI KEMBALI ---
+    // --- FUNGSI RENDER PAPAN YANG DIPERBARUI SECARA DINAMIS ---
     function renderPapan(semuaData, filterMode) {
+        let divisiSayaBersih = userData.divisi ? bersihkanTeks(userData.divisi) : '';
+        
+        // 1. FILTER DATA TERLEBIH DAHULU SEBELUM MENGHITUNG PERSENTASE
+        let dataTampil = semuaData;
+        let judulProgress = "Progress Keseluruhan Kegiatan";
+        
+        if (filterMode === 'saya') {
+            dataTampil = semuaData.filter(item => {
+                let divItem = item.divisi ? bersihkanTeks(item.divisi) : '';
+                return divItem === divisiSayaBersih;
+            });
+            judulProgress = "Progress Kegiatan Divisi " + (userData.divisi || "Saya");
+        }
+        
+        // Update Label Judul Progress secara dinamis
+        document.getElementById('labelProgress').innerText = judulProgress;
+
+        // 2. HITUNG STATISTIK BERDASARKAN DATA YANG SUDAH DIFILTER (dataTampil)
         let jmlTotal = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
         let statsTahapan = {
             'perencanaan': { total: 0, selesai: 0 },
@@ -288,22 +305,25 @@
             'pelaksanaan': { total: 0, selesai: 0 },
             'pasca-acara': { total: 0, selesai: 0 }
         };
-        
-        let divisiSayaBersih = userData.divisi ? bersihkanTeks(userData.divisi) : '';
 
-        semuaData.forEach(item => {
+        let htmlBelum = '', htmlProses = '', htmlKendala = '', htmlSelesai = '';
+        let tugasMendesak = [];
+
+        dataTampil.forEach(item => {
             let s = item.status ? bersihkanTeks(item.status) : '';
             let isBelum = s.includes('belum');
             let isProses = s.includes('kerja') || s.includes('proses');
             let isKendala = s.includes('kendala');
             let isSelesai = s.includes('selesai');
 
+            // Kalkulasi Jumlah Status
             if(isBelum) jmlTotal.belum++;
             else if(isProses) jmlTotal.proses++;
             else if(isKendala) jmlTotal.kendala++;
             else if(isSelesai) jmlTotal.selesai++;
             else jmlTotal.belum++; 
 
+            // Kalkulasi Tahapan
             let t = item.tahapan ? bersihkanTeks(item.tahapan) : '';
             let kunciTahapan = '';
             if (t.includes('rencana')) kunciTahapan = 'perencanaan';
@@ -315,40 +335,9 @@
                 statsTahapan[kunciTahapan].total++;
                 if(isSelesai) statsTahapan[kunciTahapan].selesai++;
             }
-        });
-        
-        let totalPekerjaan = jmlTotal.belum + jmlTotal.proses + jmlTotal.kendala + jmlTotal.selesai;
-        let persentase = totalPekerjaan === 0 ? 0 : Math.round((jmlTotal.selesai / totalPekerjaan) * 100);
-        
-        document.getElementById('teksPersentase').innerText = persentase + '%';
-        document.getElementById('barPersentase').style.width = persentase + '%';
-
-        updateProgressBar('barPerencanaan', 'txtPerencanaan', statsTahapan['perencanaan']);
-        updateProgressBar('barPersiapan', 'txtPersiapan', statsTahapan['persiapan']);
-        updateProgressBar('barPelaksanaan', 'txtPelaksanaan', statsTahapan['pelaksanaan']);
-        updateProgressBar('barPasca', 'txtPasca', statsTahapan['pasca-acara']);
-
-        let dataTampil = semuaData;
-        if (filterMode === 'saya') {
-            dataTampil = semuaData.filter(item => {
-                let divItem = item.divisi ? bersihkanTeks(item.divisi) : '';
-                return divItem === divisiSayaBersih;
-            });
-        }
-        
-        let jmlTampil = { belum: 0, proses: 0, kendala: 0, selesai: 0 };
-        let htmlBelum = '', htmlProses = '', htmlKendala = '', htmlSelesai = '';
-        let tugasMendesak = [];
-
-        dataTampil.forEach(item => {
-            let s = item.status ? bersihkanTeks(item.status) : '';
-            let isBelum = s.includes('belum');
-            let isProses = s.includes('kerja') || s.includes('proses');
-            let isKendala = s.includes('kendala');
-            let isSelesai = s.includes('selesai');
             
+            // Render Kartu HTML
             let warnaWaktu = "text-muted";
-            
             if(!isSelesai && item.batas_waktu) {
                 let sisaJam = (new Date(item.batas_waktu) - new Date()) / (1000 * 60 * 60);
                 if(sisaJam < 0) {
@@ -382,7 +371,6 @@
 
             let badgeTahapan = (item.tahapan && item.tahapan !== '-') ? `<span class="badge bg-dark text-white border border-secondary mb-1" style="font-size: 0.65rem;">${item.tahapan}</span>` : '';
             let teksPic = item.pic ? item.pic : 'Tim Divisi';
-
             let classKartu = isBelum ? 'kartu-belum' : isProses ? 'kartu-proses' : isKendala ? 'kartu-kendala' : isSelesai ? 'kartu-selesai' : 'kartu-belum';
 
             let kartu = `
@@ -396,13 +384,26 @@
                 </div>
             `;
 
-            if(isBelum) { htmlBelum += kartu; jmlTampil.belum++; }
-            else if(isProses) { htmlProses += kartu; jmlTampil.proses++; }
-            else if(isKendala) { htmlKendala += kartu; jmlTampil.kendala++; }
-            else if(isSelesai) { htmlSelesai += kartu; jmlTampil.selesai++; }
-            else { htmlBelum += kartu; jmlTampil.belum++; }
+            if(isBelum) { htmlBelum += kartu; }
+            else if(isProses) { htmlProses += kartu; }
+            else if(isKendala) { htmlKendala += kartu; }
+            else if(isSelesai) { htmlSelesai += kartu; }
+            else { htmlBelum += kartu; }
         });
 
+        // 3. UPDATE TAMPILAN PROGRESS BAR 
+        let totalPekerjaan = jmlTotal.belum + jmlTotal.proses + jmlTotal.kendala + jmlTotal.selesai;
+        let persentase = totalPekerjaan === 0 ? 0 : Math.round((jmlTotal.selesai / totalPekerjaan) * 100);
+        
+        document.getElementById('teksPersentase').innerText = persentase + '%';
+        document.getElementById('barPersentase').style.width = persentase + '%';
+
+        updateProgressBar('barPerencanaan', 'txtPerencanaan', statsTahapan['perencanaan']);
+        updateProgressBar('barPersiapan', 'txtPersiapan', statsTahapan['persiapan']);
+        updateProgressBar('barPelaksanaan', 'txtPelaksanaan', statsTahapan['pelaksanaan']);
+        updateProgressBar('barPasca', 'txtPasca', statsTahapan['pasca-acara']);
+
+        // 4. UPDATE ALERT & DOM WADAH KARTU
         let alertArea = document.getElementById('alertMendesak');
         if(tugasMendesak.length > 0) {
             let listHtml = tugasMendesak.map(t => `<li class="mb-1">${t}</li>`).join('');
@@ -419,10 +420,10 @@
         document.getElementById('wadahKendala').innerHTML = htmlKendala || '<div class="text-center text-muted small py-3">Aman</div>';
         document.getElementById('wadahSelesai').innerHTML = htmlSelesai || '<div class="text-center text-muted small py-3">Kosong</div>';
 
-        document.getElementById('jmlBelum').innerText = jmlTampil.belum;
-        document.getElementById('jmlProses').innerText = jmlTampil.proses;
-        document.getElementById('jmlKendala').innerText = jmlTampil.kendala;
-        document.getElementById('jmlSelesai').innerText = jmlTampil.selesai;
+        document.getElementById('jmlBelum').innerText = jmlTotal.belum;
+        document.getElementById('jmlProses').innerText = jmlTotal.proses;
+        document.getElementById('jmlKendala').innerText = jmlTotal.kendala;
+        document.getElementById('jmlSelesai').innerText = jmlTotal.selesai;
     }
 
     async function simpanTugas(e) {
