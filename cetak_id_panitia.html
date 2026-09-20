@@ -3,74 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pusat Cetak ID Card - EMS</title>
+    <title>Cetak ID Card Panitia - VIP Edition</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
-        .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); transition: transform 0.3s ease, background 0.3s ease; }
-        .glass-card-hover:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.09); cursor: pointer; border-color: rgba(0, 242, 254, 0.5); }
-        .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
+        body { background-color: #f1f5f9; font-family: 'Poppins', sans-serif; }
+        
+        /* WADAH UTAMA ID CARD (7.5cm x 12cm) */
+        .id-card-wrapper {
+            width: 7.5cm; 
+            height: 12cm;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #e2e8f0;
+            page-break-inside: avoid;
+        }
+
+        /* HEADER BIRU DONGKER (Ruang diperbesar ke bawah) */
+        .id-header {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #fbbf24;
+            text-align: center;
+            padding: 15px 8px 48px 8px; /* Padding bawah ditambah agar foto bisa turun */
+            clip-path: polygon(0 0, 100% 0, 100% 88%, 0 100%);
+        }
+        .id-header h5 { font-size: 0.8rem; font-weight: 800; margin: 0; letter-spacing: 0.5px; text-transform: uppercase; }
+        .id-header p { font-size: 0.55rem; color: #cbd5e1; margin: 3px 0 0 0; font-weight: 400; line-height: 1.3; }
+
+        /* FOTO PROFIL (Diperbesar dan Diturunkan) */
+        .id-photo {
+            width: 105px;  /* Diperbesar */
+            height: 105px; /* Diperbesar */
+            background: #f8fafc;
+            border-radius: 50%;
+            border: 3px solid #fbbf24; 
+            margin: -35px auto 5px auto; /* Posisi lebih turun */
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            font-size: 3.5rem; 
+            color: #cbd5e1;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 2;
+            position: relative;
+            overflow: hidden;
+        }
+        .id-photo img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* BODY KONTEN */
+        .id-body {
+            text-align: center;
+            padding: 0 10px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .id-name {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 2px;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+        .id-role {
+            display: inline-block;
+            background: #fbbf24;
+            color: #0f172a;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-top: 5px;
+            margin-bottom: auto;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 5px rgba(251, 191, 36, 0.3);
+        }
+
+        /* QR CODE (Diperbesar Signifikan) */
+        .id-qr-box { text-align: center; margin-bottom: 12px; margin-top: 5px; }
+        .id-qr-box img {
+            width: 125px;  /* Jauh lebih besar */
+            height: 125px; /* Jauh lebih besar */
+            padding: 4px;
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+        }
+
+        /* FOOTER */
+        .id-footer {
+            background: #0f172a;
+            color: #fff;
+            text-align: center;
+            font-size: 0.65rem;
+            padding: 6px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        @media print {
+            body { background: none !important; }
+            .no-print { display: none !important; }
+            .id-card-wrapper {
+                box-shadow: none !important;
+                border: 1px dashed #cbd5e1 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
     </style>
 </head>
 <body>
 
-<nav class="navbar navbar-dark neon-nav sticky-top mb-4">
-    <div class="container-fluid px-4">
-        <span class="navbar-brand text-neon">
-            <i class="bi bi-badge-ad-fill me-2"></i> Pusat Cetak ID Card
-        </span>
-        <button class="btn btn-sm btn-outline-light shadow-sm" onclick="window.location.href='dashboard_admin.html'">
-            <i class="bi bi-arrow-left"></i> Kembali ke Dasbor
-        </button>
-    </div>
-</nav>
-
-<div class="container py-5">
-    <div class="row justify-content-center text-center mb-5">
-        <div class="col-md-8">
-            <h3 class="fw-bold text-white mb-2">Pilih Kategori Cetak ID Card</h3>
-            <p class="text-white-50">Silakan pilih jenis kartu identitas yang ingin dicetak sesuai kebutuhan acara.</p>
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 no-print glass-card p-3 rounded bg-white shadow-sm">
+        <h4 class="fw-bold text-dark mb-0"><i class="bi bi-person-badge me-2 text-warning"></i> Cetak ID Card Panitia</h4>
+        <div>
+            <button class="btn btn-dark fw-bold" onclick="window.print()"><i class="bi bi-printer-fill me-2"></i> Cetak Semua</button>
+            <button class="btn btn-outline-secondary ms-2" onclick="window.history.back()"><i class="bi bi-arrow-left"></i> Kembali</button>
         </div>
     </div>
 
-    <div class="row g-4 justify-content-center">
-        <!-- Pilihan 1: ID Card Panitia (Sesuaikan nama file aslinya jika berbeda) -->
-        <div class="col-md-5">
-            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5" onclick="window.location.href='generator_id_panitia.html'">
-                <div class="mb-3">
-                    <i class="bi bi-person-badge-fill text-warning" style="font-size: 4rem;"></i>
-                </div>
-                <h4 class="fw-bold text-white mb-3">ID Card Panitia</h4>
-                <p class="text-white-50 small mb-4">Pusat pencetakan kartu tanda pengenal resmi untuk seluruh jajaran pengurus dan anggota panitia inti.</p>
-                <div>
-                    <span class="btn btn-outline-warning fw-bold px-4 rounded-pill">Buka Menu Panitia <i class="bi bi-arrow-right ms-2"></i></span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pilihan 2: ID Card Peserta (Sudah disesuaikan ke nama file aslinya: id_card_peserta.html) -->
-        <div class="col-md-5">
-            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5" onclick="window.location.href='id_card_peserta.html'">
-                <div class="mb-3">
-                    <i class="bi bi-people-fill text-info" style="font-size: 4rem;"></i>
-                </div>
-                <h4 class="fw-bold text-white mb-3">ID Card Peserta</h4>
-                <p class="text-white-50 small mb-4">Pusat pencetakan kartu peserta lengkap dengan kode QR unik untuk absensi dan validasi kegiatan.</p>
-                <div>
-                    <span class="btn btn-outline-info fw-bold px-4 rounded-pill">Buka Menu Peserta <i class="bi bi-arrow-right ms-2"></i></span>
-                </div>
-            </div>
-        </div>
+    <div id="loading" class="text-center py-5">
+        <div class="spinner-border text-warning" style="width: 3rem; height: 3rem;" role="status"></div>
+        <p class="text-muted mt-3 fw-bold">Merakit ID Card Premium...</p>
     </div>
+
+    <div class="d-flex flex-wrap justify-content-center gap-4" id="containerCard"></div>
 </div>
 
 <script>
-    const userData = JSON.parse(localStorage.getItem('userLogin'));
-    if (!userData) window.location.href = "index.html";
+    // WAJIB PASTE API URL KAPTEN DI SINI!
+    const API_URL = "https://script.google.com/macros/s/AKfycbwLdvXuLpbUvBE666hblNZm4y1HuoogGUl8vdHorb-aT9s6T5X6xHwXAcPaeEvrZ5RS/exec";
+
+    async function muatDataPanitia() {
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'get_all_panitia' })
+            });
+            const result = await res.json();
+            document.getElementById('loading').classList.add('d-none');
+
+            if(result.status === 'success' && result.data.length > 0) {
+                let html = '';
+                result.data.forEach(p => {
+                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(p.id_panitia)}`;
+                    
+                    let fotoHtml = p.foto_url 
+                        ? `<img src="${p.foto_url}" alt="Foto Profil">` 
+                        : `<i class="bi bi-person-fill"></i>`;
+                    
+                    html += `
+                        <div class="id-card-wrapper">
+                            <div class="id-header">
+                                <h5>K3S SD/MI Kota Kupang</h5>
+                                <!-- TEKS DIUBAH MENJADI 2 BARIS -->
+                                <p>Panitia Workshop Manajemen Kepsek SD/MI<br>Kota Kupang 2026</p>
+                            </div>
+                            
+                            <div class="id-photo">
+                                ${fotoHtml}
+                            </div>
+                            
+                            <div class="id-body">
+                                <div class="id-name">${p.nama}</div>
+                                <div><span class="id-role">${p.jabatan}</span></div>
+                                
+                                <div class="id-qr-box">
+                                    <img src="${qrUrl}" alt="QR Validasi">
+                                </div>
+                            </div>
+                            
+                            <div class="id-footer">
+                                ID: ${p.id_panitia}
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('containerCard').innerHTML = html;
+            } else {
+                document.getElementById('containerCard').innerHTML = '<div class="col-12 text-center text-muted fw-bold">Belum ada data panitia.</div>';
+            }
+        } catch(e) {
+            document.getElementById('loading').innerHTML = '<span class="text-danger fw-bold">Gagal memuat data dari server.</span>';
+        }
+    }
+
+    muatDataPanitia();
 </script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
