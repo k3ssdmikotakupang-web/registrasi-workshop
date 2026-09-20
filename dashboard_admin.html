@@ -62,23 +62,23 @@
     <h5 class="fw-bold mb-3 mt-4"><i class="bi bi-grid-fill me-2 text-info"></i> Menu Master (God Mode)</h5>
     
     <div class="row g-3 mb-5">
-        <!-- BARIS 1: Kontrol Inti -->
+        <!-- BARIS 1: Pengaturan Sistem & Master Data -->
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_manajemen.html'">
+                <i class="bi bi-person-fill-gear mb-2" style="font-size: 2.5rem; color: #fd7e14;"></i>
+                <h6 class="fw-bold text-white mb-0 mt-2">Pengaturan<br>Akun Pengguna</h6>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_panitia.html'">
+                <i class="bi bi-person-vcard-fill mb-2" style="font-size: 2.5rem; color: #20c997;"></i>
+                <h6 class="fw-bold text-white mb-0 mt-2">Manajemen<br>Data Panitia</h6>
+            </div>
+        </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_broadcast.html'">
                 <i class="bi bi-broadcast-pin mb-2" style="font-size: 2.5rem; color: #ffc107;"></i>
-                <h6 class="fw-bold text-white mb-0 mt-2">Broadcast &<br>Pengaturan</h6>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='manajemen_tugas.html'">
-                <i class="bi bi-kanban-fill mb-2" style="font-size: 2.5rem; color: #0dcaf0;"></i>
-                <h6 class="fw-bold text-white mb-0 mt-2">Papan Tugas<br>Kepanitiaan</h6>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='panitia_checkin.html'">
-                <i class="bi bi-qr-code-scan mb-2" style="font-size: 2.5rem; color: #ff9a9e;"></i>
-                <h6 class="fw-bold text-white mb-0 mt-2">Scanner<br>Absensi</h6>
+                <h6 class="fw-bold text-white mb-0 mt-2">Broadcast &<br>Sistem</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
@@ -88,13 +88,33 @@
             </div>
         </div>
 
-        <!-- BARIS 2: Database & Keuangan -->
+        <!-- BARIS 2: Operasi & Tugas -->
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='manajemen_tugas.html'">
+                <i class="bi bi-kanban-fill mb-2" style="font-size: 2.5rem; color: #0dcaf0;"></i>
+                <h6 class="fw-bold text-white mb-0 mt-2">Papan Tugas<br>Kepanitiaan</h6>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='panitia_checkin.html'">
+                <i class="bi bi-qr-code-scan mb-2" style="font-size: 2.5rem; color: #ff9a9e;"></i>
+                <h6 class="fw-bold text-white mb-0 mt-2">Scanner<br>Absensi Pusat</h6>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='profil_panitia.html'">
+                <i class="bi bi-person-lines-fill mb-2" style="font-size: 2.5rem; color: #6f42c1;"></i>
+                <h6 class="fw-bold text-white mb-0 mt-2">Database<br>Profilku</h6>
+            </div>
+        </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='rekap_sekolah.html'">
                 <i class="bi bi-buildings mb-2" style="font-size: 2.5rem; color: #f093fb;"></i>
-                <h6 class="fw-bold text-white mb-0 mt-2">Database<br>Rekap Sekolah</h6>
+                <h6 class="fw-bold text-white mb-0 mt-2">Database<br>Sekolah & Peserta</h6>
             </div>
         </div>
+
+        <!-- BARIS 3: Keuangan Pemasukan & BKU -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='validasi_v2.html'">
                 <i class="bi bi-check-circle-fill mb-2" style="font-size: 2.5rem; color: #198754;"></i>
@@ -113,41 +133,47 @@
                 <h6 class="fw-bold text-white mb-0 mt-2">Laporan BKU<br>Keseluruhan</h6>
             </div>
         </div>
-
-        <!-- BARIS 3: Evaluasi, Statistik & Fasilitas -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='rekap_transport_pusat.html'">
-                <i class="bi bi-pie-chart-fill mb-2" style="font-size: 2.5rem; color: #fd7e14;"></i>
+                <i class="bi bi-wallet2 mb-2" style="font-size: 2.5rem; color: #20c997;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Master Honor<br>& Transport</h6>
             </div>
         </div>
+
+        <!-- BARIS 4: Laporan Pajak & Percetakan -->
         <div class="col-6 col-md-3">
-            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='statistik_kehadiran.html'">
-                <i class="bi bi-bar-chart-line-fill mb-2" style="font-size: 2.5rem; color: #20c997;"></i>
-                <h6 class="fw-bold text-white mb-0 mt-2">Statistik<br>Kehadiran</h6>
+            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='rekap_pajak.html'">
+                <i class="bi bi-bank mb-2" style="font-size: 2.5rem; color: #e83e8c;"></i>
+                <h6 class="fw-bold text-white mb-0 mt-2">Rekapitulasi<br>Pajak BKU</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='evaluasi_panitia.html'">
-                <i class="bi bi-journal-text mb-2" style="font-size: 2.5rem; color: #adb5bd;"></i>
-                <h6 class="fw-bold text-white mb-0 mt-2">Catatan<br>Evaluasi</h6>
+            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='cetak_massal.html'">
+                <i class="bi bi-printer-fill mb-2" style="font-size: 2.5rem; color: #6f42c1;"></i>
+                <h6 class="fw-bold text-white mb-0 mt-2">Cetak<br>E-Kwitansi</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='profil_panitia.html'">
-                <i class="bi bi-person-lines-fill mb-2" style="font-size: 2.5rem; color: #6f42c1;"></i>
-                <h6 class="fw-bold text-white mb-0 mt-2">Profil<br>Kepanitiaan</h6>
+            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='cetak_transport.html'">
+                <i class="bi bi-car-front-fill mb-2" style="font-size: 2.5rem; color: #0dcaf0;"></i>
+                <h6 class="fw-bold text-white mb-0 mt-2">Cetak Tanda<br>Terima Transport</h6>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='cetak_id_panitia.html'">
+                <i class="bi bi-badge-ad-fill mb-2" style="font-size: 2.5rem; color: #ffc107;"></i>
+                <h6 class="fw-bold text-white mb-0 mt-2">Cetak ID Card<br>Panitia</h6>
             </div>
         </div>
 
-        <!-- BARIS 4: Eksternal Links -->
-        <div class="col-6 col-md-4">
+        <!-- BARIS 5: Eksternal Links & Materi -->
+        <div class="col-6 col-md-4 mt-4">
             <button onclick="bukaEksternal('materi')" class="btn btn-outline-info w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-book mb-2 fs-3 d-block"></i> Materi Workshop</button>
         </div>
-        <div class="col-6 col-md-4">
+        <div class="col-6 col-md-4 mt-4">
             <button onclick="bukaEksternal('dokumentasi')" class="btn btn-outline-success w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-camera mb-2 fs-3 d-block"></i> Galeri & Photobooth</button>
         </div>
-        <div class="col-12 col-md-4">
+        <div class="col-12 col-md-4 mt-4">
             <button onclick="window.location.href='sertifikat_panitia.html'" class="btn btn-outline-warning w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-award mb-2 fs-3 d-block"></i> E-Sertifikat Digital</button>
         </div>
     </div>
