@@ -37,7 +37,7 @@
     </div>
 
     <div class="row g-4 justify-content-center">
-        <!-- Pilihan 1: ID Card Panitia -->
+        <!-- Pilihan 1: ID Card Panitia (Sesuaikan nama file aslinya jika berbeda) -->
         <div class="col-md-5">
             <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5" onclick="window.location.href='generator_id_panitia.html'">
                 <div class="mb-3">
@@ -51,9 +51,9 @@
             </div>
         </div>
 
-        <!-- Pilihan 2: ID Card Peserta (Menu yang sudah dipatenkan) -->
+        <!-- Pilihan 2: ID Card Peserta (Sudah disesuaikan ke nama file aslinya: id_card_peserta.html) -->
         <div class="col-md-5">
-            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5" onclick="window.location.href='cetak_id_peserta.html'">
+            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5" onclick="window.location.href='id_card_peserta.html'">
                 <div class="mb-3">
                     <i class="bi bi-people-fill text-info" style="font-size: 4rem;"></i>
                 </div>
@@ -68,7 +68,6 @@
 </div>
 
 <script>
-    // Pengaman Sesi Admin
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if (!userData) window.location.href = "index.html";
 </script>
