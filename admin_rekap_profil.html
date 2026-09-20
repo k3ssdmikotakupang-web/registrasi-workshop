@@ -44,7 +44,6 @@
             <p class="text-white-50 small mb-0" style="max-width: 600px;">
                 Daftar di bawah ini hanya menampilkan anggota panitia yang telah berhasil melengkapi data profil, NIP, dan kepangkatannya melalui Dasbor Operasional.
             </p>
-            <!-- Tombol Ekspor Otomatis -->
             <button class="btn btn-excel px-4 py-2 fw-bold shadow-sm" onclick="bukaGoogleSheets()">
                 <i class="bi bi-file-earmark-excel-fill me-2"></i> Export Data Panitia & Peserta (Excel)
             </button>
@@ -76,12 +75,14 @@
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
     
+    // PENGAMAN KHUSUS SUPER ADMIN (DIPERBAIKI)
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     if (!userData) window.location.href = "index.html";
     
     const roleUser = (userData.role || '').toLowerCase();
     const jabatanUser = (userData.jabatan || '').toLowerCase();
-    const isSuperAdmin = (roleUser === 'admin_pusat' || roleUser === 'admin' || jabatanUser.includes('ketua') || jabatanUser.includes('jawab'));
+    
+    const isSuperAdmin = (roleUser.includes('admin') || jabatanUser.includes('ketua') || jabatanUser.includes('jawab'));
     if (!isSuperAdmin) window.location.href = "dashboard_panitia.html";
 
     const formatTgl = (tglSting) => {
@@ -91,7 +92,6 @@
         return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
     };
     
-    // --- FUNGSI EXPORT KE FILE BARU DENGAN LOADING ---
     async function bukaGoogleSheets() {
         Swal.fire({
             title: 'Mengekspor Data...',
@@ -111,7 +111,6 @@
             
             if (output.status === 'success') {
                 Swal.close();
-                // Buka file baru tersebut di tab browser sebelah
                 window.open(output.url, '_blank');
             } else {
                 Swal.fire({ icon: 'error', title: 'Gagal', text: output.message, customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff' });
