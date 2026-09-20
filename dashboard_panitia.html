@@ -15,7 +15,6 @@
         .glass-card-hover:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.08); cursor: pointer; }
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
         
-        /* Tema Keuangan (Khusus Bendahara) */
         .card-saldo { background: linear-gradient(135deg, rgba(0,242,254,0.1) 0%, rgba(79,172,254,0.1) 100%); border-left: 5px solid #00f2fe; }
         .card-masuk { border-left: 5px solid #198754; background: rgba(25,135,84,0.05); }
         .card-keluar { border-left: 5px solid #dc3545; background: rgba(220,53,69,0.05); }
@@ -27,56 +26,51 @@
 <nav class="navbar navbar-dark neon-nav sticky-top mb-4">
     <div class="container">
         <span class="navbar-brand text-neon"><i class="bi bi-shield-lock-fill"></i> Portal Kepanitiaan</span>
-        <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
+        <div>
+            <!-- Tombol Pengaturan Khusus Eksekutif (Disembunyikan default) -->
+            <button id="btnPengaturan" class="btn btn-sm btn-outline-warning me-2 d-none" onclick="window.location.href='admin_broadcast.html'" title="Broadcast & Pengaturan"><i class="bi bi-broadcast"></i></button>
+            <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
+        </div>
     </div>
 </nav>
 
 <div class="container">
-    
-    <!-- Profil Login -->
     <div class="glass-card p-4 mb-4 text-center" style="border-top: 4px solid #00f2fe;">
         <h4 class="fw-bold mb-1 text-white">Selamat Bertugas, <span id="namaPanitia" class="text-info">Panitia</span>!</h4>
         <p class="text-white-50 small mb-0" id="jabatanPanitia">Mari sukseskan acara kita bersama.</p>
     </div>
 
-    <!-- AREA WADAH KARTU DINAMIS (Sesi, Saldo, Pengumuman) -->
+    <!-- AREA WADAH KARTU DINAMIS -->
     <div id="wadahKartuInfo" class="mb-4"></div>
 
     <h5 class="fw-bold mb-3 mt-4"><i class="bi bi-grid-fill me-2 text-warning"></i> Menu Operasional</h5>
     
-    <!-- AREA WADAH MENU DINAMIS (Berdasarkan Jabatan) -->
+    <!-- AREA WADAH MENU DINAMIS -->
     <div class="row g-3" id="wadahMenuOperasional"></div>
-
 </div>
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
     const userData = JSON.parse(localStorage.getItem('userLogin'));
     
-    // Keamanan Pintu Masuk
     if (!userData) { window.location.href = "index.html"; }
     
     let idUser = userData.id_panitia || userData.id_qr || '';
     let roleUser = (userData.role || '').toLowerCase();
     let jabatanUser = (userData.jabatan || '').toLowerCase();
     
-    // Tampilkan Nama & Jabatan
     document.getElementById('namaPanitia').innerText = userData.nama || userData.nama_pic || 'Panitia';
     document.getElementById('jabatanPanitia').innerText = (userData.jabatan || 'Admin Pusat') + (userData.divisi ? ` - ${userData.divisi}` : '');
 
-    // Fungsi Render DOM Berdasarkan Role (Router Cerdas yang Diperkuat)
     function renderDynamicDasbor() {
         let wadahKartu = document.getElementById('wadahKartuInfo');
         let wadahMenu = document.getElementById('wadahMenuOperasional');
         let htmlKartu = ''; let htmlMenu = '';
 
-        // DETEKSI OTOMATIS (Sangat Akurat)
         let isBendahara = roleUser.includes('bendahara') || jabatanUser.includes('bendahara');
         let isEksekutif = roleUser.includes('admin') || jabatanUser.includes('ketua') || jabatanUser.includes('pelindung') || jabatanUser.includes('jawab');
 
-        // ----------------------------------------------------
-        // KELOMPOK B: BENDAHARA (Tertinggi Prioritas Keuangan)
-        // ----------------------------------------------------
+        // KELOMPOK B: BENDAHARA
         if (isBendahara) {
             htmlKartu += `
                 <div class="row g-3 mb-3">
@@ -88,7 +82,6 @@
                     <div><h6 class="fw-bold mb-0 text-warning">Scanner Subrayon</h6><small class="text-white-50" id="txtStatusSakelar">Memuat...</small></div>
                     <div class="form-check form-switch mt-1"><input class="form-check-input bg-secondary border-0" type="checkbox" id="sakelarPencairan" onchange="ubahSakelar()"></div>
                 </div>
-                <!-- Kartu Sesi & Pengumuman -->
                 <div id="sesiAktif" class="glass-card p-3 mb-3 border-warning d-none"><h6 class="text-warning fw-bold"><i class="bi bi-broadcast"></i> Sedang Berlangsung</h6><p id="teksSesi" class="mb-0 small text-white"></p></div>
                 <div id="pengumumanBoard" class="glass-card p-3 mb-3 border-info d-none"><h6 class="text-info fw-bold"><i class="bi bi-megaphone"></i> Pengumuman Panitia</h6><p id="teksPengumuman" class="mb-0 small text-white"></p></div>
             `;
@@ -99,17 +92,13 @@
                 <div class="col-12"><button onclick="window.location.href='dashboard_pengeluaran.html'" class="btn btn-outline-danger w-100 py-3 text-start fw-bold"><i class="bi bi-cart-dash-fill me-2"></i> Manajemen Pengeluaran & Transport</button></div>
                 <div class="col-12"><button onclick="window.location.href='laporan_bku.html'" class="btn btn-outline-light w-100 py-3 text-start fw-bold"><i class="bi bi-journal-check me-2"></i> Laporan BKU / RKAS</button></div>
             `;
-            
-            wadahKartu.innerHTML = htmlKartu;
-            wadahMenu.innerHTML = htmlMenu;
-            muatDataKeuangan(); 
-            muatSesiDanPengumuman();
+            wadahKartu.innerHTML = htmlKartu; wadahMenu.innerHTML = htmlMenu;
+            muatDataKeuangan(); muatSesiDanPengumuman();
         } 
         
-        // ----------------------------------------------------
-        // KELOMPOK A: EKSEKUTIF (Ketua, Pelindung, Admin Pusat)
-        // ----------------------------------------------------
+        // KELOMPOK A: EKSEKUTIF 
         else if (isEksekutif) {
+            document.getElementById('btnPengaturan').classList.remove('d-none'); // Munculkan tombol Broadcast
             htmlKartu += `
                 <div id="sesiAktif" class="glass-card p-3 mb-3 border-warning d-none"><h6 class="text-warning fw-bold"><i class="bi bi-broadcast"></i> Sedang Berlangsung</h6><p id="teksSesi" class="mb-0 small text-white"></p></div>
                 <div id="pengumumanBoard" class="glass-card p-3 mb-3 border-info d-none"><h6 class="text-info fw-bold"><i class="bi bi-megaphone"></i> Pengumuman Panitia</h6><p id="teksPengumuman" class="mb-0 small text-white"></p></div>
@@ -120,43 +109,42 @@
                 <div class="col-6"><div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='laporan_bku.html'"><i class="bi bi-journal-check mb-2" style="font-size: 2rem; color: #198754;"></i><h6 class="fw-bold text-white mb-0 mt-2">Pantau<br>Buku Kas</h6></div></div>
                 <div class="col-6"><div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='statistik_kehadiran.html'"><i class="bi bi-people-fill mb-2" style="font-size: 2rem; color: #f093fb;"></i><h6 class="fw-bold text-white mb-0 mt-2">Statistik<br>Kehadiran</h6></div></div>
             `;
-            
-            wadahKartu.innerHTML = htmlKartu;
-            wadahMenu.innerHTML = htmlMenu;
+            wadahKartu.innerHTML = htmlKartu; wadahMenu.innerHTML = htmlMenu;
             muatSesiDanPengumuman(); 
         } 
 
-        // ----------------------------------------------------
-        // KELOMPOK C: OPERASIONAL STANDAR (Divisi Lainnya)
-        // ----------------------------------------------------
+        // KELOMPOK C: OPERASIONAL STANDAR
         else {
-            htmlKartu += `
-                <div id="pengumumanBoard" class="glass-card p-3 mb-3 border-info d-none"><h6 class="text-info fw-bold"><i class="bi bi-megaphone"></i> Info & Pengumuman</h6><p id="teksPengumuman" class="mb-0 small text-white"></p></div>
-            `;
+            htmlKartu += `<div id="pengumumanBoard" class="glass-card p-3 mb-3 border-info d-none"><h6 class="text-info fw-bold"><i class="bi bi-megaphone"></i> Info & Pengumuman</h6><p id="teksPengumuman" class="mb-0 small text-white"></p></div>`;
             htmlMenu += `
                 <div class="col-6"><div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='panitia_checkin.html'"><i class="bi bi-qr-code-scan mb-2" style="font-size: 2.5rem; color: #ffc107;"></i><h6 class="fw-bold text-white mb-0 mt-2">Scanner<br>Absensi</h6></div></div>
                 <div class="col-6"><div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='manajemen_tugas.html'"><i class="bi bi-kanban-fill mb-2" style="font-size: 2.5rem; color: #0dcaf0;"></i><h6 class="fw-bold text-white mb-0 mt-2">Papan Tugas<br>Divisi</h6></div></div>
                 <div class="col-12"><button onclick="window.location.href='evaluasi_panitia.html'" class="btn btn-outline-warning w-100 py-3 text-start fw-bold mt-2"><i class="bi bi-journal-text me-2"></i> Catatan Evaluasi</button></div>
             `;
-            
-            wadahKartu.innerHTML = htmlKartu;
-            wadahMenu.innerHTML = htmlMenu;
+            wadahKartu.innerHTML = htmlKartu; wadahMenu.innerHTML = htmlMenu;
             muatSesiDanPengumuman();
         }
 
-        // ====================================================
-        // MENU UMUM (Ditambahkan ke semua kelompok secara otomatis)
-        // ====================================================
+        // --- MENU UMUM (DENGAN PEMICU FUNGSI ASYNCHRONOUS BARU) ---
         let menuUmum = `
-            <div class="col-6 mt-3"><button onclick="window.open('${localStorage.getItem('linkMateri')||'#'}')" class="btn btn-outline-info w-100 py-2"><i class="bi bi-book"></i> Materi</button></div>
-            <div class="col-6 mt-3"><button onclick="window.open('${localStorage.getItem('linkDokumentasi')||'#'}')" class="btn btn-outline-success w-100 py-2"><i class="bi bi-camera"></i> Galeri</button></div>
+            <div class="col-6 mt-3"><button onclick="bukaEksternal('materi')" class="btn btn-outline-info w-100 py-2"><i class="bi bi-book"></i> Materi</button></div>
+            <div class="col-6 mt-3"><button onclick="bukaEksternal('dokumentasi')" class="btn btn-outline-success w-100 py-2"><i class="bi bi-camera"></i> Galeri</button></div>
             <div class="col-6"><button onclick="window.location.href='profil_panitia.html'" class="btn btn-outline-light w-100 py-2"><i class="bi bi-person-lines-fill"></i> Profilku</button></div>
             <div class="col-6"><button onclick="window.location.href='sertifikat_panitia.html'" class="btn btn-outline-warning w-100 py-2"><i class="bi bi-award"></i> E-Sertifikat</button></div>
         `;
         wadahMenu.insertAdjacentHTML('beforeend', menuUmum);
     }
 
-    // --- FUNGSI PENDUKUNG (API FETCHING) ---
+    // FUNGSI PEMBUKA LINK (Mengecek link TEPAT saat tombol diklik)
+    function bukaEksternal(jenis) {
+        let link = localStorage.getItem(jenis === 'materi' ? 'linkMateri' : 'linkDokumentasi');
+        if (link && link.startsWith('http')) {
+            window.open(link, '_blank');
+        } else {
+            Swal.fire({icon: 'info', title: 'Belum Tersedia', text: 'Tautan belum diunggah oleh Pusat.', customClass: { popup: 'swal-dark' }, background: '#1e293b', color: '#fff'});
+        }
+    }
+
     async function muatSesiDanPengumuman() {
         try {
             const res = await fetch(API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'get_dashboard_live', role: roleUser, jabatan: jabatanUser }) });
@@ -171,7 +159,7 @@
                     document.getElementById('pengumumanBoard').classList.remove('d-none');
                     document.getElementById('teksPengumuman').innerText = result.announcements[0].judul + " - " + result.announcements[0].isi;
                 }
-                // Update Link Global
+                // Simpan Link ke Background Memory
                 fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_pengaturan' }) })
                 .then(r => r.json()).then(r2 => {
                     if(r2.status === 'success') {
@@ -216,8 +204,6 @@
     }
 
     function logout() { localStorage.removeItem('userLogin'); window.location.href = "index.html"; }
-    
-    // Jalankan Router
     renderDynamicDasbor();
 </script>
 </body>
