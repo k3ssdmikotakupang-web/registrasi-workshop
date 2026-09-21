@@ -11,7 +11,7 @@
         body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
         .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); transition: transform 0.3s ease, background 0.3s ease; }
-        .glass-card-hover:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.09); cursor: pointer; border-color: rgba(0, 242, 254, 0.5); }
+        .glass-card-hover:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.09); border-color: rgba(0, 242, 254, 0.5); }
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
     </style>
 </head>
@@ -32,35 +32,39 @@
     <div class="row justify-content-center text-center mb-5">
         <div class="col-md-8">
             <h3 class="fw-bold text-white mb-2">Pilih Kategori Cetak ID Card</h3>
-            <p class="text-white-50">Silakan pilih jenis kartu identitas yang ingin dicetak sesuai kebutuhan acara.</p>
+            <p class="text-white-50">Silakan pilih jenis kartu identitas yang ingin dicetak massal sesuai kebutuhan acara.</p>
         </div>
     </div>
 
     <div class="row g-4 justify-content-center">
-        <!-- Pilihan 1: ID Card Panitia (Sudah disinkronkan ke cetak_idcard_panitia.html) -->
+        <!-- Pilihan 1: ID Card Panitia (Target: cetak_id_panitia.html) -->
         <div class="col-md-5">
-            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5" onclick="window.location.href='cetak_idcard_panitia.html'">
+            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5 position-relative">
                 <div class="mb-3">
                     <i class="bi bi-person-badge-fill text-warning" style="font-size: 4rem;"></i>
                 </div>
                 <h4 class="fw-bold text-white mb-3">ID Card Panitia</h4>
-                <p class="text-white-50 small mb-4">Pusat pencetakan kartu tanda pengenal resmi untuk seluruh jajaran pengurus dan anggota panitia inti.</p>
+                <p class="text-white-50 small mb-4">Pusat pencetakan massal kartu tanda pengenal resmi untuk seluruh jajaran pengurus dan anggota panitia inti.</p>
                 <div>
-                    <span class="btn btn-outline-warning fw-bold px-4 rounded-pill">Buka Menu Panitia <i class="bi bi-arrow-right ms-2"></i></span>
+                    <a href="cetak_id_panitia.html" class="btn btn-warning fw-bold px-4 rounded-pill stretched-link">
+                        Buka Menu Panitia <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Pilihan 2: ID Card Peserta -->
+        <!-- Pilihan 2: ID Card Peserta (Target: admin_cetak_id_peserta.html) -->
         <div class="col-md-5">
-            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5" onclick="window.location.href='id_card_peserta.html'">
+            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5 position-relative">
                 <div class="mb-3">
                     <i class="bi bi-people-fill text-info" style="font-size: 4rem;"></i>
                 </div>
                 <h4 class="fw-bold text-white mb-3">ID Card Peserta</h4>
-                <p class="text-white-50 small mb-4">Pusat pencetakan kartu peserta lengkap dengan kode QR unik untuk absensi dan validasi kegiatan.</p>
+                <p class="text-white-50 small mb-4">Pusat pencetakan massal kartu peserta lengkap dengan kode QR unik dan data asal sekolah.</p>
                 <div>
-                    <span class="btn btn-outline-info fw-bold px-4 rounded-pill">Buka Menu Peserta <i class="bi bi-arrow-right ms-2"></i></span>
+                    <a href="admin_cetak_id_peserta.html" class="btn btn-info fw-bold px-4 rounded-pill stretched-link text-white">
+                        Buka Menu Peserta <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
                 </div>
             </div>
         </div>
