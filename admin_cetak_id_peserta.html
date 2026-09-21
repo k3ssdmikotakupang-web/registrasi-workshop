@@ -100,7 +100,7 @@
                     if(p.foto_url && p.foto_url.trim() !== '') {
                         let urlFoto = p.foto_url; let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
                         if (fileIdMatch) { urlFoto = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[0]; }
-                        fotoHtml = `<img src="${urlFoto}" alt="Foto Profil">`;
+                        fotoHtml = `<img src="${urlFoto}" style="width:100%; height:100%; object-fit:cover;" alt="Foto Profil">`;
                     }
                     
                     html += `
@@ -126,10 +126,21 @@
         } catch(e) { document.getElementById('loading').innerHTML = '<span class="text-danger fw-bold">Gagal memuat data dari server.</span>'; }
     }
     
-    // Keamanan Admin
+    // --- KEAMANAN ADMIN YANG BENAR ---
     const userData = JSON.parse(localStorage.getItem('userLogin'));
-    if (!userData || (!userData.role.includes('admin') && !userData.role.includes('panitia'))) window.location.href = "index.html";
-    else muatDataPeserta();
+    if (!userData) {
+        window.location.href = "index.html";
+    } else {
+        let roleUser = (userData.role || '').toLowerCase();
+        let jabatanUser = (userData.jabatan || '').toLowerCase();
+        let isSuperAdmin = (roleUser.includes('admin') || roleUser.includes('panitia') || jabatanUser.includes('ketua') || jabatanUser.includes('jawab'));
+        
+        if (!isSuperAdmin) {
+            window.location.href = "index.html";
+        } else {
+            muatDataPeserta();
+        }
+    }
 </script>
 </body>
 </html>
