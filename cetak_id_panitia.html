@@ -10,8 +10,8 @@
     <style>
         body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
         .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); transition: transform 0.3s ease, background 0.3s ease; display: block; text-decoration: none; }
-        .glass-card-hover:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.09); border-color: rgba(0, 242, 254, 0.5); cursor: pointer; }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); transition: transform 0.3s ease, background 0.3s ease; }
+        .glass-card-hover:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.09); border-color: rgba(0, 242, 254, 0.5); }
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
     </style>
 </head>
@@ -39,30 +39,35 @@
     <div class="row g-4 justify-content-center">
         <!-- Pilihan 1: ID Card Panitia -->
         <div class="col-md-5">
-            <a href="cetak_idcard_panitia.html" class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5 text-decoration-none">
+            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5 position-relative">
                 <div class="mb-3">
                     <i class="bi bi-person-badge-fill text-warning" style="font-size: 4rem;"></i>
                 </div>
                 <h4 class="fw-bold text-white mb-3">ID Card Panitia</h4>
                 <p class="text-white-50 small mb-4">Pusat pencetakan massal kartu tanda pengenal resmi untuk seluruh jajaran pengurus dan anggota panitia inti.</p>
                 <div>
-                    <span class="btn btn-outline-warning fw-bold px-4 rounded-pill">Buka Menu Panitia <i class="bi bi-arrow-right ms-2"></i></span>
+                    <!-- Menggunakan Stretched-Link agar 1 kartu full bisa diklik -->
+                    <a href="cetak_idcard_panitia.html" class="btn btn-warning fw-bold px-4 rounded-pill stretched-link">
+                        Buka Menu Panitia <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
                 </div>
-            </a>
+            </div>
         </div>
 
-        <!-- Pilihan 2: ID Card Peserta (Mengarahkan ke Cetak Massal Admin) -->
+        <!-- Pilihan 2: ID Card Peserta -->
         <div class="col-md-5">
-            <a href="admin_cetak_id_peserta.html" class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5 text-decoration-none">
+            <div class="card h-100 shadow border-0 glass-card glass-card-hover text-center p-5 position-relative">
                 <div class="mb-3">
                     <i class="bi bi-people-fill text-info" style="font-size: 4rem;"></i>
                 </div>
                 <h4 class="fw-bold text-white mb-3">ID Card Peserta</h4>
                 <p class="text-white-50 small mb-4">Pusat pencetakan massal kartu peserta lengkap dengan kode QR unik dan data asal sekolah.</p>
                 <div>
-                    <span class="btn btn-outline-info fw-bold px-4 rounded-pill">Buka Menu Peserta <i class="bi bi-arrow-right ms-2"></i></span>
+                    <a href="admin_cetak_id_peserta.html" class="btn btn-info fw-bold px-4 rounded-pill stretched-link text-white">
+                        Buka Menu Peserta <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
                 </div>
-            </a>
+            </div>
         </div>
     </div>
 </div>
