@@ -11,83 +11,89 @@
         body { background-color: #0f172a; color: #ffffff; font-family: 'Segoe UI', sans-serif; padding-bottom: 50px; }
         .neon-nav { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(0, 242, 254, 0.3); }
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; box-shadow: 0 8px 32px 0 rgba(0,0,0,0.3); transition: transform 0.3s ease, background 0.3s ease; }
-        .glass-card-hover:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.08); cursor: pointer; border-color: rgba(0, 242, 254, 0.3); }
+        .glass-card-hover:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.08); cursor: pointer; border-color: rgba(0, 242, 254, 0.5); }
         .text-neon { background: linear-gradient(to right, #00f2fe, #4facfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: bold; }
         .stat-card { border-left: 4px solid #00f2fe; }
         
-        /* 🔥 EFEK NEON SUPER GLOW UNTUK ICON 🔥 */
-        .glow-icon { filter: drop-shadow(0 0 12px currentColor); transition: filter 0.3s ease; }
-        .glass-card-hover:hover .glow-icon { filter: drop-shadow(0 0 20px currentColor); }
+        /* 🔥 EFEK WARNA & GLOW NEON MURNI 🔥 */
+        .glow-icon { 
+            filter: drop-shadow(0 0 10px currentColor); 
+            transition: filter 0.3s ease, transform 0.3s ease; 
+        }
+        .glass-card-hover:hover .glow-icon { 
+            filter: drop-shadow(0 0 18px currentColor); 
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
 
 <nav class="navbar navbar-dark neon-nav sticky-top mb-4">
     <div class="container">
-        <span class="navbar-brand text-neon"><i class="bi bi-cpu-fill glow-icon"></i> Ruang Kendali Pusat</span>
+        <span class="navbar-brand text-neon"><i class="bi bi-cpu-fill glow-icon" style="color: #00f2fe;"></i> Ruang Kendali Pusat</span>
         <button class="btn btn-sm btn-outline-danger" onclick="logout()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
     </div>
 </nav>
 
 <div class="container">
-    <div class="glass-card p-4 mb-4 text-center" style="border-top: 4px solid #ffc107;">
-        <h4 class="fw-bold mb-1 text-white">Selamat Datang, <span id="namaAdmin" class="text-warning">Super Admin</span>!</h4>
+    <div class="glass-card p-4 mb-4 text-center" style="border-top: 4px solid #ff007f;">
+        <h4 class="fw-bold mb-1 text-white">Selamat Datang, <span id="namaAdmin" style="color: #ff007f; text-shadow: 0 0 10px rgba(255,0,127,0.5);">Super Admin</span>!</h4>
         <p class="text-white-50 small mb-0">Pusat Komando & Kontrol Utama Keseluruhan Acara.</p>
     </div>
 
     <!-- Statistik Cepat -->
     <div class="row g-3 mb-4">
         <div class="col-6 col-md-3">
-            <div class="glass-card stat-card p-3 text-center h-100" style="border-color: #0dcaf0;">
-                <h3 class="fw-bold text-info mb-0" id="statPeserta">0</h3>
+            <div class="glass-card stat-card p-3 text-center h-100" style="border-color: #00f2fe;">
+                <h3 class="fw-bold mb-0" id="statPeserta" style="color: #00f2fe; text-shadow: 0 0 10px rgba(0,242,254,0.4);">0</h3>
                 <small class="text-white-50">Total Peserta</small>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="glass-card stat-card p-3 text-center h-100" style="border-color: #198754;">
-                <h3 class="fw-bold text-success mb-0" id="statHadir">0</h3>
+            <div class="glass-card stat-card p-3 text-center h-100" style="border-color: #00ff66;">
+                <h3 class="fw-bold mb-0" id="statHadir" style="color: #00ff66; text-shadow: 0 0 10px rgba(0,255,102,0.4);">0</h3>
                 <small class="text-white-50">Peserta Hadir</small>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="glass-card stat-card p-3 text-center h-100" style="border-color: #ffc107;">
-                <h3 class="fw-bold text-warning mb-0" id="statLunas">0</h3>
+            <div class="glass-card stat-card p-3 text-center h-100" style="border-color: #ffcc00;">
+                <h3 class="fw-bold mb-0" id="statLunas" style="color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.4);">0</h3>
                 <small class="text-white-50">Sekolah Lunas</small>
             </div>
         </div>
         <div class="col-6 col-md-3">
-            <div class="glass-card stat-card p-3 text-center h-100" style="border-color: #dc3545;">
-                <h3 class="fw-bold text-danger mb-0" id="statPending">0</h3>
+            <div class="glass-card stat-card p-3 text-center h-100" style="border-color: #ff0055;">
+                <h3 class="fw-bold mb-0" id="statPending" style="color: #ff0055; text-shadow: 0 0 10px rgba(255,0,85,0.4);">0</h3>
                 <small class="text-white-50">Sekolah Pending</small>
             </div>
         </div>
     </div>
 
-    <h5 class="fw-bold mb-3 mt-4"><i class="bi bi-grid-fill me-2 text-info glow-icon"></i> Menu Master (God Mode)</h5>
+    <h5 class="fw-bold mb-3 mt-4"><i class="bi bi-grid-fill me-2 glow-icon" style="color: #00f2fe;"></i> Menu Master (God Mode)</h5>
     
     <div class="row g-3 mb-5">
         <!-- BARIS 1: Pengaturan Sistem & Master Data -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_manajemen.html'">
-                <i class="bi bi-person-fill-gear mb-2 glow-icon" style="font-size: 2.5rem; color: #ff7675;"></i>
+                <i class="bi bi-person-fill-gear mb-2 glow-icon" style="font-size: 2.5rem; color: #ff3366;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Pengaturan<br>Akun Pengguna</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_panitia.html'">
-                <i class="bi bi-person-vcard-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #00d2d3;"></i>
+                <i class="bi bi-person-vcard-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #00ffcc;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Manajemen<br>Data Panitia</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_broadcast.html'">
-                <i class="bi bi-broadcast-pin mb-2 glow-icon" style="font-size: 2.5rem; color: #feca57;"></i>
+                <i class="bi bi-broadcast-pin mb-2 glow-icon" style="font-size: 2.5rem; color: #ffbb00;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Broadcast &<br>Sistem</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_jadwal.html'">
-                <i class="bi bi-calendar-event-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #a29bfe;"></i>
+                <i class="bi bi-calendar-event-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #bb66ff;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Pengaturan<br>Jadwal Acara</h6>
             </div>
         </div>
@@ -95,25 +101,25 @@
         <!-- BARIS 2: Operasi & Tugas -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='manajemen_tugas.html'">
-                <i class="bi bi-kanban-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #00cec9;"></i>
+                <i class="bi bi-kanban-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #00f2fe;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Papan Tugas<br>Kepanitiaan</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='panitia_checkin.html'">
-                <i class="bi bi-qr-code-scan mb-2 glow-icon" style="font-size: 2.5rem; color: #fd79a8;"></i>
+                <i class="bi bi-qr-code-scan mb-2 glow-icon" style="font-size: 2.5rem; color: #ff00aa;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Scanner<br>Absensi Pusat</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='admin_rekap_profil.html'">
-                <i class="bi bi-person-lines-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #6c5ce7;"></i>
+                <i class="bi bi-person-lines-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #9933ff;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Rekap Profil<br>Panitia</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='rekap_sekolah.html'">
-                <i class="bi bi-buildings mb-2 glow-icon" style="font-size: 2.5rem; color: #e84393;"></i>
+                <i class="bi bi-buildings mb-2 glow-icon" style="font-size: 2.5rem; color: #ff3399;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Database<br>Sekolah & Peserta</h6>
             </div>
         </div>
@@ -121,25 +127,25 @@
         <!-- BARIS 3: Keuangan Pemasukan & BKU -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='validasi_v2.html'">
-                <i class="bi bi-check-circle-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #00b894;"></i>
+                <i class="bi bi-check-circle-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #00ff66;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Validasi<br>Transfer & Tunai</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='dashboard_pengeluaran.html'">
-                <i class="bi bi-cart-dash-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #ff4757;"></i>
+                <i class="bi bi-cart-dash-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #ff2233;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Manajemen<br>Pengeluaran</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='laporan_bku.html'">
-                <i class="bi bi-journal-check mb-2 glow-icon" style="font-size: 2.5rem; color: #0984e3;"></i>
+                <i class="bi bi-journal-check mb-2 glow-icon" style="font-size: 2.5rem; color: #3388ff;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Laporan BKU<br>Keseluruhan</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='rekap_transport_pusat.html'">
-                <i class="bi bi-wallet2 mb-2 glow-icon" style="font-size: 2.5rem; color: #55efc4;"></i>
+                <i class="bi bi-wallet2 mb-2 glow-icon" style="font-size: 2.5rem; color: #66ffcc;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Master Honor<br>& Transport</h6>
             </div>
         </div>
@@ -147,38 +153,38 @@
         <!-- BARIS 4: Laporan Pajak & Percetakan -->
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='rekap_pajak.html'">
-                <i class="bi bi-bank mb-2 glow-icon" style="font-size: 2.5rem; color: #ff7675;"></i>
+                <i class="bi bi-bank mb-2 glow-icon" style="font-size: 2.5rem; color: #ff5588;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Rekapitulasi<br>Pajak BKU</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='cetak_massal.html'">
-                <i class="bi bi-printer-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #a29bfe;"></i>
+                <i class="bi bi-printer-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #cc88ff;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Cetak<br>E-Kwitansi</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='cetak_transport.html'">
-                <i class="bi bi-car-front-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #74b9ff;"></i>
+                <i class="bi bi-car-front-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #33ccff;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Cetak Tanda<br>Terima Transport</h6>
             </div>
         </div>
         <div class="col-6 col-md-3">
             <div class="card h-100 shadow-sm border-0 glass-card glass-card-hover text-center py-4" onclick="window.location.href='cetak_id_panitia.html'">
-                <i class="bi bi-badge-ad-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #fdcb6e;"></i>
+                <i class="bi bi-badge-ad-fill mb-2 glow-icon" style="font-size: 2.5rem; color: #ffdd00;"></i>
                 <h6 class="fw-bold text-white mb-0 mt-2">Pusat Cetak<br>ID Card</h6>
             </div>
         </div>
 
         <!-- BARIS 5: Eksternal Links & Materi -->
         <div class="col-6 col-md-4 mt-4">
-            <button onclick="bukaEksternal('materi')" class="btn btn-outline-info w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-book mb-2 fs-3 d-block glow-icon"></i> Materi Workshop</button>
+            <button onclick="bukaEksternal('materi')" class="btn btn-outline-info w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-book mb-2 fs-3 d-block glow-icon" style="color: #33ccff;"></i> Materi Workshop</button>
         </div>
         <div class="col-6 col-md-4 mt-4">
-            <button onclick="bukaEksternal('dokumentasi')" class="btn btn-outline-success w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-camera mb-2 fs-3 d-block glow-icon"></i> Galeri & Photobooth</button>
+            <button onclick="bukaEksternal('dokumentasi')" class="btn btn-outline-success w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-camera mb-2 fs-3 d-block glow-icon" style="color: #00ff66;"></i> Galeri & Photobooth</button>
         </div>
         <div class="col-12 col-md-4 mt-4">
-            <button onclick="window.location.href='sertifikat_panitia.html'" class="btn btn-outline-warning w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-award mb-2 fs-3 d-block glow-icon"></i> E-Sertifikat Digital</button>
+            <button onclick="window.location.href='sertifikat_panitia.html'" class="btn btn-outline-warning w-100 py-3 fw-bold glass-card glass-card-hover"><i class="bi bi-award mb-2 fs-3 d-block glow-icon" style="color: #ffdd00;"></i> E-Sertifikat Digital</button>
         </div>
     </div>
 </div>
@@ -193,7 +199,6 @@
     let roleUser = (userData.role || '').toLowerCase();
     let jabatanUser = (userData.jabatan || '').toLowerCase();
     
-    // Cek Otoritas (Hanya Admin Pusat / Ketua yang boleh di sini)
     let isSuperAdmin = (roleUser === 'admin_pusat' || roleUser === 'admin' || jabatanUser.includes('ketua') || jabatanUser.includes('jawab'));
     
     if (!isSuperAdmin) {
@@ -202,7 +207,6 @@
     
     document.getElementById('namaAdmin').innerText = userData.nama || userData.nama_pic || "Super Admin";
 
-    // Tarik Statistik Cepat & Link Eksternal
     async function muatDataMaster() {
         try {
             fetch(API_URL, { 
