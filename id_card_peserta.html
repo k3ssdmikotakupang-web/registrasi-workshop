@@ -45,7 +45,6 @@
         }
         .foto-box img { width: 100%; height: 100%; object-fit: cover; }
 
-        /* TEKS IDENTITAS & SPASI BAWAH DIRAPIKAN */
         .id-name { font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-bottom: 2px; line-height: 1.2; text-transform: uppercase; }
         .id-school { font-size: 0.85rem; font-weight: 600; color: #64748b; margin-bottom: 2px; line-height: 1.2; }
         .id-subrayon { font-size: 0.8rem; font-weight: 700; color: #dc3545; margin-bottom: 15px; }
@@ -99,62 +98,71 @@
 
 <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyXhfdbHD1LhvGR_AKTfHVpVtLOm3DOT4hx7zp9YwdQGeBHdni0JXuMbqBYs5j5X5fx/exec";
-
-    async function muatDataPeserta() {
-        try {
-            const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify({ action: 'get_all_peserta' }) });
-            const result = await res.json();
-            document.getElementById('loading').classList.add('d-none');
-
-            if(result.status === 'success' && result.data.length > 0) {
-                let html = '';
-                result.data.forEach(p => {
-                    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=350x350&data=${encodeURIComponent(p.id_qr)}`;
-                    let fotoHtml = `<i class="bi bi-person-fill"></i>`;
-                    
-                    if(p.foto_url && p.foto_url.trim() !== '') {
-                        let urlFoto = p.foto_url; let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
-                        if (fileIdMatch) { urlFoto = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[0]; }
-                        fotoHtml = `<img src="${urlFoto}" style="width:100%; height:100%; object-fit:cover;" alt="Foto Profil">`;
-                    }
-                    
-                    html += `
-                        <div class="id-card-wrapper">
-                            <div class="header-maroon">
-                                <h5>K3S SD/MI KOTA KUPANG</h5>
-                                <p>Panitia Pelaksana Workshop Manajemen Kepala SD/MI Kota Kupang 2026</p>
-                            </div>
-                            <div class="card-main">
-                                <div class="foto-box">${fotoHtml}</div>
-                                <div class="id-name">${p.nama}</div>
-                                <div class="id-school">${p.sekolah || 'Asal Sekolah Tidak Ditemukan'}</div>
-                                <div class="id-subrayon"><i class="bi bi-geo-alt-fill"></i> Subrayon: ${p.subrayon || '-'}</div>
-                                <div><span class="id-role">${p.jabatan}</span></div>
-                                <div class="qr-box"><img src="${qrUrl}" alt="QR Validasi"></div>
-                                <div class="id-qr-text">${p.id_qr}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                document.getElementById('containerCard').innerHTML = html;
-            } else { document.getElementById('containerCard').innerHTML = '<div class="col-12 text-center text-muted fw-bold">Belum ada data peserta yang terdaftar.</div>'; }
-        } catch(e) { document.getElementById('loading').innerHTML = '<span class="text-danger fw-bold">Gagal memuat data dari server.</span>'; }
-    }
     
-    // --- KEAMANAN ADMIN (SUDAH DIPERBAIKI) ---
+    // --- SKRIP KHUSUS PESERTA INDIVIDU (TIDAK BOLEH DIGANTI) ---
     const userData = JSON.parse(localStorage.getItem('userLogin'));
-    if (!userData) {
-        window.location.href = "index.html";
-    } else {
-        let roleUser = (userData.role || '').toLowerCase();
-        let jabatanUser = (userData.jabatan || '').toLowerCase();
-        let isSuperAdmin = (roleUser.includes('admin') || roleUser.includes('panitia') || jabatanUser.includes('ketua') || jabatanUser.includes('jawab'));
-        
-        if (!isSuperAdmin) {
-            window.location.href = "index.html";
-        } else {
-            muatDataPeserta();
+    if(!userData) window.location.href = "index.html";
+
+    document.getElementById('cNama').innerText = userData.nama;
+    document.getElementById('cSekolah').innerText = userData.sekolah || 'Asal Sekolah Tidak Ditemukan';
+    document.getElementById('cSubrayon').innerHTML = `<i class="bi bi-geo-alt-fill"></i> Subrayon: ${userData.subrayon || '-'}`;
+    document.getElementById('cJabatan').innerText = userData.jabatan;
+    document.getElementById('cIdQr').innerText = userData.id_qr;
+    
+    let qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(userData.id_qr)}`;
+    document.getElementById('cQr').src = qrUrl;
+
+    if(userData.foto_url && userData.foto_url.trim() !== '') {
+        let urlFoto = userData.foto_url;
+        let fileIdMatch = urlFoto.match(/[-\w]{25,}/);
+        if (fileIdMatch) { urlFoto = 'https://lh3.googleusercontent.com/d/' + fileIdMatch[0]; }
+        document.getElementById('photoArea').innerHTML = `<img src="${urlFoto}" style="width:100%; height:100%; object-fit:cover;" alt="Foto Profil">`;
+    }
+
+    let base64FotoTerkirim = ""; let namaFileFoto = "";
+
+    function prosesFoto(event) {
+        const file = event.target.files[0]; if (!file) return;
+        Swal.fire({ title: 'Menyiapkan Foto...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const scaleSize = 400 / img.width; canvas.width = 400; canvas.height = img.height * scaleSize;
+                canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                
+                document.getElementById('photoArea').innerHTML = `<img src="${dataUrl}">`;
+                base64FotoTerkirim = dataUrl.split(',')[1];
+                namaFileFoto = "Peserta_" + userData.id_qr + ".jpg";
+                
+                document.getElementById('btnSimpan').classList.remove('d-none');
+                document.getElementById('btnBukaKamera').classList.add('d-none');
+                Swal.close();
+            }
+            img.src = e.target.result;
         }
+        reader.readAsDataURL(file);
+    }
+
+    async function kirimKeServer() {
+        let btn = document.getElementById('btnSimpan');
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menyimpan...'; btn.disabled = true;
+
+        try {
+            const res = await fetch(API_URL, {
+                method: 'POST', body: JSON.stringify({ action: 'upload_foto_peserta', id_qr: userData.id_qr, fileBase64: base64FotoTerkirim, mimeType: 'image/jpeg', filename: namaFileFoto })
+            });
+            const result = await res.json();
+            if(result.status === 'success') {
+                userData.foto_url = result.url; localStorage.setItem('userLogin', JSON.stringify(userData));
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Foto tersimpan.', timer: 2000, showConfirmButton: false, customClass: { popup: 'swal-maroon' } }).then(() => {
+                    btn.classList.add('d-none'); document.getElementById('btnBukaKamera').classList.remove('d-none');
+                });
+            } else { Swal.fire('Gagal', result.message, 'error'); btn.innerHTML = 'SIMPAN FOTO BARU'; btn.disabled = false; }
+        } catch(e) { Swal.fire('Error', 'Koneksi terputus.', 'error'); btn.innerHTML = 'SIMPAN FOTO BARU'; btn.disabled = false; }
     }
 </script>
 </body>
